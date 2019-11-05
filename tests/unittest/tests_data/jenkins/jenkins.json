@@ -1,0 +1,46 @@
+{
+  "_class": "hudson.model.Hudson",
+  "assignedLabels": [
+    {
+      "name": "master"
+    }
+  ],
+  "mode": "EXCLUSIVE",
+  "nodeDescription": "the master Jenkins node",
+  "nodeName": "",
+  "numExecutors": 1,
+  "description": "Jenkins configured automatically by Jenkins Configuration as Code Plugin\n\n",
+  "jobs": [
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "name": "Level1_WorkflowJob1",
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/",
+      "color": "red"
+    },
+    {
+      "_class": "com.cloudbees.hudson.plugins.folder.Folder",
+      "name": "Level1_Folder1",
+      "url": "http://0.0.0.0:8080/job/Level1_Folder1/"
+    }
+  ],
+  "overallLoad": {},
+  "primaryView": {
+    "_class": "hudson.model.AllView",
+    "name": "all",
+    "url": "http://0.0.0.0:8080/"
+  },
+  "quietingDown": false,
+  "slaveAgentPort": 50000,
+  "unlabeledLoad": {
+    "_class": "jenkins.model.UnlabeledLoadStatistics"
+  },
+  "useCrumbs": false,
+  "useSecurity": true,
+  "views": [
+    {
+      "_class": "hudson.model.AllView",
+      "name": "all",
+      "url": "http://0.0.0.0:8080/"
+    }
+  ]
+}

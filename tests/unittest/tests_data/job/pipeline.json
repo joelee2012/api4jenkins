@@ -1,0 +1,130 @@
+{
+  "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+  "actions": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "_class": "hudson.plugins.jobConfigHistory.JobConfigHistoryProjectAction"
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "_class": "org.jenkinsci.plugins.testresultsanalyzer.TestResultsAnalyzerAction"
+    },
+    {},
+    {},
+    {
+      "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction"
+    }
+  ],
+  "description": "",
+  "displayName": "Level1_WorkflowJob",
+  "displayNameOrNull": null,
+  "fullDisplayName": "Level1_WorkflowJob",
+  "fullName": "Level1_WorkflowJob",
+  "name": "DO-8651_test_on_board",
+  "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/",
+  "buildable": true,
+  "builds": [
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 52,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 51,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/51/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 50,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/50/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 49,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 48,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/48/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 47,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/47/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 46,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/46/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "number": 45,
+      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/45/"
+    }
+  ],
+  "color": "red",
+  "firstBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 45,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/45/"
+  },
+  "healthReport": [
+    {
+      "description": "Build stability: 4 out of the last 5 builds failed.",
+      "iconClassName": "icon-health-00to19",
+      "iconUrl": "health-00to19.png",
+      "score": 20
+    }
+  ],
+  "inQueue": false,
+  "keepDependencies": false,
+  "lastBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 52,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
+  },
+  "lastCompletedBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 52,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
+  },
+  "lastFailedBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 52,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
+  },
+  "lastStableBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 49,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/"
+  },
+  "lastSuccessfulBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 49,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/"
+  },
+  "lastUnstableBuild": null,
+  "lastUnsuccessfulBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 52,
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
+  },
+  "nextBuildNumber": 53,
+  "property": [
+  ],
+  "queueItem": null,
+  "concurrentBuild": true,
+  "resumeBlocked": false
+}

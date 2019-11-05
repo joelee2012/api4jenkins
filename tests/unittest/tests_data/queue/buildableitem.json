@@ -1,0 +1,17 @@
+{
+      "_class": "hudson.model.Queue$BuildableItem",
+      "actions": [],
+      "blocked": false,
+      "buildable": true,
+      "id": 668,
+      "inQueueSince": 1561364099799,
+      "params": "",
+      "stuck": true,
+      "task": {
+        "_class": "org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution$PlaceholderTask"
+      },
+      "url": "queue/item/668/",
+      "why": "There are no nodes with the label ‘xxxx’",
+      "buildableStartMilliseconds": 1561364099799,
+      "pending": false
+    }

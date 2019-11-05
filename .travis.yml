@@ -1,0 +1,19 @@
+dist: xenial
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+# command to install dependencies
+install:
+  - pip install --upgrade setuptools wheel twine
+  - pip install coveralls tox
+# command to run tests
+script:
+  - tox
+  - tox -e integration
+  - python setup.py sdist bdist_wheel
+  - twine check dist/*
+after_success:
+  - if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
