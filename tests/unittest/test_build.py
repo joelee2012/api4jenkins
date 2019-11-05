@@ -17,7 +17,7 @@ class TestBuild(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.jenkins_json = load_test_json('jenkins/jenkins.json')
-        cls.workflow_json = load_test_json('build/build.json')
+        cls.workflow_json = load_test_json('run/workflowrun.json')
         cls.crumb = load_test_json('jenkins/crumb.json')
 
     def setUp(self):
