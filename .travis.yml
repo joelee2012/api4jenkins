@@ -11,8 +11,7 @@ install:
 # command to run tests
 script:
   - tox
+  - if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
   - tox -e e2e
   - python setup.py sdist bdist_wheel
   - twine check dist/*
-after_success:
-  - if [[ `python --version` =~ 3.7 ]]; then cd tests/unit && coveralls; fi
