@@ -15,4 +15,4 @@ script:
   - python setup.py sdist bdist_wheel
   - twine check dist/*
 after_success:
-  - if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
+  - if [[ `python --version` =~ 3.7 ]]; then cd tests/unittest && coveralls; fi

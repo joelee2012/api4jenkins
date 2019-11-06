@@ -168,7 +168,7 @@ class Jenkins(Item):
         ... <project>
         ...   <builders>
         ...     <hudson.tasks.Shell>
-        ...       <command>uname -a</command>
+        ...       <command>echo $JENKINS_VERSION</command>
         ...     </hudson.tasks.Shell>
         ...   </builders>
         ... </project>"""

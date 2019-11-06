@@ -28,14 +28,14 @@ pip install jenkinsx
 >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
 >>> j.version
 '2.176.2'
->>> xml = '''<?xml version='1.1' encoding='UTF-8'?>
+>>> xml = """<?xml version='1.1' encoding='UTF-8'?>
 ... <project>
 ...   <builders>
 ...     <hudson.tasks.Shell>
-...       <command>uname -a</command>
+...       <command>echo $JENKINS_VERSION</command>
 ...     </hudson.tasks.Shell>
 ...   </builders>
-... </project>'''
+... </project>"""
 >>> j.create_job('freestylejob', xml)
 >>> job = j.get_job('freestylejob')
 >>> print(job)
@@ -58,14 +58,15 @@ Started by user admin
 Running as SYSTEM
 Building in workspace /var/jenkins_home/workspace/freestylejob
 [freestylejob] $ /bin/sh -xe /tmp/jenkins2989549474028065940.sh
-+ uname -a
-Linux 9d4b470651d5 3.10.0-957.1.3.el7.x86_64 #1 SMP Thu Nov 29 14:49:43 UTC 2018 x86_64 GNU/Linux
++ echo $JENKINS_VERSION
+2.176.2
 Finished: SUCCESS
 >>> build.building
 False
 >>> build.result
 'SUCCESS'
   ```
+  More usage can be found in [e2e test](https://github.com/joelee2012/jenkinsx/tree/master/tests/e2e)
 
 # Contributing
 
