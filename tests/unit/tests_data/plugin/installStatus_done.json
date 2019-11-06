@@ -1,0 +1,182 @@
+{
+  "status": "ok",
+  "data": {
+    "jobs": [{
+        "name": "nant",
+        "version": "1.4.3",
+        "title": "NAnt",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "cloudbees-folder",
+        "version": "6.9",
+        "title": "Folders",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "scm-api",
+        "version": "2.6.3",
+        "title": "SCM API",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "structs",
+        "version": "1.19",
+        "title": "Structs",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "script-security",
+        "version": "1.61",
+        "title": "Script Security",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "workflow-step-api",
+        "version": "2.20",
+        "title": "Pipeline: Step API",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "workflow-api",
+        "version": "2.35",
+        "title": "Pipeline: API",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "workflow-support",
+        "version": "3.3",
+        "title": "Pipeline: Supporting APIs",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "workflow-cps",
+        "version": "2.72",
+        "title": "Pipeline: Groovy",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "config-file-provider",
+        "version": "3.6.2",
+        "title": "Config File Provider",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "workflow-job",
+        "version": "2.33",
+        "title": "Pipeline: Job",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "branch-api",
+        "version": "2.5.3",
+        "title": "Branch API",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "workflow-multibranch",
+        "version": "2.21",
+        "title": "Pipeline: Multibranch",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "pipeline-multibranch-defaults",
+        "version": "2.0",
+        "title": "Pipeline: Multibranch with defaults",
+        "installStatus": "Failure",
+        "requiresRestart": "false"
+      }, {
+        "name": "ownership",
+        "version": "0.12.1",
+        "title": "Job and Node ownership",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "nomad",
+        "version": "0.6.5",
+        "title": "Nomad",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "pipeline-multibranch-defaults",
+        "version": "2.0",
+        "title": "Pipeline: Multibranch with defaults",
+        "installStatus": "Failure",
+        "requiresRestart": "false"
+      }, {
+        "name": "multi-slave-config-plugin",
+        "version": "1.2.0",
+        "title": "Multi slave config",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "mock-slave",
+        "version": "1.13",
+        "title": "Mock Agent",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "jquery",
+        "version": "1.12.4-0",
+        "title": "jQuery",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "nodelabelparameter",
+        "version": "1.7.2",
+        "title": "Node and Label parameter",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "cloud-stats",
+        "version": "0.24",
+        "title": "Cloud Statistics",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "credentials",
+        "version": "2.2.0",
+        "title": "Credentials",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "ssh-credentials",
+        "version": "1.17.1",
+        "title": "SSH Credentials",
+        "installStatus": "SuccessButRequiresRestart",
+        "requiresRestart": "true"
+      }, {
+        "name": "openstack-cloud",
+        "version": "2.47",
+        "title": "OpenStack Cloud",
+        "installStatus": "Failure",
+        "requiresRestart": "false"
+      }, {
+        "name": "vs-code-metrics",
+        "version": "1.7",
+        "title": "Visual Studio Code Metrics",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "vs-code-metrics",
+        "version": "1.7",
+        "title": "Visual Studio Code Metrics",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "vstestrunner",
+        "version": "1.0.8",
+        "title": "VSTest Runner",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }, {
+        "name": "mstest",
+        "version": "1.0.0",
+        "title": "MSTest",
+        "installStatus": "Success",
+        "requiresRestart": "false"
+      }
+    ],
+    "state": "RESTART"
+  }
+}

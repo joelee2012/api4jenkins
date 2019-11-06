@@ -1,0 +1,308 @@
+{
+  "_class": "hudson.LocalPluginManager",
+  "plugins": [
+    {
+      "shortName": "jquery-detached"
+    },
+    {
+      "shortName": "bouncycastle-api"
+    },
+    {
+      "shortName": "htmlpublisher"
+    },
+    {
+      "shortName": "plain-credentials"
+    },
+    {
+      "shortName": "pam-auth"
+    },
+    {
+      "shortName": "resource-disposer"
+    },
+    {
+      "shortName": "timestamper"
+    },
+    {
+      "shortName": "docker-plugin"
+    },
+    {
+      "shortName": "pipeline-model-extensions"
+    },
+    {
+      "shortName": "cvs"
+    },
+    {
+      "shortName": "pipeline-build-step"
+    },
+    {
+      "shortName": "pipeline-model-api"
+    },
+    {
+      "shortName": "workflow-cps-global-lib"
+    },
+    {
+      "shortName": "workflow-job"
+    },
+    {
+      "shortName": "analysis-core"
+    },
+    {
+      "shortName": "ws-cleanup"
+    },
+    {
+      "shortName": "branch-api"
+    },
+    {
+      "shortName": "maven-plugin"
+    },
+    {
+      "shortName": "matrix-auth"
+    },
+    {
+      "shortName": "git-server"
+    },
+    {
+      "shortName": "github-api"
+    },
+    {
+      "shortName": "antisamy-markup-formatter"
+    },
+    {
+      "shortName": "ownership"
+    },
+    {
+      "shortName": "build-view-column"
+    },
+    {
+      "shortName": "command-launcher"
+    },
+    {
+      "shortName": "handlebars"
+    },
+    {
+      "shortName": "git"
+    },
+    {
+      "shortName": "gradle"
+    },
+    {
+      "shortName": "jsch"
+    },
+    {
+      "shortName": "workflow-scm-step"
+    },
+    {
+      "shortName": "vstestrunner"
+    },
+    {
+      "shortName": "apache-httpcomponents-client-4-api"
+    },
+    {
+      "shortName": "pipeline-input-step"
+    },
+    {
+      "shortName": "pipeline-multibranch-defaults"
+    },
+    {
+      "shortName": "jdk-tool"
+    },
+    {
+      "shortName": "external-monitor-job"
+    },
+    {
+      "shortName": "mailer"
+    },
+    {
+      "shortName": "ant"
+    },
+    {
+      "shortName": "nant"
+    },
+    {
+      "shortName": "workflow-api"
+    },
+    {
+      "shortName": "pipeline-model-declarative-agent"
+    },
+    {
+      "shortName": "github-organization-folder"
+    },
+    {
+      "shortName": "pipeline-github-lib"
+    },
+    {
+      "shortName": "token-macro"
+    },
+    {
+      "shortName": "git-client"
+    },
+    {
+      "shortName": "jackson2-api"
+    },
+    {
+      "shortName": "ssh-credentials"
+    },
+    {
+      "shortName": "cloudbees-folder"
+    },
+    {
+      "shortName": "job-restrictions"
+    },
+    {
+      "shortName": "gerrit-trigger"
+    },
+    {
+      "shortName": "build-timeout"
+    },
+    {
+      "shortName": "email-ext"
+    },
+    {
+      "shortName": "workflow-basic-steps"
+    },
+    {
+      "shortName": "mapdb-api"
+    },
+    {
+      "shortName": "mock-slave"
+    },
+    {
+      "shortName": "matrix-project"
+    },
+    {
+      "shortName": "durable-task"
+    },
+    {
+      "shortName": "subversion"
+    },
+    {
+      "shortName": "mstest"
+    },
+    {
+      "shortName": "javadoc"
+    },
+    {
+      "shortName": "pipeline-stage-step"
+    },
+    {
+      "shortName": "display-url-api"
+    },
+    {
+      "shortName": "junit"
+    },
+    {
+      "shortName": "cloud-stats"
+    },
+    {
+      "shortName": "pipeline-milestone-step"
+    },
+    {
+      "shortName": "synopsys-coverity"
+    },
+    {
+      "shortName": "workflow-aggregator"
+    },
+    {
+      "shortName": "ldap"
+    },
+    {
+      "shortName": "momentjs"
+    },
+    {
+      "shortName": "nodelabelparameter"
+    },
+    {
+      "shortName": "jquery"
+    },
+    {
+      "shortName": "authentication-tokens"
+    },
+    {
+      "shortName": "workflow-multibranch"
+    },
+    {
+      "shortName": "workflow-durable-task-step"
+    },
+    {
+      "shortName": "script-security"
+    },
+    {
+      "shortName": "ace-editor"
+    },
+    {
+      "shortName": "docker-java-api"
+    },
+    {
+      "shortName": "groovy-label-assignment"
+    },
+    {
+      "shortName": "github-branch-source"
+    },
+    {
+      "shortName": "pipeline-stage-tags-metadata"
+    },
+    {
+      "shortName": "workflow-cps"
+    },
+    {
+      "shortName": "config-file-provider"
+    },
+    {
+      "shortName": "pipeline-graph-analysis"
+    },
+    {
+      "shortName": "lockable-resources"
+    },
+    {
+      "shortName": "workflow-support"
+    },
+    {
+      "shortName": "vs-code-metrics"
+    },
+    {
+      "shortName": "pipeline-rest-api"
+    },
+    {
+      "shortName": "docker-commons"
+    },
+    {
+      "shortName": "ssh-slaves"
+    },
+    {
+      "shortName": "pipeline-model-definition"
+    },
+    {
+      "shortName": "github"
+    },
+    {
+      "shortName": "scm-api"
+    },
+    {
+      "shortName": "docker-workflow"
+    },
+    {
+      "shortName": "credentials"
+    },
+    {
+      "shortName": "windows-slaves"
+    },
+    {
+      "shortName": "pipeline-stage-view"
+    },
+    {
+      "shortName": "credentials-binding"
+    },
+    {
+      "shortName": "workflow-step-api"
+    },
+    {
+      "shortName": "structs"
+    },
+    {
+      "shortName": "openstack-cloud"
+    },
+    {
+      "shortName": "multi-slave-config-plugin"
+    }
+  ]
+}

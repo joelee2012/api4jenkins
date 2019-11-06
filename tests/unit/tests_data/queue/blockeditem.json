@@ -1,0 +1,29 @@
+{
+      "_class": "hudson.model.Queue$BlockedItem",
+      "actions": [{
+          "_class": "hudson.model.CauseAction",
+          "causes": [{
+              "_class": "hudson.model.Cause$UserIdCause",
+              "shortDescription": "Started by user joelee",
+              "userId": "admin",
+              "userName": "joelee"
+            }
+          ]
+        }
+      ],
+      "blocked": true,
+      "buildable": false,
+      "id": 669,
+      "inQueueSince": 1561364267921,
+      "params": "",
+      "stuck": false,
+      "task": {
+        "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+        "name": "Level1_WorkflowJob1",
+        "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/",
+        "color": "red_anime"
+      },
+      "url": "queue/item/669/",
+      "why": "Build #168 is already in progress (ETA:N/A)",
+      "buildableStartMilliseconds": 1561364277513
+    }

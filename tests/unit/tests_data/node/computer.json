@@ -1,0 +1,133 @@
+{
+  "_class": "hudson.model.ComputerSet",
+  "busyExecutors": 0,
+  "computer": [
+    {
+      "_class": "hudson.model.Hudson$MasterComputer",
+      "actions": [
+        {}
+      ],
+      "assignedLabels": [
+        {
+          "actions": [],
+          "busyExecutors": 0,
+          "clouds": [],
+          "description": null,
+          "idleExecutors": 3,
+          "loadStatistics": {
+            "_class": "hudson.model.Label$1"
+          },
+          "name": "master",
+          "nodes": [
+            {
+              "_class": "hudson.model.Hudson",
+              "nodeName": ""
+            }
+          ],
+          "offline": false,
+          "tiedJobs": [
+          ],
+          "totalExecutors": 3,
+          "propertiesList": []
+        }
+      ],
+      "description": "the master Jenkins node",
+      "displayName": "master",
+      "executors": [
+        {
+          "currentExecutable": null,
+          "idle": true,
+          "likelyStuck": false,
+          "number": 0,
+          "progress": -1
+        },
+        {
+          "currentExecutable": null,
+          "idle": true,
+          "likelyStuck": false,
+          "number": 1,
+          "progress": -1
+        },
+        {
+          "currentExecutable": null,
+          "idle": true,
+          "likelyStuck": false,
+          "number": 2,
+          "progress": -1
+        }
+      ],
+      "icon": "computer.png",
+      "iconClassName": "icon-computer",
+      "idle": false,
+      "jnlpAgent": false,
+      "launchSupported": true,
+      "loadStatistics": {
+        "_class": "hudson.model.Label$1",
+        "availableExecutors": {},
+        "busyExecutors": {},
+        "connectingExecutors": {},
+        "definedExecutors": {},
+        "idleExecutors": {},
+        "onlineExecutors": {},
+        "queueLength": {},
+        "totalExecutors": {}
+      },
+      "manualLaunchAllowed": true,
+      "monitorData": {
+        "hudson.node_monitors.SwapSpaceMonitor": {
+          "_class": "hudson.node_monitors.SwapSpaceMonitor$MemoryUsage2",
+          "availablePhysicalMemory": 3602055168,
+          "availableSwapSpace": 4294963200,
+          "totalPhysicalMemory": 8198873088,
+          "totalSwapSpace": 4294963200
+        },
+        "hudson.node_monitors.TemporarySpaceMonitor": {
+          "_class": "hudson.node_monitors.DiskSpaceMonitorDescriptor$DiskSpace",
+          "timestamp": 1566806508111,
+          "path": "/tmp",
+          "size": 10436026368
+        },
+        "hudson.node_monitors.DiskSpaceMonitor": {
+          "_class": "hudson.node_monitors.DiskSpaceMonitorDescriptor$DiskSpace",
+          "timestamp": 1566806507979,
+          "path": "/var/jenkins_home",
+          "size": 39401418752
+        },
+        "com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnershipNodeMonitor": {
+          "_class": "com.synopsys.arc.jenkins.plugins.ownership.nodes.OwnershipNodeMonitor$Data",
+          "timestamp": 1566808908013
+        },
+        "hudson.node_monitors.ArchitectureMonitor": "Linux (amd64)",
+        "hudson.node_monitors.ResponseTimeMonitor": {
+          "_class": "hudson.node_monitors.ResponseTimeMonitor$Data",
+          "timestamp": 1566806507981,
+          "average": 0
+        },
+        "hudson.node_monitors.ClockMonitor": {
+          "_class": "hudson.util.ClockDifference",
+          "diff": 0
+        }
+      },
+      "numExecutors": 3,
+      "offline": false,
+      "offlineCause": null,
+      "offlineCauseReason": "",
+      "oneOffExecutors": [
+        {
+          "currentExecutable": {
+            "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+            "number": 54,
+            "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/"
+          },
+          "idle": false,
+          "likelyStuck": true,
+          "number": -1,
+          "progress": 99
+        }
+      ],
+      "temporarilyOffline": false
+    }
+  ],
+  "displayName": "Nodes",
+  "totalExecutors": 3
+}

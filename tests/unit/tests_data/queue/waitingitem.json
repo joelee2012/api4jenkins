@@ -1,0 +1,36 @@
+{
+  "_class": "hudson.model.Queue$WaitingItem",
+  "actions": [
+    {
+      "_class": "hudson.model.CauseAction",
+      "causes": [
+        {
+          "_class": "com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritCause",
+          "shortDescription": "Triggered by"
+        }
+      ]
+    },
+    {},
+    {},
+    {},
+    {
+      "_class": "hudson.model.ParametersAction",
+      "parameters": []
+    }
+  ],
+  "blocked": false,
+  "buildable": false,
+  "id": 314339,
+  "inQueueSince": 1566553108796,
+  "params": "",
+  "stuck": false,
+  "task": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+    "name": "Level1_WorkflowJob1",
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/",
+    "color": "red"
+  },
+  "url": "queue/item/700/",
+  "why": "In the quiet period. Expires in 4.6 sec",
+  "timestamp": 1566553113796
+}

@@ -1,0 +1,54 @@
+{
+  "_class": "com.cloudbees.hudson.plugins.folder.Folder",
+  "actions": [
+    {},
+    {},
+    {
+      "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction"
+    }
+  ],
+  "description": "",
+  "displayName": "Level1_Folder1",
+  "displayNameOrNull": null,
+  "fullDisplayName": "Level1_Folder1",
+  "fullName": "Level1_Folder1",
+  "name": "Level1_Folder1",
+  "url": "http://0.0.0.0:8080/job/Level1_Folder1/",
+  "jobs": [
+    {
+      "_class": "hudson.model.FreeStyleProject",
+      "name": "Level2_FreeStyleProject",
+      "url": "http://0.0.0.0:8080/job/Level1_Folder1/job/Level2_FreeStyleProject/",
+      "color": "blue"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "name": "Level2_WorkflowJob",
+      "url": "http://0.0.0.0:8080/job/Level1_Folder1/job/Level2_WorkflowJob/",
+      "color": "red"
+    },
+    {
+      "_class": "hudson.matrix.MatrixProject",
+      "name": "Level2_MatrixProject",
+      "url": "http://0.0.0.0:8080/job/Level1_Folder1/job/Level2_MatrixProject/",
+      "color": "blue"
+    },
+    {
+      "_class": "com.cloudbees.hudson.plugins.folder.Folder",
+      "name": "Level2_Folder1",
+      "url": "http://0.0.0.0:8080/job/Level1_Folder1/job/Level2_Folder1/"
+    }
+  ],
+  "primaryView": {
+    "_class": "hudson.model.AllView",
+    "name": "All",
+    "url": "http://0.0.0.0:8080/job/Level1_Folder1/"
+  },
+  "views": [
+    {
+      "_class": "hudson.model.AllView",
+      "name": "All",
+      "url": "http://0.0.0.0:8080/job/Level1_Folder1/"
+    }
+  ]
+}

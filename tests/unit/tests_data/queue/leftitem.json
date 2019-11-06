@@ -1,0 +1,34 @@
+{
+	"_class": "hudson.model.Queue$LeftItem",
+	"actions": [{
+			"_class": "hudson.model.CauseAction",
+			"causes": [{
+					"_class": "hudson.model.Cause$UserIdCause",
+					"shortDescription": "Started by user joelee",
+					"userId": "admin",
+					"userName": "joelee"
+				}
+			]
+		}
+	],
+	"blocked": false,
+	"buildable": false,
+	"id": 599,
+	"inQueueSince": 1559112231788,
+	"params": "",
+	"stuck": false,
+	"task": {
+		"_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+		"name": "Level1_WorkflowJob1",
+		"url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/",
+		"color": "aborted_anime"
+	},
+	"url": "queue/item/599/",
+	"why": null,
+	"cancelled": false,
+	"executable": {
+		"_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+		"number": 54,
+		"url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/"
+	}
+}
