@@ -11,7 +11,7 @@ install:
 # command to run tests
 script:
   - tox
-  - tox -e integration
+  - tox -e e2e
   - python setup.py sdist bdist_wheel
   - twine check dist/*
 after_success:
