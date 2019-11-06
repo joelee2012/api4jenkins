@@ -6,7 +6,7 @@ import responses
 from jenkinsx import Jenkins
 from jenkinsx.credential import Credential
 from jenkinsx.item import snake
-from tests.unittest.help import load_test_json, mock_get, JENKINS_URL
+from .help import load_test_json, mock_get, JENKINS_URL
 
 
 class TestCredentials(unittest.TestCase):

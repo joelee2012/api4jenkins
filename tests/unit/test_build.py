@@ -8,7 +8,7 @@ from jenkinsx import Jenkins
 from jenkinsx.build import WorkflowRun
 from jenkinsx.item import snake
 from jenkinsx.job import WorkflowJob
-from tests.unittest.help import load_test_json, mock_get, \
+from .help import load_test_json, mock_get, \
     responses_count, JENKINS_URL
 
 

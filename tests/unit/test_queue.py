@@ -7,7 +7,7 @@ from jenkinsx import Jenkins
 from jenkinsx.build import WorkflowRun
 from jenkinsx.job import WorkflowJob
 from jenkinsx.queue import QueueItem
-from tests.unittest.help import load_test_json, mock_get, JENKINS_URL
+from .help import load_test_json, mock_get, JENKINS_URL
 
 
 class TestQueue(unittest.TestCase):

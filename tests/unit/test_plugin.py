@@ -4,7 +4,7 @@ import unittest
 import responses
 
 from jenkinsx import Jenkins
-from tests.unittest.help import mock_get, load_test_json, JENKINS_URL
+from .help import mock_get, load_test_json, JENKINS_URL
 
 
 class TestPlugin(unittest.TestCase):

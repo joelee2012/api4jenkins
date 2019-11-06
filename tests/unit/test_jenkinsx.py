@@ -9,7 +9,7 @@ from jenkinsx.exceptions import ItemNotFoundError, \
 from jenkinsx.item import snake
 from jenkinsx.job import Folder
 from jenkinsx.user import ApiToken
-from tests.unittest.help import mock_get, load_test_json, \
+from .help import mock_get, load_test_json, \
     mock_post, remove_get, replace_get, JENKINS_URL
 
 

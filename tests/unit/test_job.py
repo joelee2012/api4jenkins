@@ -9,7 +9,7 @@ from jenkinsx.build import WorkflowRun
 from jenkinsx.exceptions import BadRequestError
 from jenkinsx.item import snake
 from jenkinsx.job import Folder, WorkflowJob
-from tests.unittest.help import mock_get, load_test_json, responses_count,\
+from .help import mock_get, load_test_json, responses_count,\
     mock_post, JENKINS_URL
 
 

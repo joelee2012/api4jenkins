@@ -11,7 +11,7 @@ function start {
   ip=$(sudo docker inspect --format='{{.NetworkSettings.IPAddress}}' jenkins-master)
   password=$(sudo docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)
   port=8080
-  cat <<EOF | tee tests/integration/setup_jenkins.py
+  cat <<EOF | tee tests/e2e/setup_jenkins.py
 #!python
 URL = 'http://${ip}:${port}'
 USER = 'admin'
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     install_plugins(*sys.argv[1:])
 EOF
-  python tests/integration/setup_jenkins.py ${PLUGINS//,/ }
+  python tests/e2e/setup_jenkins.py ${PLUGINS//,/ }
 }
 
 function stop {

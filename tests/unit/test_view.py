@@ -7,7 +7,7 @@ from jenkinsx import Jenkins
 from jenkinsx.credential import Credential, Credentials
 from jenkinsx.item import snake
 from jenkinsx.job import WorkflowJob, Folder
-from tests.unittest.help import load_test_json, mock_get, JENKINS_URL
+from .help import load_test_json, mock_get, JENKINS_URL
 
 
 class TestCredentials(unittest.TestCase):
