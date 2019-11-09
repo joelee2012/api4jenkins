@@ -44,18 +44,16 @@ False
 'SUCCESS'
 '''
 
-from importlib import import_module
-from pathlib import PurePosixPath
 import time
 import weakref
+from importlib import import_module
+from pathlib import PurePosixPath
 
-from requests.exceptions import HTTPError
+from requests.exceptions import ConnectionError, HTTPError
 
-from jenkinsx.system import System
-
-from .__version__ import __author__, __author_email__
-from .__version__ import __license__, __copyright__
-from .__version__ import __title__, __description__, __url__, __version__
+from .__version__ import (__author__, __author_email__, __copyright__,
+                          __description__, __license__, __title__, __url__,
+                          __version__)
 from .credential import Credentials
 from .exceptions import ItemNotFoundError
 from .item import Item
@@ -64,6 +62,7 @@ from .node import Nodes
 from .plugin import PluginsManager
 from .queue import Queue
 from .requester import Requester
+from .system import System
 from .user import User
 from .view import Views
 
@@ -266,8 +265,13 @@ class Jenkins(Item):
         :returns: Ture or False
         '''
         try:
-            return super().exists()
-        except (HTTPError, ConnectionError):
+            self.send_req('GET', self.url)
+            return True
+        except ConnectionError:
+            return False
+        except HTTPError as e:
+            if e.response.status_code in [401, 403]:
+                return True
             return False
 
     @property
