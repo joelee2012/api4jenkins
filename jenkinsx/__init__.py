@@ -267,7 +267,7 @@ class Jenkins(Item):
         try:
             self.send_req('GET', self.url)
             return True
-        except  ConnectionError:
+        except ConnectionError:
             return False
         except HTTPError as e:
             if e.response.status_code in [401, 403]:
