@@ -177,8 +177,13 @@ class TestJenkins(unittest.TestCase):
         json = self.jx.api_json()
         self.assertEqual(json, self.jenkins_json)
 
-    def test_api_xml(self):
-        pass
+    @responses.activate
+    def test_exists(self):
+        for status in [400, 401, 403, 404, 500]:
+            remove_get(f'{JENKINS_URL}crumbIssuer/api/json')
+            mock_get(f'{JENKINS_URL}crumbIssuer/api/json', status=status)
+            with self.subTest(status=status):
+                self.assertTrue(self.jx.exists())
 
     @responses.activate
     def test_handle_req(self):

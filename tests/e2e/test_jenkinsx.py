@@ -33,12 +33,12 @@ class TestJenkins(unittest.TestCase):
     def tearDown(self):
         self.jx.delete_job('Level1_Folder1')
 
-    def test_init_raise_exception_if_auth_is_invalid(self):
+    def test_should_raise_exception_if_init_with_invalid_auth(self):
         jx = Jenkins(self.jx.url, auth=('admin', 'admin'))
         with self.assertRaises(AuthenticationError):
             jx.api_json()
 
-    def test_dynamic_attributes(self):
+    def test_jenkins_should_has_dynamic_attributes(self):
         dynamic_attrs = {snake(k): v for k, v in self.jx.api_json().items()
                          if isinstance(v, (int, str, bool))}
         self.assertEqual(sorted(self.jx.attrs),
@@ -47,11 +47,11 @@ class TestJenkins(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertEqual(getattr(self.jx, key), value)
 
-    def test_get_job_return_none_if_not_found(self):
+    def test_get_job_should_return_none_if_job_not_exists(self):
         folder = self.jx.get_job('Level1_Folder1')
         self.assertIsNone(folder)
 
-    def test_get_job_return_job_if_exists(self):
+    def test_get_job_should_return_job_if_job_exists(self):
         self.jx.create_job('Level1_Folder1', self.folder_xml)
         folder = self.jx.get_job('Level1_Folder1')
         self.assertIsInstance(folder, Folder)
@@ -67,29 +67,29 @@ class TestJenkins(unittest.TestCase):
                          'job/Level2_Folder1/>')
 #
 
-    def test_create_job_raise_exception_if_exists(self):
+    def test_create_job_should_raise_exception_if_job_exists(self):
         self.jx.create_job('Level1_Folder1', self.folder_xml)
         with self.assertRaises(BadRequestError):
             self.jx.create_job('Level1_Folder1', self.folder_xml)
 
-    def test_create_job_raise_exception_if_name_illegal(self):
+    def test_create_job_should_raise_exception_if_name_illegal(self):
         with self.assertRaisesRegex(BadRequestError,
                                     '@  is an unsafe character'):
             self.jx.create_job('Level2@new', '')
 
-    def test_build_job_raise_exception_if_not_found(self):
+    def test_build_job_should_raise_exception_if_job_not_found(self):
         with self.assertRaisesRegex(ItemNotFoundError,
                                     'No such job: '
                                     'Level1_Folder1'):
             self.jx.build_job('Level1_Folder1')
 
-    def test_build_job_raise_exception_if_unbuildable(self):
+    def test_build_job_should_raise_exception_if_job_unbuildable(self):
         self.jx.create_job('Level1_Folder1', self.folder_xml)
         with self.assertRaisesRegex(AttributeError,
                                     "'Folder' object has no attribute 'build'"):
             self.jx.build_job('Level1_Folder1')
 
-    def test_build_job_without_parameters(self):
+    def test_build_job_should_run_without_parameters(self):
         xml = load_test_xml('pipeline.xml')
         self.jx.create_job('pipeline', xml)
         job = self.jx.get_job('pipeline')
@@ -111,10 +111,19 @@ class TestJenkins(unittest.TestCase):
             time.sleep(1)
         self.assertEqual(build, job.get_last_build())
 
-    def test_exists(self):
-        self.assertTrue(self.jx.exists())
+    def test_exists_should_return_true_if_jenkins_exists(self):
+        from . import setup_jenkins
+        jx = Jenkins(setup_jenkins.URL, auth=(
+            setup_jenkins.USER, setup_jenkins.PASSWORD))
+        self.assertTrue(jx.exists())
+        jx = Jenkins(setup_jenkins.URL)
+        self.assertTrue(jx.exists())
 
-    def test_credential(self):
+    def test_exists_should_return_false_if_jenkins_not_exists(self):
+        jx = Jenkins('http://localhost:8080')
+        self.assertFalse(jx.exists())
+
+    def test_jenkins_should_create_credential_if_not_exists(self):
         cred = self.jx.credentials.get('user-id')
         self.assertIsNone(cred)
         self.jx.credentials.create(load_test_xml('credential.xml'))
