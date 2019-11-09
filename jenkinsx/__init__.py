@@ -265,8 +265,13 @@ class Jenkins(Item):
         :returns: Ture or False
         '''
         try:
-            return super().exists()
-        except (HTTPError, ConnectionError):
+            self.send_req('GET', self.url)
+            return True
+        except  ConnectionError:
+            return False
+        except HTTPError as e:
+            if e.response.status_code in [401, 403]:
+                return True
             return False
 
     @property
