@@ -13,10 +13,10 @@ from .view import Views
 
 class Job(Item, ConfigrationMix, DescriptionMix, DeletionMix):
 
-    def move(self, folder_name):
-        folder_name = folder_name.strip('/')
-        params = {'destination': f'/{folder_name}',
-                  'json': json.dumps({'destination': f'/{folder_name}'})}
+    def move(self, path):
+        path = path.strip('/')
+        params = {'destination': f'/{path}',
+                  'json': json.dumps({'destination': f'/{path}'})}
         resp = self.handle_req('POST', 'move/move',
                                data=params, allow_redirects=False)
         self.url = resp.headers['Location']
@@ -27,28 +27,31 @@ class Job(Item, ConfigrationMix, DescriptionMix, DeletionMix):
                                allow_redirects=False)
         self.url = append_slash(resp.headers['Location'])
 
+    def duplicate(self, path):
+        self.jenkins.create_job(path, self.configure())
+
     @property
     def parent(self):
         path = PurePosixPath(self.full_name)
         if path.parent.name == '':
             return self.jenkins
         return Folder(self.jenkins,
-                      self.jenkins.path2url(str(path.parent)))
+                      self.jenkins._name2url(str(path.parent)))
 
 
 class Folder(Job):
 
-    def create_job(self, name, xml):
+    def create(self, name, xml):
         self.handle_req('POST', 'createItem', params={'name': name},
                         headers=self.headers, data=xml)
 
-    def get_job(self, name):
+    def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
                 return self._new_instance_by_item(__name__, item)
         return None
 
-    def iter_jobs(self, depth=0):
+    def iter(self, depth=0):
         query = 'jobs[url]'
         query_format = 'jobs[url,%s]'
         for _ in range(int(depth)):
@@ -64,10 +67,13 @@ class Folder(Job):
         for item in self.api_json(tree=query)['jobs']:
             yield from _resolve(item)
 
-    def copy_job(self, src, dest):
+    def copy(self, src, dest):
         params = {'name': dest, 'mode': 'copy', 'from': src}
         self.handle_req('POST', 'createItem', params=params,
                         allow_redirects=False)
+
+    def reload(self):
+        self.handle_req('POST', 'reload')
 
     @property
     def views(self):

@@ -5,16 +5,16 @@ from .item import Item
 
 class Queue(Item):
 
-    def get(self, id_):
+    def get(self, id):
         for item in self.api_json(tree='items[id,url]')['items']:
-            if item['id'] == int(id_):
+            if item['id'] == int(id):
                 return QueueItem(self.jenkins,
                                  f"{self.jenkins.url}{item['url']}")
         return None
 
-    def cancel(self, id_):
+    def cancel(self, id):
         self.handle_req('POST', 'cancelItem', params={
-                        'id': id_}, allow_redirects=False)
+                        'id': id}, allow_redirects=False)
 
     def __iter__(self):
         for item in self.api_json(tree='items[url]')['items']:
