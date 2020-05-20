@@ -194,5 +194,4 @@ class TestJenkins(unittest.TestCase):
     @responses.activate
     def test_handle_req(self):
         json = self.jx.handle_req('GET', 'api/json').json()
-        self.assertEqual(json, full_name.jenkins_json)
-
+        self.assertEqual(json, self.jenkins_json)

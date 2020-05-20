@@ -23,7 +23,7 @@ from .view import Views
 
 
 class Jenkins(Item):
-    '''Constructs  :class:`Jenkins <Jenkins>`
+    r'''Constructs  :class:`Jenkins <Jenkins>`.
 
     :param url: URL of Jenkins server, ``str``
     :param auth: (optional) Auth ``tuple`` to enable Basic/Digest/Custom HTTP Auth.

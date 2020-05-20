@@ -66,7 +66,7 @@ False
 >>> build.result
 'SUCCESS'
   ```
-  More usage can be found in [e2e test](https://github.com/joelee2012/jenkinsx/tree/master/tests/e2e)
+  More usage can be found in [Documentation](https://jenkinsx.readthedocs.io/en/latest/)
 
 # Contributing
 

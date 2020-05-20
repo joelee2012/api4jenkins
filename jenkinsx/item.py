@@ -4,7 +4,7 @@ from importlib import import_module
 import re
 from requests.exceptions import HTTPError
 from .exceptions import AuthenticationError, ItemNotFoundError,\
-    UnsafeCharacterError,  BadRequestError, ServerError
+    UnsafeCharacterError, BadRequestError, ServerError
 
 
 def camel(s):
