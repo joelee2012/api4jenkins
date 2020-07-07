@@ -43,38 +43,38 @@ class TestFolder(unittest.TestCase):
         cls.folder2.delete()
         cls.folder3.delete()
 
-    def test_iter_jobs_should_iter_folder_with_depth(self):
-        jobs = [job.name for job in self.folder.iter_jobs()]
+    def test_iter_should_iter_folder_with_depth(self):
+        jobs = [job.name for job in self.folder.iter()]
         self.assertEqual(sorted(jobs), sorted(['pipeline1', 'Level2_Folder1']))
 
-    def test_copy_job_should_raise_exception_if_src_not_found(self):
+    def test_copy_should_raise_exception_if_src_not_found(self):
         with self.assertRaises(BadRequestError):
-            self.folder.copy_job('noexist', 'xxxx')
+            self.folder.copy('noexist', 'xxxx')
 
-    def test_copy_job_should_raise_exception_if_dest_exists(self):
+    def test_copy_should_raise_exception_if_dest_exists(self):
         with self.assertRaises(BadRequestError):
-            self.folder.copy_job('src', 'Level2_Folder1')
+            self.folder.copy('src', 'Level2_Folder1')
 
-    def test_copy_job_should_create_new_job_from_src_job(self):
-        self.folder2.copy_job('Level2_Folder1', 'Level2_Folder2')
-        self.assertIsNotNone(self.folder2.get_job('Level2_Folder2'))
+    def test_copy_should_create_new_job_from_src_job(self):
+        self.folder2.copy('Level2_Folder1', 'Level2_Folder2')
+        self.assertIsNotNone(self.folder2.get('Level2_Folder2'))
 
     def test_move_should_move_job_to_give_path(self):
-        job = self.folder2.get_job('pipeline1')
+        job = self.folder2.get('pipeline1')
         self.assertIsNotNone(job)
         job.move('Level1_Folder2/Level2_Folder1')
         self.assertTrue(job.exists())
-        job = self.folder2.get_job('pipeline1')
+        job = self.folder2.get('pipeline1')
         self.assertIsNone(job)
 
     def test_rename_should_rename_job_with_given_name(self):
-        folder = self.folder3.get_job('Level2_Folder1')
+        folder = self.folder3.get('Level2_Folder1')
         self.assertTrue(folder.exists())
         folder.rename('Level2_Folder4')
         self.assertTrue(folder.exists())
-        folder = self.folder3.get_job('Level2_Folder1')
+        folder = self.folder3.get('Level2_Folder1')
         self.assertIsNone(folder)
 
     def test_parent_should_get_correct_parent(self):
-        folder = self.folder.get_job('Level2_Folder1')
+        folder = self.folder.get('Level2_Folder1')
         self.assertEqual(folder.parent, self.folder)
