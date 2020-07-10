@@ -1,9 +1,11 @@
 #!/bin/bash
 
+HERE=$(readlink -f "${BASH_SOURCE[0]}" | xargs dirname)
+
 function start {
   set -e
   local ip port password
-  sudo docker run -dt --rm --name jenkins-master jenkins/jenkins:lts-alpine
+  sudo docker run -dt --rm --name jenkins-master jenkins/jenkins:2.222.4-lts-alpine
   echo 'Waiting for Jenkins to start...'
   until sudo docker logs jenkins-master | grep -q 'Jenkins is fully up and running'; do
     sleep 1
@@ -11,7 +13,7 @@ function start {
   ip=$(sudo docker inspect --format='{{.NetworkSettings.IPAddress}}' jenkins-master)
   password=$(sudo docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)
   port=8080
-  cat <<EOF | tee tests/e2e/setup_jenkins.py
+  cat <<EOF | tee "${HERE}"/setup_jenkins.py
 #!python
 URL = 'http://${ip}:${port}'
 USER = 'admin'
@@ -31,9 +33,9 @@ def install_plugins(*names):
     if jenkins.plugins.restart_required:
         jenkins.system.safe_restart()
         while not jenkins.exists():
-           time.sleep(2)
+            time.sleep(2)
     for name in names:
-       if not jenkins.plugins.get(name):
+        if not jenkins.plugins.get(name):
             raise RuntimeError(f'{name} was not installed')
 
 if __name__ == '__main__':
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     install_plugins(*sys.argv[1:])
 EOF
-  python tests/e2e/setup_jenkins.py ${PLUGINS//,/ }
+  python "${HERE}"/setup_jenkins.py ${PLUGINS//,/ }
 }
 
 function stop {
