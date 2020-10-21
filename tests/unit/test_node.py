@@ -3,10 +3,10 @@ import unittest
 
 import responses
 
-from jenkinsx import Jenkins
-from jenkinsx.credential import Credential, Credentials
-from jenkinsx.item import snake
-from jenkinsx.job import WorkflowJob, Folder
+from api4jenkins import Jenkins
+from api4jenkins.credential import Credential, Credentials
+from api4jenkins.item import snake
+from api4jenkins.job import WorkflowJob, Folder
 from .help import load_test_json, mock_get, JENKINS_URL
 
 

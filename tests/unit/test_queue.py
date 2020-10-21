@@ -3,10 +3,10 @@ import unittest
 
 import responses
 
-from jenkinsx import Jenkins
-from jenkinsx.build import WorkflowRun
-from jenkinsx.job import WorkflowJob
-from jenkinsx.queue import QueueItem
+from api4jenkins import Jenkins
+from api4jenkins.build import WorkflowRun
+from api4jenkins.job import WorkflowJob
+from api4jenkins.queue import QueueItem
 from .help import load_test_json, mock_get, JENKINS_URL
 
 

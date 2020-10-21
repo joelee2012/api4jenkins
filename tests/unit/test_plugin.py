@@ -3,7 +3,7 @@ import unittest
 
 import responses
 
-from jenkinsx import Jenkins
+from api4jenkins import Jenkins
 from .help import mock_get, load_test_json, JENKINS_URL
 
 

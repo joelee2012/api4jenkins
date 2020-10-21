@@ -36,12 +36,12 @@ class View(Item, ConfigrationMix, DeletionMix):
     def get_job(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
-                return self._new_instance_by_item('jenkinsx.job', item)
+                return self._new_instance_by_item('api4jenkins.job', item)
         return None
 
     def __iter__(self):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
-            yield self._new_instance_by_item('jenkinsx.job', item)
+            yield self._new_instance_by_item('api4jenkins.job', item)
 
     def include(self, name):
         self.handle_req('POST', 'addJobToView', params={'name': name})

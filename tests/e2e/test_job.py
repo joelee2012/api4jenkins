@@ -3,11 +3,11 @@
 from pathlib import Path
 import unittest
 
-from jenkinsx import Jenkins
-from jenkinsx.build import WorkflowRun
-from jenkinsx.exceptions import BadRequestError
-from jenkinsx.item import snake
-from jenkinsx.job import Folder, WorkflowJob
+from api4jenkins import Jenkins
+from api4jenkins.build import WorkflowRun
+from api4jenkins.exceptions import BadRequestError
+from api4jenkins.item import snake
+from api4jenkins.job import Folder, WorkflowJob
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
 

@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.com/joelee2012/jenkinsx.svg?branch=master)](https://travis-ci.com/joelee2012/jenkinsx)
-[![Coverage Status](https://coveralls.io/repos/github/joelee2012/jenkinsx/badge.svg?branch=master)](https://coveralls.io/github/joelee2012/jenkinsx?branch=master)
+[![Build Status](https://travis-ci.com/joelee2012/api4jenkins.svg?branch=master)](https://travis-ci.com/joelee2012/api4jenkins)
+[![Coverage Status](https://coveralls.io/repos/github/joelee2012/api4jenkins/badge.svg?branch=master)](https://coveralls.io/github/joelee2012/api4jenkins?branch=master)
 
-# Jenkinsx
+# api4jenkins
 
-[Jenkinsx](https://github.com/joelee2012/jenkinsx) is an object oriented [Python](https://www.python.org/) project that provides access to the [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API. It provides but not limits functionalities to control Job, Build, Node, View, Credential, BuildQueue, Plugins and System:
+[api4jenkins](https://github.com/joelee2012/api4jenkins) is an object oriented [Python](https://www.python.org/) project that provides access to the [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API. It provides but not limits functionalities to control Job, Build, Node, View, Credential, BuildQueue, Plugins and System:
 - get/delete/create/move/rename/copy/build/enable/disable job or folder, iterate children jobs with depth, folder based views/credentials functionalities
 - get/iterate builds of project, stop/term/kill build, get progressive console output.
 - get/delete/create/iterate views for jenkins or folder. add/remove jobs to/from view.
@@ -18,13 +18,13 @@
 # Installation
 
 ```bash
-pip install jenkinsx
+pip install api4jenkins
 ```
 
 # Quick start
 
 ```python
->>> from jenkinsx import Jenkins
+>>> from api4jenkins import Jenkins
 >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
 >>> j.version
 '2.176.2'
@@ -66,7 +66,7 @@ False
 >>> build.result
 'SUCCESS'
   ```
-  More usage can be found in [Documentation](https://jenkinsx.readthedocs.io/en/latest/)
+  More usage can be found in [Documentation](https://api4jenkins.readthedocs.io/en/latest/)
 
 # Contributing
 

@@ -3,9 +3,9 @@ import unittest
 
 import responses
 
-from jenkinsx import Jenkins
-from jenkinsx.credential import Credential
-from jenkinsx.item import snake
+from api4jenkins import Jenkins
+from api4jenkins.credential import Credential
+from api4jenkins.item import snake
 from .help import load_test_json, mock_get, JENKINS_URL
 
 

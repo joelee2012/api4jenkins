@@ -5,11 +5,11 @@ import logging
 import time
 import unittest
 
-from jenkinsx import Jenkins
-from jenkinsx.exceptions import ItemNotFoundError, AuthenticationError, \
+from api4jenkins import Jenkins
+from api4jenkins.exceptions import ItemNotFoundError, AuthenticationError, \
     BadRequestError
-from jenkinsx.item import snake
-from jenkinsx.job import Folder
+from api4jenkins.item import snake
+from api4jenkins.job import Folder
 
 
 logging.basicConfig(level=logging.DEBUG)

@@ -5,7 +5,7 @@ from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 about = {}
-with open(os.path.join(here, 'jenkinsx', '__version__.py')) as f:
+with open(os.path.join(here, 'api4jenkins', '__version__.py')) as f:
     exec(f.read(), about)
 
 with open('README.md') as f:
@@ -24,7 +24,7 @@ setup(
     url=about['__url__'],
     author=about['__author__'],
     author_email=about['__author_email__'],
-    packages=['jenkinsx'],
+    packages=['api4jenkins'],
     package_data={'': ['LICENSE']},
     python_requires='>=3.6',
     install_requires=requires,
