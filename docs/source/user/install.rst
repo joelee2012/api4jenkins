@@ -8,7 +8,7 @@ From pypi
 
 Run pip to install::
 
-    $ pip install jenkinsx
+    $ pip install api4jenkins
 
 -------------------------
 
@@ -18,6 +18,6 @@ From source
 
 Clone the public repository::
 
-    $ git clone https://github.com/joelee2012/jenkinsx
-    $ cd jenkinsx
+    $ git clone https://github.com/joelee2012/api4jenkins
+    $ cd api4jenkins
     $ pip install .
