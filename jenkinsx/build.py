@@ -52,8 +52,7 @@ class Build(Item, DescriptionMix, DeletionMix):
         return None
 
     def get_job(self):
-        job_name = self.jenkins.url2path(
-            re.sub(r'\w+[/]?$', '', self.url))
+        job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return self.jenkins.get_job(job_name)
 
 

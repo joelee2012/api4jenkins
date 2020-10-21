@@ -38,7 +38,7 @@ class TestFolder(unittest.TestCase):
                 " the name 'Level2_Folder1'"},
             status=400)
         with self.assertRaises(BadRequestError):
-            self.folder.create_job('Level2_Folder1', '')
+            self.folder.create('Level2_Folder1', '')
         self.assertEqual(responses_count(), 2)
 
     @responses.activate
@@ -49,7 +49,7 @@ class TestFolder(unittest.TestCase):
             status=400)
         with self.assertRaisesRegex(BadRequestError,
                                     '@  is an unsafe character'):
-            self.folder.create_job('Level2@new', '')
+            self.folder.create('Level2@new', '')
         self.assertEqual(responses_count(), 2)
 
     @responses.activate
@@ -57,12 +57,12 @@ class TestFolder(unittest.TestCase):
         mock_post(
             f'{JENKINS_URL}job/Level1_Folder1/createItem?name=Levevl2_new',
             match_querystring=True)
-        self.folder.create_job('Levevl2_new', '')
+        self.folder.create('Levevl2_new', '')
         self.assertEqual(responses_count(), 2)
 
     @responses.activate
     def test_get_job_when_not_found(self):
-        not_found = self.folder.get_job('notfound')
+        not_found = self.folder.get('notfound')
         self.assertIsNone(not_found)
         self.assertEqual(responses_count(), 2)
 
@@ -71,7 +71,7 @@ class TestFolder(unittest.TestCase):
         self.assertIsInstance(self.folder, Folder)
         self.assertEqual(str(self.folder),
                          '<Folder: http://0.0.0.0:8080/job/Level1_Folder1/>')
-        level2_folder1 = self.folder.get_job('Level2_Folder1')
+        level2_folder1 = self.folder.get('Level2_Folder1')
         self.assertIsInstance(level2_folder1, Folder)
         self.assertEqual(str(level2_folder1),
                          '<Folder: http://0.0.0.0:8080/job/Level1_Folder1/'
@@ -80,7 +80,7 @@ class TestFolder(unittest.TestCase):
 
     @responses.activate
     def test_iter_jobs(self):
-        jobs = list(self.folder.iter_jobs())
+        jobs = list(self.folder.iter())
         self.assertEqual(len(jobs), 4)
         self.assertEqual(responses_count(), 2)
 
@@ -92,7 +92,7 @@ class TestFolder(unittest.TestCase):
                 'X-Error': 'No such job: xxxx'},
             status=400)
         with self.assertRaises(BadRequestError):
-            self.folder.copy_job('noexist', 'xxxx')
+            self.folder.copy('noexist', 'xxxx')
 
     @responses.activate
     def test_copy_dest_exists(self):
@@ -103,13 +103,13 @@ class TestFolder(unittest.TestCase):
                 " the name 'Level2_Folder1'"},
             status=400)
         with self.assertRaises(BadRequestError):
-            self.folder.copy_job('src', 'Level2_Folder1')
+            self.folder.copy('src', 'Level2_Folder1')
 
     @responses.activate
     def test_copy(self):
         mock_post(
             f'{JENKINS_URL}job/Level1_Folder1/createItem')
-        self.folder.copy_job('Level2_Folder1', 'Level2_Folder2')
+        self.folder.copy('Level2_Folder1', 'Level2_Folder2')
         self.assertEqual(responses_count(), 2)
 
     @responses.activate

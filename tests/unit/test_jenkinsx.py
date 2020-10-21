@@ -152,24 +152,24 @@ class TestJenkins(unittest.TestCase):
 
     def test_url2full_name(self):
         with self.assertRaises(ValueError):
-            self.jx.url2path('http://0.0.0.1/job/folder1/')
-        full_name = self.jx.url2path(f'{JENKINS_URL}job/job/')
+            self.jx._url2name('http://0.0.0.1/job/folder1/')
+        full_name = self.jx._url2name(f'{JENKINS_URL}job/job/')
         self.assertEqual(full_name, '/job/')
-        full_name = self.jx.url2path(
+        full_name = self.jx._url2name(
             f'{JENKINS_URL}job/job/job/job/')
         self.assertEqual(full_name, '/job/job/')
-        full_name = self.jx.url2path(f'{JENKINS_URL}job/job/job/job')
+        full_name = self.jx._url2name(f'{JENKINS_URL}job/job/job/job')
         self.assertEqual(full_name, '/job/job')
 
     def test_full_name2url(self):
-        self.assertEqual(self.jx.path2url(''), self.jx.url)
+        self.assertEqual(self.jx._name2url(''), self.jx.url)
         for name in ['/job/', 'job/', '/job', 'job']:
             with self.subTest(name=name):
-                self.assertEqual(self.jx.path2url(name),
+                self.assertEqual(self.jx._name2url(name),
                                  f'{JENKINS_URL}job/job/')
         for name in ['/job/job/', 'job/job/', '/job/job', 'job/job']:
             with self.subTest(name=name):
-                self.assertEqual(self.jx.path2url(name),
+                self.assertEqual(self.jx._name2url(name),
                                  f'{JENKINS_URL}job/job/job/job/')
 
     @responses.activate
@@ -195,4 +195,3 @@ class TestJenkins(unittest.TestCase):
     def test_handle_req(self):
         json = self.jx.handle_req('GET', 'api/json').json()
         self.assertEqual(json, self.jenkins_json)
-

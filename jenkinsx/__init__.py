@@ -1,49 +1,4 @@
 # encoding: utf-8
-
-'''
->>> from jenkinsx import Jenkins
->>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
->>> j.version
-'2.176.2'
->>> xml = """<?xml version='1.1' encoding='UTF-8'?>
-... <project>
-...   <builders>
-...     <hudson.tasks.Shell>
-...       <command>echo $JENKINS_VERSION</command>
-...     </hudson.tasks.Shell>
-...   </builders>
-... </project>"""
->>> j.create_job('freestylejob', xml)
->>> job = j.get_job('freestylejob')
->>> print(job)
-<FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
->>> print(job.parent)
-<Jenkins: http://127.0.0.1:8080/>
->>> print(job.jenkins)
-<Jenkins: http://127.0.0.1:8080/>
->>> import time
->>> item = job.build()
->>> while not item.get_build():
-...      time.sleep(1)
->>> build = item.get_build()
->>> print(build)
-<FreeStyleBuild: http://127.0.0.1:8080/job/freestylejob/1/>
->>> for line in build.progressive_output():
-...     print(line)
-...
-Started by user admin
-Running as SYSTEM
-Building in workspace /var/jenkins_home/workspace/freestylejob
-[freestylejob] $ /bin/sh -xe /tmp/jenkins2989549474028065940.sh
-+ echo $JENKINS_VERSION
-2.176.2
-Finished: SUCCESS
->>> build.building
-False
->>> build.result
-'SUCCESS'
-'''
-
 import time
 import weakref
 from importlib import import_module
@@ -68,33 +23,14 @@ from .view import Views
 
 
 class Jenkins(Item):
-    '''Constructs  :class:`Jenkins <Jenkins>`
+    r'''Constructs  :class:`Jenkins <Jenkins>`.
 
-    :param url:
-    :param auth: (optional) Auth tuple to enable Basic/Digest/Custom HTTP Auth.
-    :param token: (optional) if Ture, create user token on fly, useful
-        when LDAP server refuse username and password used too much often.
-    :param max_retries: (optional) The maximum number of retries each
-        connection should attempt. default value is 1, more detail can be
-        found requests ``HTTPAdapter``.
-    :param timeout: (optional) How many seconds to wait for the server to
-        send data before giving up, as a float, or a :ref:`(connect timeout,
-        read timeout) <timeouts>` tuple.
-    :type timeout: float or tuple
-    :param allow_redirects: (optional) Boolean. Enable/disable
-        GET/OPTIONS/POST/PUT/PATCH/DELETE/HEAD redirection.
-        Defaults to ``True``.
-    :type allow_redirects: bool
-    :param proxies: (optional) Dictionary mapping protocol to
-        the URL of the proxy.
-    :param verify: (optional) Either a boolean, in which case it controls
-        whether we verify the server's TLS certificate, or a string,
-        in which case it must be a path to a CA bundle to use.
-        Defaults to ``True``.
-    :param stream: (optional) if ``False``, the response content will be
-        immediately downloaded.
-    :param cert: (optional) if String, path to ssl client cert file (.pem).
-        If Tuple, ('cert', 'key') pair.
+    :param url: URL of Jenkins server, ``str``
+    :param auth: (optional) Auth ``tuple`` to enable Basic/Digest/Custom HTTP Auth.
+    :param token: (optional) Boolean, Create user token when initialize instance and
+        revoke token once instance is destroied. useful when LDAP server refuse
+        username and password used too much often. Defaults to ``False``.
+    :param \*\*kwargs: other kwargs are same as `requests.Session.request <https://requests.readthedocs.io/en/latest/api/#requests.Session.request>`_
 
     Usage::
 
@@ -113,10 +49,12 @@ class Jenkins(Item):
         self._crumb = None
         self._token = None
         self._auth = kwargs.get('auth', None)
+        self.user = None
+        if self._auth:
+            self.user = User(self, f'{self.url}user/{self._auth[0]}/')
         if self._auth and token is True:
-            user = User(self, f'{self.url}user/{self._auth[0]}/')
-            self._token = user.generate_token()
-            weakref.finalize(user, user.revoke_token,
+            self._token = self.user.generate_token()
+            weakref.finalize(self.user, self.user.revoke_token,
                              self._token.uuid)
             kwargs['auth'] = (self._auth[0], self._token.value)
             self.send_req = Requester(**kwargs)
@@ -124,10 +62,11 @@ class Jenkins(Item):
     def get_job(self, full_name):
         '''Get job by full name
 
-        :param full_name: full name of job
+        :param full_name: ``str``, full name of job
         :returns: Corresponding Job object or None
 
         Usage::
+
             >>> from jenkinsx import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> job = j.get_job('freestylejob')
@@ -135,49 +74,51 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
         folder, name = self._get_folder(full_name)
-        return folder.get_job(name)
+        return folder.get(name)
 
     def iter_jobs(self, depth=0):
         '''Iterate jobs with depth
 
-        :param depth: depth of iterate, default is 0
+        :param depth: ``int``, depth to iterate, default is 0
         :returns: iterator of jobs
 
         Usage::
+
             >>> from jenkinsx import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> for job in j.iter_job():
+            >>> for job in j.iter_jobs():
             ...     print(job)
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
             ...
         '''
-        folder = Folder(self, self.path2url(''))
-        yield from folder.iter_jobs(depth)
+        folder = Folder(self, self.url)
+        yield from folder.iter(depth)
 
     def create_job(self, full_name, xml):
         '''Create new jenkins job with given xml configuration
 
-        :param full_name: full name of job
+        :param full_name: ``str``, full name of job
         :param xml: xml configuration string
 
         Usage::
-        >>> from jenkinsx import Jenkins
-        >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-        >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
-        ... <project>
-        ...   <builders>
-        ...     <hudson.tasks.Shell>
-        ...       <command>echo $JENKINS_VERSION</command>
-        ...     </hudson.tasks.Shell>
-        ...   </builders>
-        ... </project>"""
-        >>> j.create_job('freestylejob', xml)
-        >>> job = j.get_job('freestylejob')
-        >>> print(job)
-        <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
+
+            >>> from jenkinsx import Jenkins
+            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
+            >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
+            ... <project>
+            ...   <builders>
+            ...     <hudson.tasks.Shell>
+            ...       <command>echo $JENKINS_VERSION</command>
+            ...     </hudson.tasks.Shell>
+            ...   </builders>
+            ... </project>"""
+            >>> j.create_job('freestylejob', xml)
+            >>> job = j.get_job('freestylejob')
+            >>> print(job)
+            <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
         folder, name = self._get_folder(full_name)
-        return folder.create_job(name, xml)
+        return folder.create(name, xml)
 
     def copy_job(self, full_name, dest):
         '''Create job by copying other job, the source job and dest job are in
@@ -187,6 +128,7 @@ class Jenkins(Item):
         :param dest: name of new job
 
         Usage::
+
             >>> from jenkinsx import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> j.copy_job('folder/freestylejob', 'newjob')
@@ -195,14 +137,15 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/folder/job/newjob/>
         '''
         folder, name = self._get_folder(full_name)
-        return folder.copy_job(name, dest)
+        return folder.copy(name, dest)
 
     def delete_job(self, full_name):
         '''Delete job
 
-        :param full_name: full name of job
+        :param full_name: ``str``, full name of job
 
         Usage::
+
             >>> from jenkinsx import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> job = j.get_job('freestylejob')
@@ -220,11 +163,12 @@ class Jenkins(Item):
     def build_job(self, full_name, parameters=None):
         '''Build job with/without parameters
 
-        :param full_name: full name of job
-        :param parameters: None or Dict
-        :returns: ``Queue``
+        :param full_name: ``str``, full name of job
+        :param parameters: None or Dict, support delay and remote token
+        :returns: ``QueueItem``
 
         Usage::
+
             >>> from jenkinsx import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> item = j.build_job('freestylejob')
@@ -243,21 +187,32 @@ class Jenkins(Item):
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job.build(parameters)
 
-    def url2path(self, url):
+    def _url2name(self, url):
+        '''Covert job url to full name
+
+        :param url: ``str``, url of job
+        :returns: ``str``, full name of job
+        '''
         if not url.startswith(self.url):
             raise ValueError(f'{url} is not in {self.url}')
         return url.replace(self.url, '/').replace('/job/', '/')
 
-    def path2url(self, path):
-        if not path:
+    def _name2url(self, full_name):
+        '''Covert job full name to url
+
+        :param full_name: ``str``, full name of job
+        :returns: ``str``, url of job
+        '''
+        if not full_name:
             return self.url
-        path = path.strip('/').replace('/', '/job/')
-        return f'{self.url}job/{path}/'
+        full_name = full_name.strip('/').replace('/', '/job/')
+        return f'{self.url}job/{full_name}/'
 
     def _get_folder(self, full_name):
+        '''Split folder and job'''
         path = PurePosixPath(full_name)
         parent = str(path.parent) if path.parent.name else ''
-        return Folder(self, self.path2url(parent)), path.name
+        return Folder(self, self._name2url(parent)), path.name
 
     def exists(self):
         '''Check if Jenkins server is up
@@ -276,36 +231,50 @@ class Jenkins(Item):
 
     @property
     def crumb(self):
+        '''Crumb of Jenkins'''
         self._add_crumb({})
         return self._crumb
 
     @property
     def system(self):
+        '''An object for managing system operation.
+        see :class:`System <jenkinsx.system.System>`'''
         return System(self, self.url)
 
     @property
     def plugins(self):
+        '''An object for managing plugins.
+        see :class:`PluginsManager <jenkinsx.plugin.PluginsManager>`'''
         return PluginsManager(self, f'{self.url}pluginManager/')
 
     @property
     def version(self):
+        '''Version of Jenkins'''
         return self.handle_req('GET', '').headers['X-Jenkins']
 
     @property
     def credentials(self):
+        '''An object for managing credentials.
+        see :class:`Credentials <jenkinsx.credential.Credentials>`'''
         return Credentials(self,
                            f'{self.url}credentials/store/system/domain/_/')
 
     @property
     def views(self):
+        '''An object for managing views of main window.
+        see :class:`Views <jenkinsx.view.Views>`'''
         return Views(self)
 
     @property
     def nodes(self):
+        '''An object for managing nodes.
+        see :class:`Nodes <jenkinsx.node.Nodes>`'''
         return Nodes(self, f'{self.url}computer/')
 
     @property
     def queue(self):
+        '''An object for managing build queue.
+        see :class:`Queue <jenkinsx.queue.Queue>`'''
         return Queue(self, f'{self.url}queue/')
 
 
