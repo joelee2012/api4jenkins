@@ -20,16 +20,6 @@ Initialization
     ['_class', 'mode', 'node_description', 'node_name', 'num_executors', 'description', 'quieting_down', 'slave_agent_port', 'use_crumbs', 'use_security']
 
 
-From Jenkins version 1.426 onward you can specify an API token instead of your
-real password while authenticating the user against the Jenkins instance.
-Refer to the `Jenkins Authentication`_ wiki for details about how you
-can generate an API token. Once you have an API token you can pass the API token
-instead of a real password while creating a Jenkins instance.
-
-.. _Jenkins Authentication: https://wiki.jenkins-ci.org/display/JENKINS/Authenticating+scripted+clients
-
-
-
 
 Job
 ------------------------------------

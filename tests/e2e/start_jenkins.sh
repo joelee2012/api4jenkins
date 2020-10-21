@@ -5,7 +5,7 @@ HERE=$(readlink -f "${BASH_SOURCE[0]}" | xargs dirname)
 function start {
   set -e
   local ip port password
-  sudo docker run -dt --rm --name jenkins-master jenkins/jenkins:2.222.4-lts-alpine
+  sudo docker run -dt --rm --name jenkins-master jenkins/jenkins
   echo 'Waiting for Jenkins to start...'
   until sudo docker logs jenkins-master | grep -q 'Jenkins is fully up and running'; do
     sleep 1
