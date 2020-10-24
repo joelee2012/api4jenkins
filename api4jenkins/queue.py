@@ -44,7 +44,7 @@ class QueueItem(Item):
         if self._class.endswith('$BuildableItem'):
             return self.get_build().get_job()
         task = self.api_json(tree='task[url]')['task']
-        return self._new_instance_by_item('jenkinsx.job', task)
+        return self._new_instance_by_item('api4jenkins.job', task)
 
     def get_build(self):
         if not self._build:
@@ -53,7 +53,7 @@ class QueueItem(Item):
             if _class.endswith('$LeftItem'):
                 executable = self.api_json('executable[url]')['executable']
                 self._build = self._new_instance_by_item(
-                    'jenkinsx.build', executable)
+                    'api4jenkins.build', executable)
             elif _class.endswith(('$BuildableItem', '$WaitingItem')):
                 for build in self.jenkins.nodes.iter_builds():
                     if int(build.queue_id) + 1 == self.id:

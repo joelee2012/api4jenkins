@@ -23,7 +23,7 @@ def install_plugins(*names):
     import re
     import time
     import os
-    from jenkinsx import Jenkins
+    from api4jenkins import Jenkins
     jenkins = Jenkins(URL, auth=(USER, PASSWORD))
     if os.getenv('HTTPS_PROXY'):
         matcher = re.match(r'(?P<ip>.*):(?P<port>\d+)$', os.getenv('HTTPS_PROXY'))

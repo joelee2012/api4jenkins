@@ -1,13 +1,13 @@
-.. Jenkinsx documentation master file, created by
+.. api4jenkins documentation master file, created by
    sphinx-quickstart on Mon Dec 16 20:16:12 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Jenkinsx's documentation!
+Welcome to api4jenkins's documentation!
 ====================================
 
 
-`Jenkinsx <https://github.com/joelee2012/jenkinsx>`_ is an object oriented `Python <https://www.python.org/>`_ project that provides access to the `Jenkins <https://jenkins.io/>`_ `Remote access API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_ programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API.
+`api4jenkins <https://github.com/joelee2012/api4jenkins>`_ is an object oriented `Python <https://www.python.org/>`_ project that provides access to the `Jenkins <https://jenkins.io/>`_ `Remote access API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_ programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API.
 
 ------------------------------
 
@@ -31,7 +31,7 @@ Quick start
 Here is an example to create job and start build, obtain build object the queue item, and pull progressive output until its completion, and obtain the build status.
 
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> j.version
     '2.176.2'

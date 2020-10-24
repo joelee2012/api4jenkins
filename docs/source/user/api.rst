@@ -3,72 +3,72 @@
 API reference
 =============
 
-.. automodule:: jenkinsx
+.. automodule:: api4jenkins
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.job
+.. automodule:: api4jenkins.job
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.build
+.. automodule:: api4jenkins.build
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.queue
+.. automodule:: api4jenkins.queue
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.credential
+.. automodule:: api4jenkins.credential
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.node
+.. automodule:: api4jenkins.node
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.plugin
+.. automodule:: api4jenkins.plugin
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.view
+.. automodule:: api4jenkins.view
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.system
+.. automodule:: api4jenkins.system
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.user
+.. automodule:: api4jenkins.user
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.item
+.. automodule:: api4jenkins.item
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.mix
+.. automodule:: api4jenkins.mix
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.requester
+.. automodule:: api4jenkins.requester
    :members:
    :undoc-members:
    :inherited-members:
 
-.. automodule:: jenkinsx.exceptions
+.. automodule:: api4jenkins.exceptions
    :members:
    :undoc-members:
    :inherited-members:

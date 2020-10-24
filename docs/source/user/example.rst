@@ -10,7 +10,7 @@ Initialization
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('myuser', 'mypassword'))
     >>> j.version
     '2.176.2'
@@ -28,7 +28,7 @@ Job
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> job = j.get_job('freestylejob')
     >>> print(job)
@@ -38,7 +38,7 @@ Job
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
     ... <project>
@@ -57,7 +57,7 @@ Job
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> j.copy_job('freestylejob', 'newjob')
     >>> j.get_job('newjob')
@@ -68,7 +68,7 @@ Job
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> item = j.build_job('freestylejob')
     >>> import time
@@ -99,7 +99,7 @@ Default depth is 0
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> for job in j.iter_job():
     ...     print(job)
@@ -109,7 +109,7 @@ Default depth is 0
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> job = j.get_job('freestylejob')
     >>> print(job)
@@ -119,7 +119,7 @@ Default depth is 0
     >>> print(job)
     None
 
-:class:`Folder <jenkinsx.job.Folder>`
+:class:`Folder <api4jenkins.job.Folder>`
 -----------------------------------------------------
 
 Requires the `Cloudbees Folders Plugin
@@ -131,11 +131,11 @@ This is an example showing how to create, configure and delete Jenkins folders.
 
 - Create job
 
-Use method :class:`Jenkins.create_job <jenkinsx.Jenkins.create_job>`
+Use method :class:`Jenkins.create_job <api4jenkins.Jenkins.create_job>`
 
 .. code-block:: python
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> j.create_job('folder', folder_xml)
     >>> j.create_job('folder/freestylejob', job_xml)
@@ -143,7 +143,7 @@ Use method :class:`Jenkins.create_job <jenkinsx.Jenkins.create_job>`
     >>> print(job)
     <FreeStyleProject: http://127.0.0.1:8080/job/folder/job/freestylejob/>
 
-Use method :class:`Folder.create <jenkinsx.job.Folder.create>`
+Use method :class:`Folder.create <api4jenkins.job.Folder.create>`
 
     >>> j.create_job('folder', folder_xml)
     >>> folder = j.get_job('folder')
@@ -157,17 +157,17 @@ Use method :class:`Folder.create <jenkinsx.job.Folder.create>`
 - Copy job
 
 
-use method :class:`Jenkins.copy_job <jenkinsx.Jenkins.copy_job>`
+use method :class:`Jenkins.copy_job <api4jenkins.Jenkins.copy_job>`
 to copy job in same folder
 
-    >>> from jenkinsx import Jenkins
+    >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     >>> j.copy_job('folder/freestylejob', 'newjob')
     >>> j.get_job('folder/newjob')
     >>> print(job)
     <FreeStyleProject: http://127.0.0.1:8080/job/folder/job/newjob/>
 
-use method of :class:`Folder.copy <jenkinsx.job.Folder.copy>`
+use method of :class:`Folder.copy <api4jenkins.job.Folder.copy>`
 to copy job in same folder
 
     >>> folder = j.get_job('folder')
@@ -176,7 +176,7 @@ to copy job in same folder
     >>> print(job)
     <FreeStyleProject: http://127.0.0.1:8080/job/folder/job/newjob/>
 
-use method of :class:`Job.duplicate <jenkinsx.job.Job.duplicate>`
+use method of :class:`Job.duplicate <api4jenkins.job.Job.duplicate>`
 to copy job in different place
 
     >>> old = j.get_job('folder/freestylejob')

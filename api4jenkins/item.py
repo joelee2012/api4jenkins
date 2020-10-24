@@ -98,7 +98,7 @@ class Item:
         if not hasattr(module, class_name):
             raise AttributeError(f'{module} has no class {class_name}, '
                                  'Patch new class with'
-                                 ' jenkinsx._patch_to')
+                                 ' api4jenkins._patch_to')
         _class = getattr(module, class_name)
         return _class(self.jenkins, item['url'])
 

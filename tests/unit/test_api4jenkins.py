@@ -3,12 +3,12 @@ import unittest
 
 import responses
 
-from jenkinsx import Jenkins
-from jenkinsx.exceptions import ItemNotFoundError, \
+from api4jenkins import Jenkins
+from api4jenkins.exceptions import ItemNotFoundError, \
     AuthenticationError, BadRequestError
-from jenkinsx.item import snake
-from jenkinsx.job import Folder
-from jenkinsx.user import ApiToken
+from api4jenkins.item import snake
+from api4jenkins.job import Folder
+from api4jenkins.user import ApiToken
 from .help import mock_get, load_test_json, \
     mock_post, remove_get, replace_get, JENKINS_URL
 

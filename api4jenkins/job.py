@@ -101,7 +101,7 @@ class Project(Job):
             item = self.api_json(tree=f'{key}[url]')[key]
             if item is None:
                 return None
-            return self._new_instance_by_item('jenkinsx.build', item)
+            return self._new_instance_by_item('api4jenkins.build', item)
 
         for key in ['firstBuild', 'lastBuild', 'lastCompletedBuild',
                     'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
@@ -123,7 +123,7 @@ class Project(Job):
     def get_build(self, number):
         for item in self.api_json(tree='builds[number,url]')['builds']:
             if int(number) == int(item['number']):
-                return self._new_instance_by_item('jenkinsx.build', item)
+                return self._new_instance_by_item('api4jenkins.build', item)
         return None
 
     def iter_builds(self):
@@ -146,7 +146,7 @@ class Project(Job):
 
     def __iter__(self):
         for item in self.api_json(tree='builds[number,url]')['builds']:
-            yield self._new_instance_by_item('jenkinsx.build', item)
+            yield self._new_instance_by_item('api4jenkins.build', item)
 
 
 class WorkflowJob(Project):

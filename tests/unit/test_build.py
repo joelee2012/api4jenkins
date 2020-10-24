@@ -4,10 +4,10 @@ import unittest
 
 import responses
 
-from jenkinsx import Jenkins
-from jenkinsx.build import WorkflowRun
-from jenkinsx.item import snake
-from jenkinsx.job import WorkflowJob
+from api4jenkins import Jenkins
+from api4jenkins.build import WorkflowRun
+from api4jenkins.item import snake
+from api4jenkins.job import WorkflowJob
 from .help import load_test_json, mock_get, \
     responses_count, JENKINS_URL
 

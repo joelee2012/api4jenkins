@@ -47,7 +47,7 @@ class Nodes(Item):
         tree = 'computer[oneOffExecutors[currentExecutable[url]]]'
         for computer in self.api_json(tree, 2)['computer']:
             for executor in computer.get('oneOffExecutors'):
-                yield self._new_instance_by_item('jenkinsx.build',
+                yield self._new_instance_by_item('api4jenkins.build',
                                                  executor['currentExecutable'])
 
     def __iter__(self):
@@ -74,7 +74,7 @@ class Node(Item, ConfigrationMix, DeletionMix, RunScriptMix):
     def iter_builds(self):
         tree = 'oneOffExecutors[currentExecutable[url]]'
         for executor in self.api_json(tree, 2)['oneOffExecutors']:
-            yield self._new_instance_by_item('jenkinsx.build',
+            yield self._new_instance_by_item('api4jenkins.build',
                                              executor['currentExecutable'])
 
 

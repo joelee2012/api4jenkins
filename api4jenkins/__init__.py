@@ -34,7 +34,7 @@ class Jenkins(Item):
 
     Usage::
 
-        >>> from jenkinsx import Jenkins
+        >>> from api4jenkins import Jenkins
         >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
         >>> print(j)
         <Jenkins: http://127.0.0.1:8080/>
@@ -67,7 +67,7 @@ class Jenkins(Item):
 
         Usage::
 
-            >>> from jenkinsx import Jenkins
+            >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> job = j.get_job('freestylejob')
             >>> print(job)
@@ -84,7 +84,7 @@ class Jenkins(Item):
 
         Usage::
 
-            >>> from jenkinsx import Jenkins
+            >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> for job in j.iter_jobs():
             ...     print(job)
@@ -102,7 +102,7 @@ class Jenkins(Item):
 
         Usage::
 
-            >>> from jenkinsx import Jenkins
+            >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
             ... <project>
@@ -129,7 +129,7 @@ class Jenkins(Item):
 
         Usage::
 
-            >>> from jenkinsx import Jenkins
+            >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> j.copy_job('folder/freestylejob', 'newjob')
             >>> j.get_job('folder/newjob')
@@ -146,7 +146,7 @@ class Jenkins(Item):
 
         Usage::
 
-            >>> from jenkinsx import Jenkins
+            >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> job = j.get_job('freestylejob')
             >>> print(job)
@@ -169,7 +169,7 @@ class Jenkins(Item):
 
         Usage::
 
-            >>> from jenkinsx import Jenkins
+            >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
             >>> item = j.build_job('freestylejob')
             >>> import time
@@ -238,13 +238,13 @@ class Jenkins(Item):
     @property
     def system(self):
         '''An object for managing system operation.
-        see :class:`System <jenkinsx.system.System>`'''
+        see :class:`System <api4jenkins.system.System>`'''
         return System(self, self.url)
 
     @property
     def plugins(self):
         '''An object for managing plugins.
-        see :class:`PluginsManager <jenkinsx.plugin.PluginsManager>`'''
+        see :class:`PluginsManager <api4jenkins.plugin.PluginsManager>`'''
         return PluginsManager(self, f'{self.url}pluginManager/')
 
     @property
@@ -255,26 +255,26 @@ class Jenkins(Item):
     @property
     def credentials(self):
         '''An object for managing credentials.
-        see :class:`Credentials <jenkinsx.credential.Credentials>`'''
+        see :class:`Credentials <api4jenkins.credential.Credentials>`'''
         return Credentials(self,
                            f'{self.url}credentials/store/system/domain/_/')
 
     @property
     def views(self):
         '''An object for managing views of main window.
-        see :class:`Views <jenkinsx.view.Views>`'''
+        see :class:`Views <api4jenkins.view.Views>`'''
         return Views(self)
 
     @property
     def nodes(self):
         '''An object for managing nodes.
-        see :class:`Nodes <jenkinsx.node.Nodes>`'''
+        see :class:`Nodes <api4jenkins.node.Nodes>`'''
         return Nodes(self, f'{self.url}computer/')
 
     @property
     def queue(self):
         '''An object for managing build queue.
-        see :class:`Queue <jenkinsx.queue.Queue>`'''
+        see :class:`Queue <api4jenkins.queue.Queue>`'''
         return Queue(self, f'{self.url}queue/')
 
 
