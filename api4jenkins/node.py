@@ -50,6 +50,23 @@ class Nodes(Item):
                 yield self._new_instance_by_item('api4jenkins.build',
                                                  executor['currentExecutable'])
 
+    def iter_running_builds(self):
+        for computer in self.api_json(tree='computer[displayName,offline]')['computer']:
+            if computer['offline']:
+                continue
+            name = computer['displayName']
+            if name == 'master':
+                name = '(master)'
+            url = name + '/api/json'
+            params = {'depth': 2}
+            params['tree'] = 'executors[currentExecutable[url]]'
+            info = self.handle_req('GET', url, params=params).json()
+            for item in info['executors']:
+                if not item['currentExecutable']:
+                    continue
+                yield self._new_instance_by_item('api4jenkins.build',
+                                                 item['currentExecutable'])
+
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
             if item['displayName'] == 'master':

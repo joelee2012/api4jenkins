@@ -66,3 +66,6 @@ class FreeStyleBuild(Build):
 
 class MatrixBuild(Build):
     pass
+
+class PlaceholderExecutable(Build):
+    pass
