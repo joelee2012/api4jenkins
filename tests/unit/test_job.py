@@ -146,7 +146,7 @@ class TestFolder(unittest.TestCase):
     def test_dynamic_attributes(self):
         dynamic_attrs = {snake(k): v for k, v in
                          self.folder_json.items()
-                         if isinstance(v, (int, str, bool))}
+                         if isinstance(v, (int, str, bool, type(None)))}
         self.assertEqual(sorted(self.folder.attrs),
                          sorted(dynamic_attrs.keys()))
         for key, value in dynamic_attrs.items():
@@ -183,7 +183,7 @@ class TestProject(unittest.TestCase):
         mock_post(f'{JENKINS_URL}job/Level1_WorkflowJob/buildWithParameters',
                   headers={'Location':
                            f'{JENKINS_URL}queue/item/53/'})
-        item = self.project.build({'parameter': 'xxx'})
+        item = self.project.build(parameter='xxx')
         self.assertEqual(item.url, f'{JENKINS_URL}queue/item/53/')
 
     @responses.activate
@@ -218,13 +218,13 @@ class TestProject(unittest.TestCase):
     def test_dynamic_attributes(self):
         dynamic_attrs = {snake(k): v for k, v in
                          self.workflow_json.items()
-                         if isinstance(v, (int, str, bool))}
+                         if isinstance(v, (int, str, bool, type(None)))}
         self.assertEqual(sorted(self.project.attrs),
                          sorted(dynamic_attrs.keys()))
         for key, value in dynamic_attrs.items():
             with self.subTest(value=value):
                 self.assertEqual(getattr(self.project, key), value)
-        self.assertEqual(responses_count(), 15)
+        self.assertEqual(responses_count(), len(dynamic_attrs.keys())+1)
 
 
 if __name__ == "__main__":

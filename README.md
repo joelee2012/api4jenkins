@@ -18,7 +18,7 @@
 # Installation
 
 ```bash
-pip install api4jenkins
+python -m pip install api4jenkins
 ```
 
 # Quick start
@@ -66,8 +66,5 @@ False
 >>> build.result
 'SUCCESS'
   ```
-  More usage can be found in [Documentation](https://api4jenkins.readthedocs.io/en/latest/)
 
-# Contributing
-
-Feel free to open pull requests to contribute your code or idea
+# API Reference and User Guide available on [Documentation](https://api4jenkins.readthedocs.io/en/latest/)

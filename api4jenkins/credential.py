@@ -7,11 +7,11 @@ from .mix import ConfigrationMix, DeletionMix
 
 class Credentials(Item):
 
-    def get(self, name):
+    def get(self, id):
         for item in self.api_json(tree='credentials[id]')['credentials']:
-            if item['id'] == name:
+            if item['id'] == id:
                 return Credential(self.jenkins,
-                                  f'{self.url}credential/{name}/')
+                                  f'{self.url}credential/{id}/')
         return None
 
     def create(self, xml):

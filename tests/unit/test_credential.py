@@ -57,7 +57,7 @@ class TestCredential(unittest.TestCase):
     def test_dynamic_attributes(self):
         dynamic_attrs = {snake(k): v for k, v in
                          self.cred_json.items()
-                         if isinstance(v, (int, str, bool))}
+                         if isinstance(v, (int, str, bool, type(None)))}
         self.assertEqual(sorted(self.cred.attrs),
                          sorted(dynamic_attrs.keys()))
         for key, value in dynamic_attrs.items():

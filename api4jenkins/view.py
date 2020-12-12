@@ -9,12 +9,12 @@ class Views(Item):
     classdocs
     '''
 
-    def __init__(self, provider):
+    def __init__(self, owner):
         '''
         Constructor
         '''
-        self.provider = provider
-        super().__init__(provider.jenkins, provider.url)
+        self.owner = owner
+        super().__init__(owner.jenkins, owner.url)
 
     def get(self, name):
         for item in self.api_json(tree='views[name,url]')['views']:

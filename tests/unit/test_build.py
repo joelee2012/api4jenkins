@@ -72,10 +72,10 @@ class TestBuild(unittest.TestCase):
     def test_dynamic_attributes(self):
         dynamic_attrs = {snake(k): v for k, v in
                          self.workflow_json.items()
-                         if isinstance(v, (int, str, bool))}
+                         if isinstance(v, (int, str, bool, type(None)))}
         self.assertEqual(sorted(self.build.attrs),
                          sorted(dynamic_attrs.keys()))
         for key, value in dynamic_attrs.items():
             with self.subTest(value=value):
                 self.assertEqual(getattr(self.build, key), value)
-        self.assertEqual(responses_count(), 14)
+        self.assertEqual(responses_count(), len(dynamic_attrs.keys())+1)

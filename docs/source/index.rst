@@ -28,7 +28,7 @@ It provides but not limits functionalities to control Job, Build, Node, View, Cr
 Quick start
 ----------------------------------------
 
-Here is an example to create job and start build, obtain build object the queue item, and pull progressive output until its completion, and obtain the build status.
+Here is an example which will create job, start build, obtain build object from queue item, and pull progressive output until its completion, obtain the build status in order.
 
 
     >>> from api4jenkins import Jenkins
@@ -81,7 +81,6 @@ Here is an example to create job and start build, obtain build object the queue 
   user/install.rst
   user/example.rst
   user/api.rst
-
 
 
 Indices and tables

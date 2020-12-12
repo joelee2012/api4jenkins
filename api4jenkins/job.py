@@ -85,7 +85,7 @@ class Folder(Job):
                            f'{self.url}credentials/store/folder/domain/_/')
 
     def __iter__(self):
-        yield from self.iter_jobs()
+        yield from self.iter()
 
 
 class WorkflowMultiBranchProject(Folder):
@@ -109,15 +109,13 @@ class Project(Job):
             setattr(self, snake(f'get_{key}'),
                     partial(_get_build_by_key, key))
 
-    def build(self, parameters=None):
+    def build(self, **params):
         reserved = ['token', 'delay']
-        if not isinstance(parameters, (type(None), dict)):
-            raise ArgumentError('Paramters should be None or Dict')
-        if parameters is None or all(k in reserved for k in parameters):
+        if not params or all(k in reserved for k in params):
             entry = 'build'
         else:
             entry = 'buildWithParameters'
-        resp = self.handle_req('POST', entry, params=parameters)
+        resp = self.handle_req('POST', entry, params=params)
         return QueueItem(self.jenkins, resp.headers['Location'])
 
     def get_build(self, number):
