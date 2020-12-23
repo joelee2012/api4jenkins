@@ -10,10 +10,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import api4jenkins
 import os
 import sys
-import api4jenkins
-
 
 sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
