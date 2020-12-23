@@ -502,6 +502,11 @@ get build from queue item
 
     >>> build = item.get_build()
 
+get build from queue item until build is avaliable:
+
+    >>> while not item.get_build():
+    ...     time.sleep(1)
+
 cancel item
 
     >>> item.cancel()
@@ -601,13 +606,17 @@ iterate builds which is executing on nodes
 
     >>> for build in j.nodes.iter_builds():
     ...     print(build)
-    ...
+
+iter all building items over jenkins
+
+    >>> for build in j.nodes.iter_builds():
+    ...     if build.building:
+    ...         print(build)
 
 iterate all nodes:
 
     >>> for node in j.nodes:
     ...     print(node)
-    ...
 
 enable/disable node
 
@@ -618,6 +627,12 @@ iterate builds which is executing on node
 
     >>> for build in node.iter_builds():
     ...     print(build)
+
+iter building item over one node
+
+    >>> for build in j.nodes.get('node name'):
+    ...     if build.building:
+    ...         print(build)
 
 get/update configuration of node
 
