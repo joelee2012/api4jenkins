@@ -1,65 +1,43 @@
 # encoding: utf-8
-import unittest
 
-import responses
-
-from api4jenkins import Jenkins
+import pytest
 from api4jenkins.credential import Credential
-from api4jenkins.item import snake
-from .help import load_test_json, mock_get, JENKINS_URL
 
 
-class TestCredentials(unittest.TestCase):
+class TestCredentials:
 
-    @classmethod
-    def setUpClass(cls):
-        cls.credentials_json = load_test_json('credential/credentials.json')
-        cls.crumb = load_test_json('jenkins/crumb.json')
+    @pytest.mark.parametrize('id_, obj', [('not exist', type(None)), ('test-user', Credential)])
+    def test_get(self, jenkins, id_, obj):
+        assert isinstance(jenkins.credentials.get(id_), obj)
 
-    def setUp(self):
-        mock_get(f'{JENKINS_URL}crumbIssuer/api/json',
-                 json=self.crumb)
-        mock_get(f'{JENKINS_URL}credentials/store/system/domain/_/api/json',
-                 json=self.credentials_json)
-        self.jx = Jenkins(f'{JENKINS_URL}', auth=('admin', 'admin'))
+    def test_create(self, jenkins, mock_resp):
+        req_url = f'{jenkins.credentials.url}createCredentials'
+        mock_resp.add('POST', req_url)
+        jenkins.credentials.create('xml')
+        assert mock_resp.calls[0].request.url == req_url
 
-    @responses.activate
-    def test_get_none_if_id_not_exist(self):
-        self.assertIsNone(self.jx.credentials.get('no exist'))
-
-    @responses.activate
-    def test_get_item_if_id_exist(self):
-        self.assertIsInstance(self.jx.credentials.get('test-user'), Credential)
-
-    @responses.activate
-    def test_get_all_items(self):
-        for item in self.jx.credentials:
-            with self.subTest(url=item.url):
-                self.assertIsInstance(item, Credential)
+    def test_iter(self, jenkins):
+        creds = list(jenkins.credentials)
+        assert len(creds) == 2
+        assert all([isinstance(c, Credential) for c in creds])
 
 
-class TestCredential(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.cred_json = load_test_json('credential/user_psw.json')
-        cls.crumb = load_test_json('jenkins/crumb.json')
+class TestCredential:
 
-    def setUp(self):
-        mock_get(f'{JENKINS_URL}crumbIssuer/api/json',
-                 json=self.crumb)
-        mock_get(f'{JENKINS_URL}credentials/store/system/domain/_/test-user/api/json',
-                 json=self.cred_json)
-        self.jx = Jenkins(f'{JENKINS_URL}', auth=('admin', 'admin'))
-        self.cred = Credential(
-            self.jx, f'{JENKINS_URL}credentials/store/system/domain/_/test-user/')
+    def test_delete(self, credential, mock_resp):
+        req_url = f'{credential.url}doDelete'
+        mock_resp.add('POST', req_url)
+        credential.delete()
+        assert mock_resp.calls[0].response.status_code == 200
+        assert mock_resp.calls[0].request.url == req_url
 
-    @responses.activate
-    def test_dynamic_attributes(self):
-        dynamic_attrs = {snake(k): v for k, v in
-                         self.cred_json.items()
-                         if isinstance(v, (int, str, bool, type(None)))}
-        self.assertEqual(sorted(self.cred.attrs),
-                         sorted(dynamic_attrs.keys()))
-        for key, value in dynamic_attrs.items():
-            with self.subTest(value=value):
-                self.assertEqual(getattr(self.cred, key), value)
+    @pytest.mark.parametrize('req, xml, body',
+                             [('GET', None, '<xml/>'), ('POST', '<xml/>', '')],
+                             ids=['get', 'set'])
+    def test_configure(self, credential, mock_resp, req, xml, body):
+        req_url = f'{credential.url}config.xml'
+        mock_resp.add(req, req_url, body=body)
+        text = credential.configure(xml)
+        assert mock_resp.calls[0].request.url == req_url
+        if req == 'GET':
+            assert text == body

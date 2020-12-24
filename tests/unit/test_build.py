@@ -1,81 +1,28 @@
 # encoding: utf-8
-from itertools import zip_longest
-import unittest
 
-import responses
-
-from api4jenkins import Jenkins
 from api4jenkins.build import WorkflowRun
-from api4jenkins.item import snake
-from api4jenkins.job import WorkflowJob
-from .help import load_test_json, mock_get, \
-    responses_count, JENKINS_URL
 
 
-class TestBuild(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.jenkins_json = load_test_json('jenkins/jenkins.json')
-        cls.workflow_json = load_test_json('run/workflowrun.json')
-        cls.crumb = load_test_json('jenkins/crumb.json')
+class TestBuild:
+    def test_console_text(self, workflowrun, mock_resp):
+        body = b'a\nb'
+        mock_resp.add('GET', f'{workflowrun.url}consoleText', body=body)
+        assert list(workflowrun.console_text()) == body.split(b'\n')
 
-    def setUp(self):
-        mock_get(f'{JENKINS_URL}crumbIssuer/api/json',
-                 json=self.crumb)
-        mock_get(f'{JENKINS_URL}job/Level1_WorkflowJob1/52/api/json',
-                 json=self.workflow_json)
-        self.jx = Jenkins(JENKINS_URL, auth=('admin', 'admin'))
-        self.build = WorkflowRun(
-            self.jx, f'{JENKINS_URL}job/Level1_WorkflowJob1/52/')
+    def test_progressive_output(self, workflowrun, mock_resp):
+        body = ['a', 'b']
+        headers = {'X-More-Data': 'True', 'X-Text-Size': '1'}
+        req_url = f'{workflowrun.url}logText/progressiveText'
+        mock_resp.add('GET', req_url, headers=headers, body=body[0])
+        mock_resp.add('GET', req_url, body=body[1])
+        assert list(workflowrun.progressive_output()) == body
 
-    @responses.activate
-    def test_console_text(self):
-        mock_get(f'{JENKINS_URL}job/Level1_WorkflowJob1/52/consoleText',
-                 body='a\nb')
-        for given, expected in zip_longest(self.build.console_text(),
-                                           [b'a', b'b']):
-            with self.subTest(given=given, expected=expected):
-                self.assertEqual(given, expected)
+    def test_get_next_build(self, workflowrun):
+        assert workflowrun.get_next_build() is None
 
-    @responses.activate
-    def test_progressive_output(self):
-        url = f'{JENKINS_URL}job/Level1_WorkflowJob1/52/logText/progressiveText'
-        mock_get(url, body='a', headers={
-            'X-More-Data': 'True', 'X-Text-Size': '1'})
-        mock_get(url, body='b')
-        for given, expected in zip_longest(self.build.progressive_output(),
-                                           ['a', 'b']):
-            with self.subTest(given=given, expected=expected):
-                self.assertEqual(given, expected)
+    def test_get_previous_build(self, workflowrun):
+        assert isinstance(workflowrun.get_previous_build(), WorkflowRun)
 
-    @responses.activate
-    def test_get_next_build(self):
-        build = self.build.get_next_build()
-        self.assertIsNone(build)
-
-    @responses.activate
-    def test_get_previous_build(self):
-        build = self.build.get_previous_build()
-        self.assertIsInstance(build, WorkflowRun)
-
-    @responses.activate
-    def test_get_job(self):
-        mock_get(f'{JENKINS_URL}api/json?',
-                 json=self.jenkins_json)
-        job = self.build.get_job()
-        self.assertIsInstance(job, WorkflowJob)
-        self.assertEqual(
-            job.url, f'{JENKINS_URL}job/Level1_WorkflowJob1/')
-
-    @responses.activate
-    def test_dynamic_attributes(self):
-        dynamic_attrs = {snake(k): v for k, v in
-                         self.workflow_json.items()
-                         if isinstance(v, (int, str, bool, type(None)))}
-        self.assertEqual(sorted(self.build.attrs),
-                         sorted(dynamic_attrs.keys()))
-        for key, value in dynamic_attrs.items():
-            with self.subTest(value=value):
-                self.assertEqual(getattr(self.build, key), value)
-        self.assertEqual(responses_count(), len(dynamic_attrs.keys())+1)
+    def test_get_job(self, workflowrun, workflow):
+        assert workflow == workflowrun.get_job()

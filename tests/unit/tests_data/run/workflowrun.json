@@ -1,7 +1,7 @@
 {
   "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
   "actions": [
-   
+
   ],
   "artifacts": [],
   "building": false,
@@ -14,7 +14,7 @@
   "id": "52",
   "keepLog": false,
   "number": 52,
-  "queueId": 1308768,
+  "queueId": 667,
   "result": "FAILURE",
   "timestamp": 1559281453240,
   "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/52/",

@@ -195,7 +195,7 @@ class Jenkins(Item):
         '''
         if not url.startswith(self.url):
             raise ValueError(f'{url} is not in {self.url}')
-        return url.replace(self.url, '/').replace('/job/', '/')
+        return url.replace(self.url, '/').replace('/job/', '/').strip('/')
 
     def _name2url(self, full_name):
         '''Covert job full name to url
