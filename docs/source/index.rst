@@ -28,7 +28,7 @@ It provides but not limits functionalities to control Job, Build, Node, View, Cr
 Quick start
 ----------------------------------------
 
-Here is an example which will create job, start build, obtain build object from queue item, and pull progressive output until its completion, obtain the build status in order.
+Here is an example to create and build job, get build object from queue item, and monitor progressive output until it's done.
 
 
     >>> from api4jenkins import Jenkins
