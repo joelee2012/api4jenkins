@@ -3,7 +3,7 @@
 
 # api4jenkins
 
-[api4jenkins](https://github.com/joelee2012/api4jenkins) is an object oriented [Python](https://www.python.org/) project that provides access to the [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API. It provides but not limits functionalities to control Job, Build, Node, View, Credential, BuildQueue, Plugins and System:
+[api4jenkins](https://github.com/joelee2012/api4jenkins) is an object oriented [Python](https://www.python.org/) project that provides access to the [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API. It provides but not limits functionalities to control Job, Build, Credential, View, Queue, Plugins, Node, and System operation:
 - get/delete/create/move/rename/copy/build/enable/disable job or folder, iterate children jobs with depth, folder based views/credentials functionalities
 - get/iterate builds of project, stop/term/kill build, get progressive console output.
 - get/delete/create/iterate views for jenkins or folder. add/remove jobs to/from view.
@@ -67,4 +67,4 @@ False
 'SUCCESS'
   ```
 
-# API Reference and User Guide available on [Documentation](https://api4jenkins.readthedocs.io/en/latest/)
+# User Guide available on [Documentation](https://api4jenkins.readthedocs.io/en/latest/)

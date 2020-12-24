@@ -16,6 +16,10 @@ if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to con
 
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('username', 'password'), token=True)
 
+.. note::
+
+    Any parameter supported by `requests.Session.request <https://requests.readthedocs.io/en/latest/api/#requests.Session.request>`_ can be passed to initialize Jenkins object.
+
 Now, we have a :class:`Jenkins <api4jenkins.Jenkins>` object `j`, let's check if Jenkins exists and retrive its version and crumb value::
 
     >>> j.exists()
@@ -104,6 +108,15 @@ call `j.build_job()` to trigger job to build if it is buildable, it will return 
     >>> for line in build.progressive_output():
     ...     print(line)
 
+.. note::
+
+    If you don't care console log, you can just poll the building status::
+
+        >>> while build.building:
+        ...     time.sleep(1)
+
+    see `Build`_
+
 you can also set delay and `Authentication Token` when trigger build::
 
     >>> item = j.build_job('freestylejob', delay='30sec', token='abc')
@@ -179,6 +192,10 @@ get/update configuration:
     ... </project>"""
     >>> job.configure(xml)
 
+.. note::
+
+    method `configure()` is avaliable for Job, View, Credential, Node to get/set the xml configuration.
+
 get/set description of job:
 
     >>> job.description
@@ -196,6 +213,7 @@ check if job exists:
 
     >>> job.exists()
     False
+
 
 Project
 ----------------------------------
@@ -265,9 +283,22 @@ iterate all builds of this project, following are same
 
 see `Build`_
 
+
 Folder
 ----------------------------------
 :class:`Folder <api4jenkins.job.Folder>` is organizational container in Jenkins, besides methods inheriented from :class:`Job <api4jenkins.job.Job>`, following methods are avaliable:
+
+create empty folder::
+
+    >>> xml = '''<?xml version='1.0' encoding='UTF-8'?>
+    ... <com.cloudbees.hudson.plugins.folder.Folder>
+    ...  <actions/>
+    ...  <description></description>
+    ...  <properties/>
+    ...  <folderViews/>
+    ...  <healthMetrics/>
+    ... </com.cloudbees.hudson.plugins.folder.Folder>'''
+    >>> j.create_job('folder name', xml)
 
 create new job under the folder:
 
@@ -513,6 +544,7 @@ cancel item
     >>> item.exists()
     False
 
+
 Plugin
 ------------
 Plugin manager is for managing plugins on Jenkins
@@ -659,6 +691,7 @@ generate/revoke api token
     >>> j.user.generate_token()
     ApiToken(name='Token created on 2020-12-18T09:27:44.209Z', uuid='3d6a2b51-26cd-4788-9395-c218de5e732a', value='11813a7e1abbf8fc78a5bcc82136dc6e28')
     >>> j.user.revoke_token('3d6a2b51-26cd-4788-9395-c218de5e732a')
+
 
 Item
 ----
