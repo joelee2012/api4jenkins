@@ -12,6 +12,7 @@ from api4jenkins.credential import Credential
 from api4jenkins import PluginsManager
 from api4jenkins import Queue
 from api4jenkins.node import Nodes
+from api4jenkins.view import AllView
 
 DATA = Path(__file__).with_name('tests_data')
 
@@ -35,6 +36,8 @@ def _api_json(self, tree='', depth=0):
         return load_json('queue/queue.json')
     elif isinstance(self, Nodes):
         return load_json('node/computer.json')
+    elif isinstance(self, AllView):
+        return load_json('view/allview.json')
     raise TypeError(f'unknow item: {type(self)}')
 
 
@@ -79,6 +82,10 @@ def workflowrun(jenkins):
 def credential(jenkins):
     return Credential(jenkins, f'{jenkins.url}credentials/store/system/domain/_/test-user/')
 
+
+@pytest.fixture(scope='module')
+def view(jenkins):
+    return AllView(jenkins, jenkins.url)
 
 @pytest.fixture
 def mock_resp():

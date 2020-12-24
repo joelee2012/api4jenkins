@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+import pytest
 from api4jenkins.build import WorkflowRun
 
 
@@ -26,3 +26,10 @@ class TestBuild:
 
     def test_get_job(self, workflowrun, workflow):
         assert workflow == workflowrun.get_job()
+
+    @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
+    def test_stop_term_kill(self, workflowrun, mock_resp, action):
+        req_url = f'{workflowrun.url}{action}'
+        mock_resp.add('POST', req_url)
+        getattr(workflowrun, action)()
+        assert mock_resp.calls[0].request.url == req_url

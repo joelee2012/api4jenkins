@@ -19,6 +19,8 @@ class Views(Item):
     def get(self, name):
         for item in self.api_json(tree='views[name,url]')['views']:
             if name == item['name']:
+                if item['name'] == 'all':
+                    item['url'] = item['url'] + 'view/all/'
                 return self._new_instance_by_item(__name__, item)
         return None
 
@@ -28,6 +30,8 @@ class Views(Item):
 
     def __iter__(self):
         for item in self.api_json(tree='views[name,url]')['views']:
+            if item['name'] == 'all':
+                item['url'] = item['url'] + 'view/all/'
             yield self._new_instance_by_item(__name__, item)
 
 

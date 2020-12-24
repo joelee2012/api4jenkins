@@ -143,3 +143,13 @@ class TestProject:
     def test_iter_builds(self, workflow):
         builds = list(workflow.iter_builds())
         assert len(builds) == 8
+
+    @pytest.mark.parametrize('action', ['enable', 'disable'])
+    def test_enable_disable(self, workflow, mock_resp, action):
+        req_url = f'{workflow.url}{action}'
+        mock_resp.add('POST', req_url)
+        getattr(workflow, action)()
+        assert mock_resp.calls[0].request.url == req_url
+
+    def test_building(self, workflow):
+        assert workflow.building is False

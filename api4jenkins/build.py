@@ -36,8 +36,8 @@ class Build(Item, DescriptionMix, DeletionMix):
     def kill(self):
         self.handle_req('POST', 'kill', allow_redirects=False)
 
-    def retrigger(self):
-        pass
+    # def retrigger(self):
+    #     pass
 
     def get_next_build(self):
         item = self.api_json(tree='nextBuild[url]')['nextBuild']

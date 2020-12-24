@@ -17,7 +17,6 @@ class System(Item, RunScriptMix):
     def cancel_quiet_down(self):
         self.handle_req('POST', 'cancelQuietDown', allow_redirects=False)
 
-    def show_credential(self):
-        pass
-
 # TODO add groovy to print credential
+    # def show_credential(self):
+    #     pass
