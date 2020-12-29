@@ -37,6 +37,7 @@ class TestFolder:
 
     def test_iter_jobs(self, folder):
         assert len(list(folder.iter())) == 4
+        assert len(list(folder)) == 4
 
     @pytest.mark.parametrize('headers', [{'X-Error': "A job already exists "
                                           "with the name 'Level2_Folder1'"},

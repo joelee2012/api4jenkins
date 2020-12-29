@@ -12,6 +12,6 @@ install:
 script:
   - tox
   - if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
-  - tox -e e2e
+  - tox -e integration
   - python setup.py sdist bdist_wheel
   - twine check dist/*
