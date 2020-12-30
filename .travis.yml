@@ -6,7 +6,7 @@ python:
   - "3.8"
 # command to install dependencies
 install:
-  - pip install --upgrade setuptools wheel twine
+  - pip install --upgrade keyring==21.4.0 setuptools wheel twine
   - pip install coveralls tox
 # command to run tests
 script:

@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to api4jenkins's documentation!
-====================================
+=========================================
 
 
 `api4jenkins <https://github.com/joelee2012/api4jenkins>`_ is an object oriented `Python <https://www.python.org/>`_ project that provides access to the `Jenkins <https://jenkins.io/>`_ `Remote access API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_ programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API.
@@ -28,7 +28,7 @@ It provides but not limits functionalities to control Job, Build, Node, View, Cr
 Quick start
 ----------------------------------------
 
-Here is an example to create job and start build, obtain build object the queue item, and pull progressive output until its completion, and obtain the build status.
+Here is an example to create and build job, get build object from queue item, and monitor progressive output until it's done.
 
 
     >>> from api4jenkins import Jenkins
@@ -81,7 +81,6 @@ Here is an example to create job and start build, obtain build object the queue 
   user/install.rst
   user/example.rst
   user/api.rst
-
 
 
 Indices and tables

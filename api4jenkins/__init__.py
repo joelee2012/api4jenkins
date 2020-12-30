@@ -160,11 +160,11 @@ class Jenkins(Item):
         if job:
             job.delete()
 
-    def build_job(self, full_name, parameters=None):
-        '''Build job with/without parameters
+    def build_job(self, full_name, **params):
+        '''Build job with/without params
 
         :param full_name: ``str``, full name of job
-        :param parameters: None or Dict, support delay and remote token
+        :param params: parameters for building, support delay and remote token
         :returns: ``QueueItem``
 
         Usage::
@@ -185,7 +185,7 @@ class Jenkins(Item):
         job = self.get_job(full_name)
         if job is None:
             raise ItemNotFoundError(f'No such job: {full_name}')
-        return job.build(parameters)
+        return job.build(**params)
 
     def _url2name(self, url):
         '''Covert job url to full name

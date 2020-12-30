@@ -116,7 +116,7 @@ class Item:
             # maybe not thread safe
             self.__class__._attrs = \
                 [snake(attr) for attr in data if isinstance(
-                    data[attr], (int, str, bool))]
+                    data[attr], (int, str, bool, type(None)))]
         return self._attrs
 
     def __eq__(self, other):
