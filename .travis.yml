@@ -4,6 +4,7 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 # command to install dependencies
 install:
   - pip install --upgrade keyring==21.4.0 setuptools wheel twine
@@ -12,6 +13,6 @@ install:
 script:
   - tox
   - if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
-  - tox -e e2e
+  - tox -e integration
   - python setup.py sdist bdist_wheel
   - twine check dist/*

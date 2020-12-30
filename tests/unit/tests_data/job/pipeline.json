@@ -29,7 +29,7 @@
   "displayNameOrNull": null,
   "fullDisplayName": "Level1_WorkflowJob",
   "fullName": "Level1_WorkflowJob",
-  "name": "DO-8651_test_on_board",
+  "name": "Level1_WorkflowJob",
   "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/",
   "buildable": true,
   "builds": [

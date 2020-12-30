@@ -1,14 +1,9 @@
 # encoding: utf-8
-
-from typing import NamedTuple
+from collections import namedtuple
 
 from .item import Item
 
-
-class ApiToken(NamedTuple):
-    name: str
-    uuid: str
-    value: str
+ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])
 
 
 class User(Item):
