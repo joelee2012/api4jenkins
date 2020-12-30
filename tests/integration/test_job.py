@@ -1,10 +1,7 @@
 # encoding: utf-8
-import time
 import pytest
-from api4jenkins.build import WorkflowRun
 from api4jenkins.exceptions import BadRequestError
-from api4jenkins.item import snake
-from api4jenkins.job import Folder, WorkflowJob
+from api4jenkins.job import Folder
 
 
 class TestFolder:
@@ -69,28 +66,18 @@ class TestProject:
 
     @pytest.mark.parametrize('params', [{}, {'delay': 2}],
                              ids=['without delay', 'with delay'])
-    def test_build_job_without_params(self, workflow, params):
-        item = workflow.build(params)
-        while not item.get_build():
-            time.sleep(1)
-        build = item.get_build()
-        output = []
-        for line in build.progressive_output():
-            output.append(str(line))
+    def test_build_without_params(self, workflow, params, retrive_build_and_output):
+        item = workflow.build(**params)
+        build, output = retrive_build_and_output(item)
         assert build == workflow.get_last_build()
         assert workflow.jenkins.version in ''.join(output)
 
     @pytest.mark.parametrize('params', [{'arg1': 'arg1_value'},
                                         {'arg1': 'arg1_value', 'delay': 2}],
                              ids=['without delay', 'with delay'])
-    def test_build_job_with_params(self, freejob, params):
-        item = freejob.build(params)
-        while not item.get_build():
-            time.sleep(1)
-        build = item.get_build()
-        output = []
-        for line in build.progressive_output():
-            output.append(str(line))
+    def test_build_with_params(self, freejob, params, retrive_build_and_output):
+        item = freejob.build(**params)
+        build, output = retrive_build_and_output(item)
         assert build == freejob.get_last_build()
         assert params['arg1'] in ''.join(output)
 
