@@ -95,7 +95,7 @@ class TestJenkins1:
         req_url = f'{jenkins.url}job/{name}/{entry}'
         mock_resp.add('POST', req_url, headers={
                       'Location': f'{jenkins.url}/queue/123'})
-        jenkins.build_job(name, params)
+        jenkins.build_job(name, **params)
         assert mock_resp.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('url_entry, name', [('job/job/', 'job'),

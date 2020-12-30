@@ -104,16 +104,22 @@ class TestFolder:
 
 class TestProject:
 
-    @pytest.mark.parametrize('params', [{}, {'arg1': 'ab'}],
-                             ids=['with params', 'without params'])
-    def test_build(self, workflow, mock_resp, params):
-        if params:
-            req_url = f'{workflow.url}buildWithParameters?arg1=ab'
-        else:
-            req_url = f'{workflow.url}build'
+    @pytest.mark.parametrize('name, entry, params',
+                             [('Level1_WorkflowJob1', 'build', {}),
+                              ('Level1_WorkflowJob1',
+                               'build?delay=2', {'delay': 2}),
+                              ('Level1_WorkflowJob1', 'build?delay=2&token=x',
+                               {'delay': 2, 'token': 'x'}),
+                              ('Level1_WorkflowJob1',
+                               'buildWithParameters?arg1=ab', {'arg1': 'ab'}),
+                              ('Level1_WorkflowJob1', 'buildWithParameters?arg1=ab&delay=2&token=x', {
+                               'arg1': 'ab', 'delay': 2, 'token': 'x'}),
+                              ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token'])
+    def test_build(self, workflow, mock_resp, name, entry, params):
+        req_url = f'{workflow.url}{entry}'
         mock_resp.add('POST', req_url, headers={
                       'Location': f'{workflow.jenkins.url}/queue/123'})
-        workflow.build(params)
+        workflow.build(**params)
         assert mock_resp.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('number, obj',
