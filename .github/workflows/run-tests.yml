@@ -24,10 +24,15 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
-    - name: Run tests
+    - name: Run unit tests
       run: |
         tox -e py
         if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
-        tox -e integration
+    - name: Run twine check
+      run: |
         python setup.py sdist bdist_wheel
         twine check dist/*
+    - name: Run integration tests
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        tox -e integration
