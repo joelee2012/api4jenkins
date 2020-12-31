@@ -26,8 +26,7 @@ jobs:
         pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
     - name: Run unit tests
       run: |
-        tox -e py
-        if [[ `python --version` =~ 3.7 ]]; then coveralls; fi
+        tox
     - name: Run twine check
       run: |
         python setup.py sdist bdist_wheel
