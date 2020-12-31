@@ -27,6 +27,12 @@ jobs:
     - name: Run pylint & codestyle & unit tests
       run: |
         tox
+    - name: Publish coverage report
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        coveralls
     - name: Run twine check
       run: |
         python setup.py sdist bdist_wheel
