@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import json
+import re
 
 from .exceptions import ItemNotFoundError
 from .item import Item
@@ -36,10 +37,7 @@ class Nodes(Item):
     def get(self, name):
         for item in self.api_json(tree='computer[displayName]')['computer']:
             if name == item['displayName']:
-                if name == 'master':
-                    item['url'] = f'{self.url}(master)/'
-                else:
-                    item['url'] = f"{self.url}{item['displayName']}/"
+                item['url'] = f"{self.url}{item['displayName']}/"
                 return self._new_instance_by_item(__name__, item)
         return None
 
@@ -52,10 +50,7 @@ class Nodes(Item):
 
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
-            if item['displayName'] == 'master':
-                item['url'] = f'{self.url}(master)/'
-            else:
-                item['url'] = f"{self.url}{item['displayName']}/"
+            item['url'] = f"{self.url}{item['displayName']}/"
             yield self._new_instance_by_item(__name__, item)
 
 
@@ -79,7 +74,8 @@ class Node(Item, ConfigrationMix, DeletionMix, RunScriptMix):
 
 
 class MasterComputer(Node):
-    pass
+    def __init__(self, jenkins, url):
+        super().__init__(jenkins, re.sub(r'/master/$', '/(master)/', url))
 
 
 class SlaveComputer(Node):
