@@ -1,7 +1,7 @@
 Release History
 ===============
 
-1.1 (2020-12-??)
+1.1 (2020-12-31)
 -----------------
 - Rewrite documentation and add more examples
 - `Jenkins.build_job()` and `Project.build()` accept key word argments instead of dict
