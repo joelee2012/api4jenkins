@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from .item import Item
-from .mix import ConfigrationMix, DeletionMix
+from .mix import ConfigrationMix, DeletionMix, DescriptionMix
 
 
 class Views(Item):
@@ -31,7 +31,7 @@ class Views(Item):
             yield self._new_instance_by_item(__name__, item)
 
 
-class View(Item, ConfigrationMix, DeletionMix):
+class View(Item, ConfigrationMix, DescriptionMix, DeletionMix):
 
     def get_job(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
@@ -51,7 +51,8 @@ class View(Item, ConfigrationMix, DeletionMix):
 
 
 class AllView(View):
-    pass
+    def __init__(self, jenkins, url):
+        super().__init__(jenkins, url + 'view/all/')
 
 
 class MyView(View):

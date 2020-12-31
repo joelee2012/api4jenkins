@@ -64,8 +64,22 @@ class TestJenkins1:
         assert mock_resp.calls[0].response.status_code == 200
         assert mock_resp.calls[0].request.url == req_url
 
-    def test_copy_job(self, jenkins, mock_resp):
-        pass
+    @pytest.mark.parametrize('headers', [{'X-Error': "A job already exists "
+                                          "with the name 'Level2_Folder1'"},
+                                         {'X-Error': 'No such job: xxxx'}],
+                             ids=['job exist', 'no source job'])
+    def test_copy_fail(self, jenkins, mock_resp, headers):
+        mock_resp.add('POST', f'{jenkins.url}createItem',
+                      headers=headers, status=400)
+        with pytest.raises(BadRequestError):
+            jenkins.copy_job('not exist', 'Level2_Folder1')
+
+    def test_copy_succ(self, jenkins, mock_resp):
+        req_url = f'{jenkins.url}createItem?name=new_job&mode=copy&from=src_job'
+        mock_resp.add('POST', req_url)
+        jenkins.copy_job('src_job', 'new_job')
+        assert mock_resp.calls[0].response.status_code == 200
+        assert mock_resp.calls[0].request.url == req_url
 
     def test_delete_job(self, jenkins, mock_resp):
         req_url = f'{jenkins.url}job/Level1_Folder1/doDelete'
