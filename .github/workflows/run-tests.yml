@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
-    - name: Run unit tests
+    - name: Run pylint & codestyle & unit tests
       run: |
         tox
     - name: Run twine check
