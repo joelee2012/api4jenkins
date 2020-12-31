@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/joelee2012/api4jenkins.svg?branch=master)](https://travis-ci.com/joelee2012/api4jenkins)
+![Tests](https://github.com/joelee2012/api4jenkins/workflows/Tests/badge.svg?branch=master)
+![CodeQL](https://github.com/joelee2012/api4jenkins/workflows/CodeQL/badge.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/joelee2012/api4jenkins/badge.svg?branch=master)](https://coveralls.io/github/joelee2012/api4jenkins?branch=master)
 
 # api4jenkins

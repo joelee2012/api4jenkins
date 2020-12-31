@@ -1,0 +1,43 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        include:
+          - python-version: pypy3
+            os: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
+    - name: Run pylint & codestyle & unit tests
+      run: |
+        tox
+    - name: Publish coverage report
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        coveralls
+    - name: Run twine check
+      run: |
+        python setup.py sdist bdist_wheel
+        twine check dist/*
+    - name: Run integration tests
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        tox -e integration
