@@ -3,6 +3,13 @@ from collections import namedtuple
 
 from .item import Item
 
+
+class Users(Item):
+    def __iter__(self):
+        for user in self.api_json()['users']:
+            yield User(self.jenkins, user['user']['absoluteUrl'])
+
+
 ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])
 
 

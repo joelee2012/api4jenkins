@@ -1,19 +1,15 @@
 ![Tests](https://github.com/joelee2012/api4jenkins/workflows/Tests/badge.svg?branch=master)
 ![CodeQL](https://github.com/joelee2012/api4jenkins/workflows/CodeQL/badge.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/joelee2012/api4jenkins/badge.svg?branch=master)](https://coveralls.io/github/joelee2012/api4jenkins?branch=master)
+![PyPI](https://img.shields.io/pypi/v/api4jenkins)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/api4jenkins)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/api4jenkins)
+![GitHub](https://img.shields.io/github/license/joelee2012/api4jenkins)
 
-# api4jenkins
+# Api4jenkins
 
-[api4jenkins](https://github.com/joelee2012/api4jenkins) is an object oriented [Python](https://www.python.org/) project that provides access to the [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API. It provides but not limits functionalities to control Job, Build, Credential, View, Queue, Plugins, Node, and System operation:
-- get/delete/create/move/rename/copy/build/enable/disable job or folder, iterate children jobs with depth, folder based views/credentials functionalities
-- get/iterate builds of project, stop/term/kill build, get progressive console output.
-- get/delete/create/iterate views for jenkins or folder. add/remove jobs to/from view.
-- get/delete/create/iterate credentials for system or folder.
-- get/delete/create/iterate nodes, run groovy script on node.
-- get/cancel/iterate queue item, get job/build from queue item.
-- restart/safe restart/quiet down/cancel quiet down/run groovy script for master
-- get item status(int, bool, str) by accessing attribute of python object.
-- install/uninstall/iterate plugin, check installation status, change update site and set proxy
+[Api4jenkins](https://github.com/joelee2012/api4jenkins) is a Jenkins REST API client for [Python](https://www.python.org/) access to [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It provides full functionalities to control Job, Build, Credential, View, Queue, Plugins, Node, and System operation.
+
 
 
 # Installation
@@ -68,4 +64,5 @@ False
 'SUCCESS'
   ```
 
-# User Guide available on [Documentation](https://api4jenkins.readthedocs.io/en/latest/)
+# Documentation
+User Guide is available on [Documentation](https://api4jenkins.readthedocs.io/en/latest/)

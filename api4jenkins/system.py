@@ -1,21 +1,24 @@
 # encoding: utf-8
-from .item import Item
-from .mix import RunScriptMix
+from functools import partial
+from .item import Item, snake
+from .mix import RunScriptMixIn
 
 
-class System(Item, RunScriptMix):
+class System(Item, RunScriptMixIn):
 
-    def restart(self):
-        self.handle_req('POST', 'restart', allow_redirects=False)
+    def __init__(self, jenkins, url):
+        '''
+        see: https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance-
+        '''
+        super().__init__(jenkins, url)
 
-    def safe_restart(self):
-        self.handle_req('POST', 'safeRestart', allow_redirects=False)
+        def _post(entry):
+            return self.handle_req('POST', entry, allow_redirects=False)
 
-    def quiet_down(self):
-        self.handle_req('POST', 'quietDown', allow_redirects=False)
+        for entry in ['restart', 'safeRestart', 'exit',
+                      'safeExit', 'quietDown', 'cancelQuietDown']:
+            setattr(self, snake(entry), partial(_post, entry))
 
-    def cancel_quiet_down(self):
-        self.handle_req('POST', 'cancelQuietDown', allow_redirects=False)
 
 # TODO add groovy to print credential
     # def show_credential(self):

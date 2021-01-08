@@ -335,6 +335,13 @@ iterate jobs in folder, following are same, set depth for function `Folder.iter(
 
 you can also manage folder based `View`_, `Credential`_
 
+WorkflowMultiBranchProject
+--------------------------
+WorkflowMultiBranchProject is a kind of `Folder`. it has few dedicated methods, assume you have one WorkflowMultiBranchProject object `branch_project`
+
+    >>> branch_project.scan()
+    >>> for line in branch_project.get_scan_log():
+    ...     print(line)
 
 Build
 -----------------------------------
@@ -392,6 +399,23 @@ delete build
     >>> build.exists()
     False
 
+WorkflowRun
+------------
+WorkflowRun is kind of `Build`, more detail to see: https://www.jenkins.io/doc/book/pipeline/
+
+it provide an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as :
+
+    >>> while not build.pending_input:
+    >>>     time.sleep(1)
+    >>> build.pending_input.submit(arg1='xyz', arg2=time.asctime())
+
+or if without parameters
+
+    >>> build.pending_input.submit()
+
+and abort input
+
+    >>> build.pending_input.abort()
 
 Credential
 -------------

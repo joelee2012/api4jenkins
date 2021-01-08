@@ -4,10 +4,11 @@ import re
 import time
 
 from .item import Item
-from .mix import DescriptionMix, DeletionMix
+from .mix import DescriptionMixIn, DeletionMixIn
+from .input import PendingInputAction
 
 
-class Build(Item, DescriptionMix, DeletionMix):
+class Build(Item, DescriptionMixIn, DeletionMixIn):
 
     def console_text(self, stream=False):
         with self.handle_req('GET', 'consoleText', stream=stream) as resp:
@@ -36,9 +37,6 @@ class Build(Item, DescriptionMix, DeletionMix):
     def kill(self):
         self.handle_req('POST', 'kill', allow_redirects=False)
 
-    # def retrigger(self):
-    #     pass
-
     def get_next_build(self):
         item = self.api_json(tree='nextBuild[url]')['nextBuild']
         if item:
@@ -57,7 +55,17 @@ class Build(Item, DescriptionMix, DeletionMix):
 
 
 class WorkflowRun(Build):
-    pass
+
+    @property
+    def pending_input(self):
+        '''process pending input step,
+        see: https://github.com/jenkinsci/pipeline-stage-view-plugin/tree/master/rest-api
+        '''
+        data = self.handle_req('GET', 'wfapi/describe').json()
+        if not data['_links'].get('pendingInputActions'):
+            return None
+        action = self.handle_req('GET', 'wfapi/pendingInputActions').json()[0]
+        return PendingInputAction(self.jenkins, action)
 
 
 class FreeStyleBuild(Build):

@@ -1,17 +1,19 @@
 # encoding: utf-8
+import json
+from pathlib import PurePosixPath
+
 from _ctypes import ArgumentError
 from _functools import partial
-from pathlib import PurePosixPath
-import json
 
 from .credential import Credentials
-from .item import snake, Item, append_slash
-from .mix import ConfigrationMix, DescriptionMix, DeletionMix
+from .item import Item, append_slash, snake
+from .mix import (ConfigurationMixIn, DeletionMixIn, DescriptionMixIn,
+                  EnableMixIn)
 from .queue import QueueItem
 from .view import Views
 
 
-class Job(Item, ConfigrationMix, DescriptionMix, DeletionMix):
+class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
     def move(self, path):
         path = path.strip('/')
@@ -35,8 +37,7 @@ class Job(Item, ConfigrationMix, DescriptionMix, DeletionMix):
         path = PurePosixPath(self.full_name)
         if path.parent.name == '':
             return self.jenkins
-        return Folder(self.jenkins,
-                      self.jenkins._name2url(str(path.parent)))
+        return self.jenkins.get_job(str(path.parent))
 
 
 class Folder(Job):
@@ -88,11 +89,18 @@ class Folder(Job):
         yield from self.iter()
 
 
-class WorkflowMultiBranchProject(Folder):
-    pass
+class WorkflowMultiBranchProject(Folder, EnableMixIn):
+
+    def scan(self, delay=0):
+        self.handle_req('POST', 'build', params={'delay':   delay})
+
+    def get_scan_log(self, stream=False):
+        with self.handle_req('GET', 'indexing/consoleText', stream=stream) as resp:
+            for line in resp.iter_lines():
+                yield line
 
 
-class Project(Job):
+class Project(Job, EnableMixIn):
 
     def __init__(self, jenkins, url):
         super().__init__(jenkins, url)
@@ -126,12 +134,6 @@ class Project(Job):
 
     def iter_builds(self):
         yield from self
-
-    def enable(self):
-        return self.handle_req('POST', 'enable')
-
-    def disable(self):
-        return self.handle_req('POST', 'disable')
 
     def set_next_build_number(self, number):
         self.handle_req('POST', 'nextbuildnumber/submit',

@@ -113,7 +113,6 @@ class Item:
     def attrs(self):
         if not self._attrs:
             data = self.api_json()
-            # maybe not thread safe
             self.__class__._attrs = \
                 [snake(attr) for attr in data if isinstance(
                     data[attr], (int, str, bool, type(None)))]
