@@ -2,7 +2,6 @@
 import json
 from pathlib import PurePosixPath
 
-from _ctypes import ArgumentError
 from _functools import partial
 
 from .credential import Credentials
@@ -92,7 +91,7 @@ class Folder(Job):
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
 
     def scan(self, delay=0):
-        self.handle_req('POST', 'build', params={'delay':   delay})
+        self.handle_req('POST', 'build', params={'delay': delay})
 
     def get_scan_log(self, stream=False):
         with self.handle_req('GET', 'indexing/consoleText', stream=stream) as resp:

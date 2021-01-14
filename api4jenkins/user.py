@@ -9,6 +9,11 @@ class Users(Item):
         for user in self.api_json()['users']:
             yield User(self.jenkins, user['user']['absoluteUrl'])
 
+    def get(self, id, full_name):
+        for user in self.api_json()['users']:
+            if id == user['user']['id'] or full_name == user['user']['fullName']:
+                return User(self.jenkins, user['user']['absoluteUrl'])
+
 
 ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])
 

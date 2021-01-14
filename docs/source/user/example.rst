@@ -403,7 +403,7 @@ WorkflowRun
 ------------
 WorkflowRun is kind of `Build`, more detail to see: https://www.jenkins.io/doc/book/pipeline/
 
-it provide an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as :
+it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as :
 
     >>> while not build.pending_input:
     >>>     time.sleep(1)
@@ -613,6 +613,37 @@ uninstall plugin
     >>> plugin.exists()
     False
 
+fully example to install plugins::
+
+    #!python
+    URL = 'http://localhost:8080'
+    USER = 'admin'
+    PASSWORD = '1234'
+
+    def install_plugins(*names):
+        import re
+        import time
+        import os
+        from api4jenkins import Jenkins
+        jenkins = Jenkins(URL, auth=(USER, PASSWORD))
+        if os.getenv('HTTPS_PROXY'):
+            matcher = re.match(r'(?P<ip>.*):(?P<port>\d+)$', os.getenv('HTTPS_PROXY'))
+            jenkins.plugins.set_proxy(matcher['ip'], port=matcher['port'])
+        jenkins.plugins.check_updates_server()
+        jenkins.plugins.install(*names, block=True)
+        if jenkins.plugins.restart_required:
+            jenkins.system.safe_restart()
+            while not jenkins.exists():
+                time.sleep(2)
+        for name in names:
+            if not jenkins.plugins.get(name):
+                raise RuntimeError(f'{name} was not installed successful')
+
+    if __name__ == '__main__':
+        import logging
+        import sys
+        logging.basicConfig(level=logging.DEBUG)
+        install_plugins(*sys.argv[1:])
 
 System
 -----------
@@ -624,6 +655,8 @@ restart/safe restart/quiet_down/cancel_quiet_down, see `how to start/stop/restar
     >>> j.system.safe_restart()
     >>> j.system.quiet_down()
     >>> j.system.cancel_quiet_down()
+    >>> j.system.exit()
+    >>> j.system.safe_exit()
 
 run groovy script
 

@@ -128,4 +128,4 @@ class Item:
         if name in self.attrs:
             attr = camel(name)
             return self.api_json(tree=attr)[attr]
-        super().__getattribute__(name)
+        return super().__getattribute__(name)

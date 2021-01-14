@@ -282,8 +282,9 @@ class Jenkins(Item):
         return Users(self, f'{self.url}asynchPeople/')
 
     @property
-    def whoami(self):
+    def me(self):
         return self.user
+
 
 def _patch_to(module, cls, func=None):
     _module = import_module(module)
