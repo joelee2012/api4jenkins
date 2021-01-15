@@ -61,6 +61,35 @@ class TestFolder:
         folder.delete()
         assert folder.exists() is False
 
+    def test_parent(self, folder, jenkins):
+        job = folder.get('Level2_Folder1')
+        assert folder == job.parent
+        assert jenkins == folder.parent
+
+    def test_credential(self, folder, credential_xml):
+        assert len(list(folder.credentials)) == 0
+        folder.credentials.create(credential_xml)
+        assert len(list(folder.credentials)) == 1
+        c = folder.credentials.get('user-id')
+        assert c.id == 'user-id'
+        c.delete()
+        assert c.exists() == False
+
+    def test_view(self, folder, view_xml):
+        assert len(list(folder.views)) == 1
+        folder.views.create('test-view', view_xml)
+        assert len(list(folder.views)) == 2
+        v = folder.views.get('test-view')
+        assert v.name == 'test-view'
+        assert len(list(v)) == 0
+        v.include('Level2_Folder1')
+        assert len(list(v)) == 1
+        job = v.get_job('Level2_Folder1')
+        assert job.name == 'Level2_Folder1'
+        v.exclude('Level2_Folder1')
+        assert len(list(v)) == 0
+        v.delete()
+        assert v.exists() == False
 
 class TestProject:
 

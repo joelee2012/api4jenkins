@@ -65,4 +65,4 @@ False
   ```
 
 # Documentation
-User Guide is available on [Documentation](https://api4jenkins.readthedocs.io/en/latest/)
+API Reference and User Guide is available on [Read the Docs](https://api4jenkins.readthedocs.io/)

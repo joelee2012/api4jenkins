@@ -1,6 +1,7 @@
 # encoding: utf-8
 import pytest
 from api4jenkins.build import WorkflowRun
+from api4jenkins.input import PendingInputAction
 
 
 
@@ -33,3 +34,15 @@ class TestBuild:
         mock_resp.add('POST', req_url)
         getattr(workflowrun, action)()
         assert mock_resp.calls[0].request.url == req_url
+
+
+class TestWorkflowRun:
+
+    @pytest.mark.parametrize('data, obj', [({"_links": {}}, type(None)),
+                                           ({"_links": {"pendingInputActions": 'x'}}, PendingInputAction)])
+    def test_pending_input(self, workflowrun, mock_resp, data, obj):
+        mock_resp.add('GET', f'{workflowrun.url}wfapi/describe', json=data)
+        if data['_links']:
+            mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
+                          json=[{'abortUrl': 'x'}])
+        assert isinstance(workflowrun.pending_input, obj)

@@ -32,12 +32,12 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        coveralls
+        coveralls --service=github
     - name: Run twine check
       run: |
         python setup.py sdist bdist_wheel
         twine check dist/*
     - name: Run integration tests
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
       run: |
         tox -e integration

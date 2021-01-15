@@ -5,12 +5,15 @@ from .item import Item
 
 
 class Users(Item):
+
+    tree = 'users[user[id,absoluteUrl,fullName]]'
+
     def __iter__(self):
-        for user in self.api_json()['users']:
+        for user in self.api_json(depth=2, tree=self.tree)['users']:
             yield User(self.jenkins, user['user']['absoluteUrl'])
 
-    def get(self, id, full_name):
-        for user in self.api_json()['users']:
+    def get(self, id, full_name=None):
+        for user in self.api_json(depth=2, tree=self.tree)['users']:
             if id == user['user']['id'] or full_name == user['user']['fullName']:
                 return User(self.jenkins, user['user']['absoluteUrl'])
 

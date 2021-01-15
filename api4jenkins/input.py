@@ -9,7 +9,7 @@ class PendingInputAction(Item):
         ''' see https://github.com/jenkinsci/pipeline-stage-view-plugin/tree/master/rest-api
         '''
         super().__init__(
-            jenkins, f"{jenkins.url}{raw['redirectApprovalUrl']}{raw['id']}/")
+            jenkins, f"{jenkins.url}{raw['abortUrl'].rstrip('abort')}")
         self.raw = raw
         self.raw['_class'] = 'PendingInputAction'
 
@@ -17,7 +17,7 @@ class PendingInputAction(Item):
         return self.raw
 
     def abort(self):
-        self._item.handle_req('POST', 'abort')
+        self.handle_req('POST', 'abort')
 
     def submit(self, **params):
         if params:

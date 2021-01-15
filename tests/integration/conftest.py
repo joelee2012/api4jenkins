@@ -34,6 +34,15 @@ def workflow_xml():
     return load_xml('pipeline.xml')
 
 
+@pytest.fixture(scope='module')
+def credential_xml():
+    return load_xml('credential.xml')
+
+
+@pytest.fixture(scope='module')
+def view_xml():
+    return load_xml('view.xml')
+
 @pytest.fixture
 def freejob(jenkins, freejob_xml):
     jenkins.create_job('Level1_FreeJob1', freejob_xml)

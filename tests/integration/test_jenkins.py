@@ -63,3 +63,28 @@ class TestJenkins:
     def test_iter_jobs(self, jenkins):
         assert len(list(jenkins.iter_jobs())) == 1
         assert len(list(jenkins.iter_jobs(2))) == 2
+
+    def test_credential(self, jenkins, credential_xml):
+        assert len(list(jenkins.credentials)) == 0
+        jenkins.credentials.create(credential_xml)
+        assert len(list(jenkins.credentials)) == 1
+        c = jenkins.credentials.get('user-id')
+        assert c.id == 'user-id'
+        c.delete()
+        assert c.exists() == False
+
+    def test_view(self, jenkins, view_xml):
+        assert len(list(jenkins.views)) == 1
+        jenkins.views.create('test-view', view_xml)
+        assert len(list(jenkins.views)) == 2
+        v = jenkins.views.get('test-view')
+        assert v.name == 'test-view'
+        assert len(list(v)) == 0
+        v.include('Level1_Folder1')
+        assert len(list(v)) == 1
+        job = v.get_job('Level1_Folder1')
+        assert job.name == 'Level1_Folder1'
+        v.exclude('Level1_Folder1')
+        assert len(list(v)) == 0
+        v.delete()
+        assert v.exists() == False
