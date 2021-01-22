@@ -66,6 +66,7 @@ class TestFolder:
         assert folder == job.parent
         assert jenkins == folder.parent
 
+    @pytest.mark.xfail
     def test_credential(self, folder, credential_xml):
         assert len(list(folder.credentials)) == 0
         folder.credentials.create(credential_xml)

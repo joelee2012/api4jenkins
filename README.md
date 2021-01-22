@@ -4,7 +4,9 @@
 ![PyPI](https://img.shields.io/pypi/v/api4jenkins)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/api4jenkins)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/api4jenkins)
+[![Documentation Status](https://readthedocs.org/projects/api4jenkins/badge/?version=latest)](https://api4jenkins.readthedocs.io/en/latest/?badge=latest)
 ![GitHub](https://img.shields.io/github/license/joelee2012/api4jenkins)
+
 
 # Api4jenkins
 

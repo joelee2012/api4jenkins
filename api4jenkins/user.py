@@ -2,6 +2,7 @@
 from collections import namedtuple
 
 from .item import Item
+from .mix import DeletionMixIn, DescriptionMixIn
 
 
 class Users(Item):
@@ -12,7 +13,7 @@ class Users(Item):
         for user in self.api_json(depth=2, tree=self.tree)['users']:
             yield User(self.jenkins, user['user']['absoluteUrl'])
 
-    def get(self, id, full_name=None):
+    def get(self, id=None, full_name=None):
         for user in self.api_json(depth=2, tree=self.tree)['users']:
             if id == user['user']['id'] or full_name == user['user']['fullName']:
                 return User(self.jenkins, user['user']['absoluteUrl'])
@@ -21,7 +22,7 @@ class Users(Item):
 ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])
 
 
-class User(Item):
+class User(Item, DeletionMixIn, DescriptionMixIn):
 
     def generate_token(self, name=''):
         entry = 'descriptorByName/jenkins.security.' \

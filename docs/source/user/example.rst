@@ -613,7 +613,7 @@ uninstall plugin
     >>> plugin.exists()
     False
 
-fully example to install plugins::
+fully example to install plugins, save following code as install_plugins.py::
 
     #!python
     URL = 'http://localhost:8080'
@@ -644,6 +644,12 @@ fully example to install plugins::
         import sys
         logging.basicConfig(level=logging.DEBUG)
         install_plugins(*sys.argv[1:])
+
+
+call install_plugins.py to install plugin::
+
+    python3 install_plugins.py plugin1 plugin2
+
 
 System
 -----------
@@ -741,13 +747,34 @@ run groovy script on node
 
 User
 ------
-User can be used to manage api token for current user
+you can manage api token for current user, and set description or delete user
 
-generate/revoke api token
+generate/revoke api token for current user, `Jenkins.me` is alias of `Jenkins.user`::
 
+    # j.me.generate_token()
     >>> j.user.generate_token()
     ApiToken(name='Token created on 2020-12-18T09:27:44.209Z', uuid='3d6a2b51-26cd-4788-9395-c218de5e732a', value='11813a7e1abbf8fc78a5bcc82136dc6e28')
     >>> j.user.revoke_token('3d6a2b51-26cd-4788-9395-c218de5e732a')
+
+
+iterate all known “users”, including login identities which the current security realm can enumerate, as well as people mentioned in commit messages in recorded changelogs.
+
+
+    >>> for user in j.users:
+    ...     print(user)
+
+get user by id or full name ::
+
+    >>> user1 = j.users.get(id='admin')
+    >>> user2 = j.user.get(full_name='admin')
+
+set description for user::
+
+    >>> user1.set_description("i'm admin")
+
+delete user:
+
+    >>> user1.delete()
 
 
 Item
