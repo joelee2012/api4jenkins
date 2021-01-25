@@ -29,13 +29,13 @@ class Build(Item, DescriptionMixIn, DeletionMixIn):
             start = resp.headers['X-Text-Size']
 
     def stop(self):
-        self.handle_req('POST', 'stop', allow_redirects=False)
+        return self.handle_req('POST', 'stop', allow_redirects=False)
 
     def term(self):
-        self.handle_req('POST', 'term', allow_redirects=False)
+        return self.handle_req('POST', 'term', allow_redirects=False)
 
     def kill(self):
-        self.handle_req('POST', 'kill', allow_redirects=False)
+        return self.handle_req('POST', 'kill', allow_redirects=False)
 
     def get_next_build(self):
         item = self.api_json(tree='nextBuild[url]')['nextBuild']
@@ -50,17 +50,15 @@ class Build(Item, DescriptionMixIn, DeletionMixIn):
         return None
 
     def get_job(self):
+        '''get job of this build'''
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return self.jenkins.get_job(job_name)
 
 
 class WorkflowRun(Build):
 
-    @property
-    def pending_input(self):
-        '''process pending input step,
-        see: https://github.com/jenkinsci/pipeline-stage-view-plugin/tree/master/rest-api
-        '''
+    def get_pending_input(self):
+        '''get current pending input step'''
         data = self.handle_req('GET', 'wfapi/describe').json()
         if not data['_links'].get('pendingInputActions'):
             return None

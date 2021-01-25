@@ -40,9 +40,9 @@ class TestWorkflowRun:
 
     @pytest.mark.parametrize('data, obj', [({"_links": {}}, type(None)),
                                            ({"_links": {"pendingInputActions": 'x'}}, PendingInputAction)])
-    def test_pending_input(self, workflowrun, mock_resp, data, obj):
+    def test_get_pending_input(self, workflowrun, mock_resp, data, obj):
         mock_resp.add('GET', f'{workflowrun.url}wfapi/describe', json=data)
         if data['_links']:
             mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
                           json=[{'abortUrl': 'x'}])
-        assert isinstance(workflowrun.pending_input, obj)
+        assert isinstance(workflowrun.get_pending_input(), obj)

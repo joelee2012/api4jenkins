@@ -31,7 +31,22 @@ class TestPendingInput:
         pending_input.abort()
         assert mock_resp.calls[0].request.url == f'{pending_input.url}abort'
 
-    @pytest.mark.parametrize('entry, params', [('proceedEmpty', {}), ('submit', {'arg1': 'v'})])
-    def test_submit(self, pending_input, mock_resp, entry, params):
-        mock_resp.add('POST', f'{pending_input.url}{entry}', json=params)
-        pending_input.submit(**params)
+    def test_submit_empty(self, pending_input, mock_resp):
+        mock_resp.add('POST', f'{pending_input.url}proceedEmpty')
+        pending_input.submit()
+        assert mock_resp.calls[0].request.url == f'{pending_input.url}proceedEmpty'
+
+    def test_submit_arg(self, pending_input, mock_resp):
+        pending_input.raw['inputs'] = [{'name': 'arg1'}]
+        mock_resp.add('POST', f'{pending_input.url}submit', json={'arg1': 'x'})
+        pending_input.submit(arg1='x')
+        assert mock_resp.calls[0].request.url == f'{pending_input.url}submit'
+
+    def test_submit_empty_with_arg(self, pending_input):
+        with pytest.raises(TypeError):
+            pending_input.submit(arg1='x')
+
+    def test_submit_wrong_arg(self, pending_input):
+        pending_input.raw['inputs'] = {'name': 'arg1'}
+        with pytest.raises(TypeError):
+            pending_input.submit(arg2='x')

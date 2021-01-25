@@ -21,12 +21,14 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
         resp = self.handle_req('POST', 'move/move',
                                data=params, allow_redirects=False)
         self.url = resp.headers['Location']
+        return resp
 
     def rename(self, name):
         resp = self.handle_req('POST', 'confirmRename',
                                params={'newName': name},
                                allow_redirects=False)
         self.url = append_slash(resp.headers['Location'])
+        return resp
 
     def duplicate(self, path):
         self.jenkins.create_job(path, self.configure())
@@ -42,8 +44,8 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 class Folder(Job):
 
     def create(self, name, xml):
-        self.handle_req('POST', 'createItem', params={'name': name},
-                        headers=self.headers, data=xml)
+        return self.handle_req('POST', 'createItem', params={'name': name},
+                               headers=self.headers, data=xml)
 
     def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
@@ -69,11 +71,11 @@ class Folder(Job):
 
     def copy(self, src, dest):
         params = {'name': dest, 'mode': 'copy', 'from': src}
-        self.handle_req('POST', 'createItem', params=params,
-                        allow_redirects=False)
+        return self.handle_req('POST', 'createItem', params=params,
+                               allow_redirects=False)
 
     def reload(self):
-        self.handle_req('POST', 'reload')
+        return self.handle_req('POST', 'reload')
 
     @property
     def views(self):
@@ -91,7 +93,7 @@ class Folder(Job):
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
 
     def scan(self, delay=0):
-        self.handle_req('POST', 'build', params={'delay': delay})
+        return self.handle_req('POST', 'build', params={'delay': delay})
 
     def get_scan_log(self, stream=False):
         with self.handle_req('GET', 'indexing/consoleText', stream=stream) as resp:

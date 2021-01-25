@@ -405,17 +405,17 @@ WorkflowRun is kind of `Build`, more detail to see: https://www.jenkins.io/doc/b
 
 it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as :
 
-    >>> while not build.pending_input:
+    >>> while not build.get_pending_input():
     >>>     time.sleep(1)
-    >>> build.pending_input.submit(arg1='xyz', arg2=time.asctime())
+    >>> build.get_pending_input().submit(arg1='xyz', arg2=time.asctime())
 
 or if without parameters
 
-    >>> build.pending_input.submit()
+    >>> build.get_pending_input().submit()
 
 and abort input
 
-    >>> build.pending_input.abort()
+    >>> build.get_pending_input().abort()
 
 Credential
 -------------

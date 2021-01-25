@@ -18,6 +18,11 @@ API reference
    :undoc-members:
    :inherited-members:
 
+.. automodule:: api4jenkins.input
+   :members:
+   :undoc-members:
+   :inherited-members:
+
 .. automodule:: api4jenkins.queue
    :members:
    :undoc-members:
