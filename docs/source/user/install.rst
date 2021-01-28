@@ -23,6 +23,7 @@ Prerequisites
 ------------------
 Install following plugins for Jenkins to enable full functionality for api4jenkins:
     - `folder <https://plugins.jenkins.io/cloudbees-folder/>`_
+    - `pipeline <https://plugins.jenkins.io/workflow-aggregator/>`_
     - `credentials <https://plugins.jenkins.io/credentials/>`_
     - `next-build-number <https://plugins.jenkins.io/next-build-number/>`_
 

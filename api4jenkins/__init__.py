@@ -18,7 +18,7 @@ from .plugin import PluginsManager
 from .queue import Queue
 from .requester import Requester
 from .system import System
-from .user import User
+from .user import User, Users
 from .view import Views
 
 
@@ -276,6 +276,14 @@ class Jenkins(Item):
         '''An object for managing build queue.
         see :class:`Queue <api4jenkins.queue.Queue>`'''
         return Queue(self, f'{self.url}queue/')
+
+    @property
+    def users(self):
+        return Users(self, f'{self.url}asynchPeople/')
+
+    @property
+    def me(self):
+        return self.user
 
 
 def _patch_to(module, cls, func=None):

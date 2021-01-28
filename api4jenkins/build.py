@@ -4,10 +4,11 @@ import re
 import time
 
 from .item import Item
-from .mix import DescriptionMix, DeletionMix
+from .mix import DescriptionMixIn, DeletionMixIn
+from .input import PendingInputAction
 
 
-class Build(Item, DescriptionMix, DeletionMix):
+class Build(Item, DescriptionMixIn, DeletionMixIn):
 
     def console_text(self, stream=False):
         with self.handle_req('GET', 'consoleText', stream=stream) as resp:
@@ -28,16 +29,13 @@ class Build(Item, DescriptionMix, DeletionMix):
             start = resp.headers['X-Text-Size']
 
     def stop(self):
-        self.handle_req('POST', 'stop', allow_redirects=False)
+        return self.handle_req('POST', 'stop', allow_redirects=False)
 
     def term(self):
-        self.handle_req('POST', 'term', allow_redirects=False)
+        return self.handle_req('POST', 'term', allow_redirects=False)
 
     def kill(self):
-        self.handle_req('POST', 'kill', allow_redirects=False)
-
-    # def retrigger(self):
-    #     pass
+        return self.handle_req('POST', 'kill', allow_redirects=False)
 
     def get_next_build(self):
         item = self.api_json(tree='nextBuild[url]')['nextBuild']
@@ -52,12 +50,20 @@ class Build(Item, DescriptionMix, DeletionMix):
         return None
 
     def get_job(self):
+        '''get job of this build'''
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return self.jenkins.get_job(job_name)
 
 
 class WorkflowRun(Build):
-    pass
+
+    def get_pending_input(self):
+        '''get current pending input step'''
+        data = self.handle_req('GET', 'wfapi/describe').json()
+        if not data['_links'].get('pendingInputActions'):
+            return None
+        action = self.handle_req('GET', 'wfapi/pendingInputActions').json()[0]
+        return PendingInputAction(self.jenkins, action)
 
 
 class FreeStyleBuild(Build):

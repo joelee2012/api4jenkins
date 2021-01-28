@@ -1,5 +1,11 @@
 Release History
 ===============
+1.2 (2020-01-31)
+----------------
+- Support to enable, disable, scan, get_scan_log for `WorkflowMultiBranchProject`
+- Call `Jenkins.get_job` for getting parent of `Job`
+- Support process input step for WorkflowRun,  see `WorkflowRun.get_pending_input()`
+- Support user management
 
 1.1 (2020-12-31)
 -----------------

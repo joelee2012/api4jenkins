@@ -3,13 +3,13 @@
 # pylint: disable=no-member
 
 
-class DeletionMix:
+class DeletionMixIn:
 
     def delete(self):
         self.handle_req('POST', 'doDelete', allow_redirects=False)
 
 
-class ConfigrationMix:
+class ConfigurationMixIn:
 
     def configure(self, xml=None):
         if not xml:
@@ -18,14 +18,23 @@ class ConfigrationMix:
                                headers=self.headers, data=xml)
 
 
-class DescriptionMix:
+class DescriptionMixIn:
 
     def set_description(self, text):
         self.handle_req('POST', 'submitDescription',
                         params={'description': text})
 
 
-class RunScriptMix:
+class RunScriptMixIn:
     def run_script(self, script):
         return self.handle_req('POST', 'scriptText',
                                data={'script': script}).text
+
+
+class EnableMixIn:
+
+    def enable(self):
+        return self.handle_req('POST', 'enable')
+
+    def disable(self):
+        return self.handle_req('POST', 'disable')

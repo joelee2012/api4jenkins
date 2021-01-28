@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from .item import Item
-from .mix import ConfigrationMix, DeletionMix, DescriptionMix
+from .mix import ConfigurationMixIn, DeletionMixIn, DescriptionMixIn
 
 
 class Views(Item):
@@ -31,7 +31,7 @@ class Views(Item):
             yield self._new_instance_by_item(__name__, item)
 
 
-class View(Item, ConfigrationMix, DescriptionMix, DeletionMix):
+class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
     def get_job(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:

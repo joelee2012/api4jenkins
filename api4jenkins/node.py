@@ -5,7 +5,7 @@ import re
 
 from .exceptions import ItemNotFoundError
 from .item import Item
-from .mix import ConfigrationMix, DeletionMix, RunScriptMix
+from .mix import ConfigurationMixIn, DeletionMixIn, RunScriptMixIn
 
 
 class Nodes(Item):
@@ -54,7 +54,7 @@ class Nodes(Item):
             yield self._new_instance_by_item(__name__, item)
 
 
-class Node(Item, ConfigrationMix, DeletionMix, RunScriptMix):
+class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
 
     def enable(self):
         if self.offline:

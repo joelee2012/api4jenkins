@@ -102,6 +102,20 @@ class TestFolder:
             assert text == body
 
 
+class TestWorkflowMultiBranchProject:
+
+    def test_scan(self, multibranchproject, mock_resp):
+        req_url = f'{multibranchproject.url}build?delay=0'
+        mock_resp.add('POST', req_url)
+        multibranchproject.scan()
+        assert mock_resp.calls[0].request.url == req_url
+
+    def test_get_scan_log(self, multibranchproject, mock_resp):
+        body = b'a\nb'
+        mock_resp.add(
+            'GET', f'{multibranchproject.url}indexing/consoleText', body=body)
+        assert list(multibranchproject.get_scan_log()) == body.split(b'\n')
+
 class TestProject:
 
     @pytest.mark.parametrize('name, entry, params',

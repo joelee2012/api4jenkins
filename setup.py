@@ -30,8 +30,10 @@ setup(
     install_requires=requires,
     license=about['__license__'],
     classifiers=[
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
@@ -41,4 +43,8 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Topic :: Software Development',
     ],
+    project_urls={
+        'Documentation': about['__documentation__'],
+        'Source': about['__url__'],
+    },
 )

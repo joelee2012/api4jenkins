@@ -2,7 +2,7 @@
 
 
 from .item import Item
-from .mix import ConfigrationMix, DeletionMix
+from .mix import ConfigurationMixIn, DeletionMixIn
 
 
 class Credentials(Item):
@@ -24,5 +24,5 @@ class Credentials(Item):
                              f'{self.url}credential/{item["id"]}/')
 
 
-class Credential(Item, ConfigrationMix, DeletionMix):
+class Credential(Item, ConfigurationMixIn, DeletionMixIn):
     pass

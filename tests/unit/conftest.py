@@ -5,7 +5,7 @@ import pytest
 import responses
 from api4jenkins import Jenkins
 from api4jenkins import Item, Folder
-from api4jenkins.job import WorkflowJob
+from api4jenkins.job import WorkflowJob, WorkflowMultiBranchProject
 from api4jenkins.build import WorkflowRun
 from api4jenkins import Credentials
 from api4jenkins.credential import Credential
@@ -77,6 +77,10 @@ def workflow(jenkins):
 def workflowrun(jenkins):
     return WorkflowRun(jenkins, f'{jenkins.url}job/Level1_WorkflowJob1/2/')
 
+
+@pytest.fixture(scope='module')
+def multibranchproject(jenkins):
+    return WorkflowMultiBranchProject(jenkins, f'{jenkins.url}job/Level1_WorkflowMultiBranchProject/')
 
 @pytest.fixture(scope='module')
 def credential(jenkins):
