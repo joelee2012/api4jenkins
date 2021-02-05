@@ -3,9 +3,10 @@
 import re
 import time
 
-from .item import Item
-from .mix import DescriptionMixIn, DeletionMixIn
+from .artifact import Artifact, save_response_to
 from .input import PendingInputAction
+from .item import Item
+from .mix import DeletionMixIn, DescriptionMixIn
 
 
 class Build(Item, DescriptionMixIn, DeletionMixIn):
@@ -64,6 +65,17 @@ class WorkflowRun(Build):
             return None
         action = self.handle_req('GET', 'wfapi/pendingInputActions').json()[0]
         return PendingInputAction(self.jenkins, action)
+
+    def get_artifacts(self):
+        artifacts = self.handle_req('GET', 'wfapi/artifacts').json()
+        if not artifacts:
+            return []
+        for artifact in artifacts:
+            yield Artifact(self.jenkins, artifact)
+
+    def save_artifacts(self, to='archive.zip'):
+        with self.handle_req('GET', 'artifact/*zip*/archive.zip') as resp:
+            save_response_to(resp, to)
 
 
 class FreeStyleBuild(Build):

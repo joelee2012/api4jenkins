@@ -89,6 +89,12 @@ class Folder(Job):
     def __iter__(self):
         yield from self.iter()
 
+    def __call__(self, depth):
+        yield from self.iter(depth)
+
+    def __getitem__(self, name):
+        return self.get(name)
+
 
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
 

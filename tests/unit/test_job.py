@@ -34,6 +34,7 @@ class TestFolder:
     def test_get(self, folder, name, type_):
         job = folder.get(name)
         assert isinstance(job, type_)
+        assert isinstance(folder[name], type_)
 
     def test_iter_jobs(self, folder):
         assert len(list(folder.iter())) == 4

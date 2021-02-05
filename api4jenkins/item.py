@@ -1,10 +1,15 @@
 # encoding: utf-8
 
-from importlib import import_module
+import logging
 import re
+from importlib import import_module
+
 from requests.exceptions import HTTPError
-from .exceptions import AuthenticationError, ItemNotFoundError,\
-    UnsafeCharacterError, BadRequestError, ServerError
+
+from .exceptions import (AuthenticationError, BadRequestError,
+                         ItemNotFoundError, ServerError, UnsafeCharacterError)
+
+logger = logging.getLogger(__name__)
 
 
 def camel(s):
@@ -14,9 +19,15 @@ def camel(s):
     return first.lower() + ''.join(x.title() for x in other)
 
 
-def snake(s):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+def _snake():
+    pattern = re.compile(r'(?<!^)(?=[A-Z])')
+
+    def func(name):
+        return pattern.sub('_', name).lower()
+    return func
+
+
+snake = _snake()
 
 
 def append_slash(url):
@@ -93,6 +104,7 @@ class Item:
             kwargs['headers'] = headers
 
     def _new_instance_by_item(self, module, item):
+        logger.debug(item)
         class_name = self.class_delimiter.split(item['_class'])[-1]
         module = import_module(module)
         if not hasattr(module, class_name):

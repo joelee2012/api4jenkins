@@ -73,7 +73,7 @@ class Jenkins(Item):
             >>> print(job)
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
-        folder, name = self._get_folder(full_name)
+        folder, name = self._resolve_name(full_name)
         return folder.get(name)
 
     def iter_jobs(self, depth=0):
@@ -117,7 +117,7 @@ class Jenkins(Item):
             >>> print(job)
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
-        folder, name = self._get_folder(full_name)
+        folder, name = self._resolve_name(full_name)
         return folder.create(name, xml)
 
     def copy_job(self, full_name, dest):
@@ -136,7 +136,7 @@ class Jenkins(Item):
             >>> print(job)
             <FreeStyleProject: http://127.0.0.1:8080/job/folder/job/newjob/>
         '''
-        folder, name = self._get_folder(full_name)
+        folder, name = self._resolve_name(full_name)
         return folder.copy(name, dest)
 
     def delete_job(self, full_name):
@@ -208,8 +208,8 @@ class Jenkins(Item):
         full_name = full_name.strip('/').replace('/', '/job/')
         return f'{self.url}job/{full_name}/'
 
-    def _get_folder(self, full_name):
-        '''Split folder and job'''
+    def _resolve_name(self, full_name):
+        '''Resolve folder and job name from full name'''
         path = PurePosixPath(full_name)
         parent = str(path.parent) if path.parent.name else ''
         return Folder(self, self._name2url(parent)), path.name
@@ -284,6 +284,15 @@ class Jenkins(Item):
     @property
     def me(self):
         return self.user
+
+    def __iter__(self):
+        yield from self.iter_jobs()
+
+    def __call__(self, depth):
+        yield from self.iter_jobs(depth)
+
+    def __getitem__(self, full_name):
+        return self.get_job(full_name)
 
 
 def _patch_to(module, cls, func=None):
