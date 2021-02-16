@@ -34,21 +34,34 @@ def append_slash(url):
     return url if url[-1] == '/' else url + '/'
 
 
+def _new_item():
+    delimiter = re.compile(r'[.$]')
+    def func(jenkins, module, item):
+        logger.debug(item)
+        class_name = delimiter.split(item['_class'])[-1]
+        module = import_module(module)
+        if not hasattr(module, class_name):
+            raise AttributeError(f'{module} has no class {class_name}, '
+                                    'Patch new class with'
+                                    ' api4jenkins._patch_to')
+        _class = getattr(module, class_name)
+        return _class(jenkins, item['url'])
+    return func
+
+new_item = _new_item()
+
 class Item:
     '''
     classdocs
     '''
     headers = {'Content-Type': 'text/xml; charset=utf-8'}
     class_delimiter = re.compile(r'[.$]')
-#     unsafe_msg = re.compile(r'.*>([^<]+)</div>')
+
     _attrs = []
 
     def __init__(self, jenkins, url):
         self.jenkins = jenkins
         self.url = append_slash(url)
-
-    def api_xml(self):
-        return self.handle_req('GET', 'api/xml').text
 
     def api_json(self, tree='', depth=0):
         params = {'depth': depth}
@@ -80,12 +93,7 @@ class Item:
                 raise ServerError(e.response.text) from e
             raise
 
-    def check_name(self, name):
-        resp = self.jenkins.handle_req(
-            'GET', 'checkJobName', params={'value': name})
-        if 'is an unsafe character' in resp.text:
-            raise UnsafeCharacterError(
-                self.unsafe_msg.search(resp.text).group(1))
+
 
     def _add_crumb(self, kwargs):
         if self.jenkins._crumb is None:

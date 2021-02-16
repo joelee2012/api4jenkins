@@ -10,7 +10,7 @@ from .__version__ import (__author__, __author_email__, __copyright__,
                           __description__, __license__, __title__, __url__,
                           __version__)
 from .credential import Credentials
-from .exceptions import ItemNotFoundError
+from .exceptions import ItemNotFoundError, AuthenticationError
 from .item import Item
 from .job import Folder
 from .node import Nodes
@@ -187,6 +187,11 @@ class Jenkins(Item):
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job.build(**params)
 
+    def check_job_name(self, name):
+        resp = self.handle_req('GET', 'checkJobName', params={'value': name})
+        return 'is an unsafe character' in resp.text
+
+
     def _url2name(self, url):
         '''Covert job url to full name
 
@@ -232,7 +237,16 @@ class Jenkins(Item):
     @property
     def crumb(self):
         '''Crumb of Jenkins'''
-        self._add_crumb({})
+        if self._crumb is None:
+            try:
+                self._crumb = self.send_req('GET', self.url + 'crumbIssuer/api/json').json()
+            except HTTPError as e:
+                if e.response.status_code in [401, 403]:
+                    raise AuthenticationError(
+                        'Invalid authorization for %s' % self) from e
+                self._crumb = {}
+        if self._crumb:
+            self._crumb = {self._crumb['crumbRequestField']:self._crumb['crumb']}
         return self._crumb
 
     @property
