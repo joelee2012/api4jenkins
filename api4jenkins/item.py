@@ -93,22 +93,11 @@ class Item:
                 raise ServerError(e.response.text) from e
             raise
 
-
-
     def _add_crumb(self, kwargs):
-        if self.jenkins._crumb is None:
-            try:
-                self.jenkins._crumb = self.jenkins.send_req(
-                    'GET', self.jenkins.url + 'crumbIssuer/api/json').json()
-            except HTTPError as e:
-                if e.response.status_code in [401, 403]:
-                    raise AuthenticationError(
-                        'Invalid authorization for %s' % self) from e
-                self.jenkins._crumb = False
-        if self.jenkins._crumb:
+        if self.jenkins.crumb:
             headers = kwargs.get('headers', {})
-            headers[self.jenkins._crumb['crumbRequestField']
-                    ] = self.jenkins._crumb['crumb']
+            _crumb = {self.jenkins.crumb['crumbRequestField']: self.jenkins.crumb['crumb']}
+            headers.update(_crumb)
             kwargs['headers'] = headers
 
     def _new_instance_by_item(self, module, item):
