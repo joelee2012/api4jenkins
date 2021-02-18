@@ -191,7 +191,6 @@ class Jenkins(Item):
         resp = self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' in resp.text
 
-
     def _url2name(self, url):
         '''Covert job url to full name
 
@@ -239,14 +238,14 @@ class Jenkins(Item):
         '''Crumb of Jenkins'''
         if self._crumb is None:
             try:
-                self._crumb = self.send_req('GET', self.url + 'crumbIssuer/api/json').json()
+                _crumb = self.send_req(
+                    'GET', self.url + 'crumbIssuer/api/json').json()
+                self._crumb = {_crumb['crumbRequestField']: _crumb['crumb']}
             except HTTPError as e:
                 if e.response.status_code in [401, 403]:
                     raise AuthenticationError(
                         'Invalid authorization for %s' % self) from e
                 self._crumb = {}
-        if self._crumb:
-            self._crumb = {self._crumb['crumbRequestField']:self._crumb['crumb']}
         return self._crumb
 
     @property

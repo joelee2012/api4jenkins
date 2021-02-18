@@ -1,6 +1,6 @@
 Release History
 ===============
-1.3 (2021-02-??)
+1.3 (2021-02-28)
 -----------------
 - Support save artifacts as zip or only one file.
 - Support pythonic way to iterate jenkins and folder with depth.

@@ -26,6 +26,7 @@ class DescriptionMixIn:
 
 
 class RunScriptMixIn:
+
     def run_script(self, script):
         return self.handle_req('POST', 'scriptText',
                                data={'script': script}).text
@@ -38,3 +39,9 @@ class EnableMixIn:
 
     def disable(self):
         return self.handle_req('POST', 'disable')
+
+
+class RawJsonMixIn:
+
+    def api_json(self, tree='', depth=0):
+        return self.raw

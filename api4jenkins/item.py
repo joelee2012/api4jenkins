@@ -1,15 +1,12 @@
 # encoding: utf-8
 
-import logging
 import re
 from importlib import import_module
 
 from requests.exceptions import HTTPError
 
 from .exceptions import (AuthenticationError, BadRequestError,
-                         ItemNotFoundError, ServerError, UnsafeCharacterError)
-
-logger = logging.getLogger(__name__)
+                         ItemNotFoundError, ServerError)
 
 
 def camel(s):
@@ -36,19 +33,21 @@ def append_slash(url):
 
 def _new_item():
     delimiter = re.compile(r'[.$]')
+
     def func(jenkins, module, item):
-        logger.debug(item)
         class_name = delimiter.split(item['_class'])[-1]
         module = import_module(module)
         if not hasattr(module, class_name):
             raise AttributeError(f'{module} has no class {class_name}, '
-                                    'Patch new class with'
-                                    ' api4jenkins._patch_to')
+                                 'Patch new class with'
+                                 ' api4jenkins._patch_to')
         _class = getattr(module, class_name)
         return _class(jenkins, item['url'])
     return func
 
+
 new_item = _new_item()
+
 
 class Item:
     '''
@@ -76,15 +75,15 @@ class Item:
         except HTTPError as e:
             if e.response.status_code == 404:
                 raise ItemNotFoundError('No such item: %s' % self) from e
-            elif e.response.status_code == 401:
+            if e.response.status_code == 401:
                 raise AuthenticationError(
                     'Invalid authorization for %s' % self) from e
-            elif e.response.status_code == 403:
+            if e.response.status_code == 403:
                 raise PermissionError(
                     'No permission to %s for %s' % (entry, self.url)) from e
-            elif e.response.status_code == 400:
+            if e.response.status_code == 400:
                 raise BadRequestError(e.response.headers['X-Error']) from e
-            elif e.response.status_code == 500:
+            if e.response.status_code == 500:
                 #                 import xml.etree.ElementTree as ET
                 #                 tree = ET.fromstring(e.response.text)
                 #                 stack_trace = tree.find(
@@ -96,12 +95,10 @@ class Item:
     def _add_crumb(self, kwargs):
         if self.jenkins.crumb:
             headers = kwargs.get('headers', {})
-            _crumb = {self.jenkins.crumb['crumbRequestField']: self.jenkins.crumb['crumb']}
-            headers.update(_crumb)
+            headers.update(self.jenkins.crumb)
             kwargs['headers'] = headers
 
     def _new_instance_by_item(self, module, item):
-        logger.debug(item)
         class_name = self.class_delimiter.split(item['_class'])[-1]
         module = import_module(module)
         if not hasattr(module, class_name):
@@ -128,7 +125,7 @@ class Item:
         return self._attrs
 
     def __eq__(self, other):
-        return type(self) == type(other) and self.url == other.url
+        return type(self) is type(other) and self.url == other.url
 
     def __str__(self):
         return f'<{type(self).__name__}: {self.url}>'

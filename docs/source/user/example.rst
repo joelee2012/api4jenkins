@@ -434,19 +434,32 @@ WorkflowRun
 ------------
 WorkflowRun is kind of `Build`, more detail to see: https://www.jenkins.io/doc/book/pipeline/
 
-it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as :
+it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as this::
 
     >>> while not build.get_pending_input():
-    >>>     time.sleep(1)
+    ...     time.sleep(1)
     >>> build.get_pending_input().submit(arg1='xyz', arg2=time.asctime())
 
-or if without parameters
+or if without parameters::
 
     >>> build.get_pending_input().submit()
 
-and abort input
+and abort input::
 
     >>> build.get_pending_input().abort()
+
+WorkflowRun supports `archive artfacts <https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts>`_,  you can also process with api4jenkins::
+
+save file you interest::
+
+    >>> for artifacts in build.get_artifacts():
+    ...     if artifacts.name == 'you need':
+    ...         artfacts.save('filename')
+
+save all file as zip::
+
+    >>> build.save_artifacts('filename.zip')
+
 
 Credential
 -------------
