@@ -1,6 +1,6 @@
 Release History
 ===============
-1.2 (2020-01-31)
+1.2 (2021-01-31)
 ----------------
 - Support to enable, disable, scan, get_scan_log for `WorkflowMultiBranchProject`
 - Call `Jenkins.get_job` for getting parent of `Job`
