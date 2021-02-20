@@ -39,10 +39,8 @@ def _new_item():
         module = import_module(module)
         if not hasattr(module, class_name):
             raise AttributeError(f'{module} has no class {class_name}, '
-                                 'Patch new class with'
-                                 ' api4jenkins._patch_to')
-        _class = getattr(module, class_name)
-        return _class(jenkins, item['url'])
+                                 'Patch new class with api4jenkins._patch_to')
+        return getattr(module, class_name)(jenkins, item['url'])
     return func
 
 
@@ -56,7 +54,7 @@ class Item:
     headers = {'Content-Type': 'text/xml; charset=utf-8'}
     class_delimiter = re.compile(r'[.$]')
 
-    _attrs = []
+    _dynamic_attrs = []
 
     def __init__(self, jenkins, url):
         self.jenkins = jenkins
@@ -74,13 +72,14 @@ class Item:
             return self.jenkins.send_req(method, self.url + entry, **kwargs)
         except HTTPError as e:
             if e.response.status_code == 404:
-                raise ItemNotFoundError('No such item: %s' % self) from e
+                raise ItemNotFoundError(
+                    f'Not found {entry} for item: {self}') from e
             if e.response.status_code == 401:
                 raise AuthenticationError(
-                    'Invalid authorization for %s' % self) from e
+                    f'Invalid authorization for {self}') from e
             if e.response.status_code == 403:
                 raise PermissionError(
-                    'No permission to %s for %s' % (entry, self.url)) from e
+                    f'No permission to {entry} for {self}') from e
             if e.response.status_code == 400:
                 raise BadRequestError(e.response.headers['X-Error']) from e
             if e.response.status_code == 500:
@@ -116,13 +115,13 @@ class Item:
             return False
 
     @property
-    def attrs(self):
-        if not self._attrs:
+    def dynamic_attrs(self):
+        if not self._dynamic_attrs:
             data = self.api_json()
-            self.__class__._attrs = \
-                [snake(attr) for attr in data if isinstance(
-                    data[attr], (int, str, bool, type(None)))]
-        return self._attrs
+            self.__class__._dynamic_attrs = \
+                [snake(key) for key, val in data.items() if isinstance(
+                    val, (int, str, bool, type(None)))]
+        return self._dynamic_attrs
 
     def __eq__(self, other):
         return type(self) is type(other) and self.url == other.url
@@ -131,7 +130,7 @@ class Item:
         return f'<{type(self).__name__}: {self.url}>'
 
     def __getattr__(self, name):
-        if name in self.attrs:
+        if name in self.dynamic_attrs:
             attr = camel(name)
             return self.api_json(tree=attr)[attr]
         return super().__getattribute__(name)

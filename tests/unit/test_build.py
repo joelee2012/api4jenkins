@@ -52,7 +52,7 @@ class TestWorkflowRun:
     def test_get_artifacts(self, workflowrun, mock_resp, data, count):
         mock_resp.add('GET', f'{workflowrun.url}wfapi/artifacts', json=data)
         artifacts = workflowrun.get_artifacts()
-        assert len(list(artifacts)) == count
+        assert len(artifacts) == count
 
     def test_save_artifacts(self, workflowrun, mock_resp, tmp_path):
         mock_resp.add(

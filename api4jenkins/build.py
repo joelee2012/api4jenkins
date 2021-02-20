@@ -67,8 +67,8 @@ class WorkflowRun(Build):
         return PendingInputAction(self.jenkins, action)
 
     def get_artifacts(self):
-        for artifact in self.handle_req('GET', 'wfapi/artifacts').json():
-            yield Artifact(self.jenkins, artifact)
+        artifacts = self.handle_req('GET', 'wfapi/artifacts').json()
+        return [Artifact(self.jenkins, art) for art in artifacts]
 
     def save_artifacts(self, filename='archive.zip'):
         with self.handle_req('GET', 'artifact/*zip*/archive.zip') as resp:

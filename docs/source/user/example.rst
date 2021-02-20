@@ -60,14 +60,14 @@ Then we can access attribute(**must be snake case of json key**) of Jenkins obje
     >>> j.node_description
     'the master Jenkins node
 
-Call `j.attrs` to get the attributes list of an Item::
+Call `j.dynamic_attrs` to get the dynamic attributes of an Item::
 
-    >>> j.attrs
+    >>> j.dynamic_attrs
     ['_class', 'mode', 'node_description', 'node_name', 'num_executors', 'description', 'quieting_down', 'slave_agent_port', 'use_crumbs', 'use_security']
 
 With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management::
 
-create job with `j.create_job()`:
+create job with `j.create_job()`::
 
     >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
     ... <project>
@@ -181,7 +181,7 @@ Job
 
 to list all attributes are avaliable in json data
 
-    >>> job.attrs
+    >>> job.dynamic_attrs
     ['_class', 'description', 'display_name', 'full_display_name', 'full_name', 'name', 'url', 'buildable', 'color', 'in_queue', 'keep_dependencies', 'next_build_number', 'concurrent_build', 'disabled']
 
 get the parent of `Job`
@@ -456,7 +456,7 @@ save file you interest::
     ...     if artifacts.name == 'you need':
     ...         artfacts.save('filename')
 
-save all file as zip::
+save artifacts as zip::
 
     >>> build.save_artifacts('filename.zip')
 
@@ -834,9 +834,9 @@ check if item exists
 
     >>> item.exists()
 
-list and access attributes(**must be snake case of json key**) come from json data
+list and access dynamic attributes(**must be snake case of json key**) come from json data
 
-    >>> item.attrs
+    >>> item.dynamic_attrs
     >>> item.url
 
 get Jenkins object from item

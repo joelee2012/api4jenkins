@@ -7,7 +7,7 @@ from api4jenkins.item import snake
 from api4jenkins.job import WorkflowJob
 
 
-class TestJenkins1:
+class TestJenkins:
 
     def test_init(self, jenkins):
         assert str(jenkins), f'<Jenkins: {jenkins.url}>'
@@ -32,7 +32,7 @@ class TestJenkins1:
         for k, v in jenkins.api_json().items():
             if isinstance(v, (int, str, bool, type(None))):
                 expected.append(snake(k))
-        assert sorted(expected) == sorted(jenkins.attrs)
+        assert sorted(expected) == sorted(jenkins.dynamic_attrs)
 
     @pytest.mark.parametrize('name,type_', [('not exist', type(None)),
                                             ('Level1_Folder1', Folder),
