@@ -101,7 +101,7 @@ class Item:
 
     def exists(self):
         try:
-            self.handle_req('HEAD', '')
+            self.api_json(tree='_class')
             return True
         except ItemNotFoundError:
             return False
