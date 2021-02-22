@@ -40,7 +40,8 @@ def _new_item():
         if not hasattr(module, class_name):
             raise AttributeError(f'{module} has no class {class_name}, '
                                  'Patch new class with api4jenkins._patch_to')
-        return getattr(module, class_name)(jenkins, item['url'])
+        _class = getattr(module, class_name)
+        return _class(jenkins, item['url'])
     return func
 
 
@@ -52,8 +53,6 @@ class Item:
     classdocs
     '''
     headers = {'Content-Type': 'text/xml; charset=utf-8'}
-    class_delimiter = re.compile(r'[.$]')
-
     _dynamic_attrs = []
 
     def __init__(self, jenkins, url):
@@ -98,18 +97,11 @@ class Item:
             kwargs['headers'] = headers
 
     def _new_instance_by_item(self, module, item):
-        class_name = self.class_delimiter.split(item['_class'])[-1]
-        module = import_module(module)
-        if not hasattr(module, class_name):
-            raise AttributeError(f'{module} has no class {class_name}, '
-                                 'Patch new class with'
-                                 ' api4jenkins._patch_to')
-        _class = getattr(module, class_name)
-        return _class(self.jenkins, item['url'])
+        return new_item(self.jenkins, module, item)
 
     def exists(self):
         try:
-            self.api_json(tree='_class')
+            self.handle_req('HEAD', '')
             return True
         except ItemNotFoundError:
             return False
