@@ -7,7 +7,7 @@ from api4jenkins.item import snake
 from api4jenkins.job import WorkflowJob
 
 
-class TestJenkins1:
+class TestJenkins:
 
     def test_init(self, jenkins):
         assert str(jenkins), f'<Jenkins: {jenkins.url}>'
@@ -32,7 +32,7 @@ class TestJenkins1:
         for k, v in jenkins.api_json().items():
             if isinstance(v, (int, str, bool, type(None))):
                 expected.append(snake(k))
-        assert sorted(expected) == sorted(jenkins.attrs)
+        assert sorted(expected) == sorted(jenkins.dynamic_attrs)
 
     @pytest.mark.parametrize('name,type_', [('not exist', type(None)),
                                             ('Level1_Folder1', Folder),
@@ -43,6 +43,7 @@ class TestJenkins1:
     def test_get_job(self, jenkins, name, type_):
         job = jenkins.get_job(name)
         assert isinstance(job, type_)
+        assert isinstance(jenkins[name], type_)
 
     @pytest.mark.parametrize('headers', [{'X-Error': "A job already exists "
                                           "with the name 'Level1_Folder1'"},
@@ -142,3 +143,4 @@ class TestJenkins1:
 
     def test_iter_jobs(self, jenkins):
         assert len(list(jenkins.iter_jobs())) == 2
+        assert len(list(jenkins)) == 2

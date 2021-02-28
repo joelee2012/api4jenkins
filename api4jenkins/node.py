@@ -45,6 +45,10 @@ class Nodes(Item):
         tree = 'computer[oneOffExecutors[currentExecutable[url]]]'
         for computer in self.api_json(tree, 2)['computer']:
             for executor in computer.get('oneOffExecutors'):
+                # in case of issue:
+                # https://github.com/joelee2012/api4jenkins/issues/16
+                if not executor['currentExecutable']:
+                    continue
                 yield self._new_instance_by_item('api4jenkins.build',
                                                  executor['currentExecutable'])
 

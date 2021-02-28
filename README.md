@@ -10,7 +10,7 @@
 
 # Api4jenkins
 
-[Api4jenkins](https://github.com/joelee2012/api4jenkins) is a Jenkins REST API client for [Python](https://www.python.org/) access to [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It provides full functionalities to control Job, Build, Credential, View, Queue, Plugins, Node, and System operation.
+[Api4jenkins](https://github.com/joelee2012/api4jenkins) is a Jenkins REST API client for [Python](https://www.python.org/) to access [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It provides full functionalities to control Job, Build, Credential, View, Queue, Plugins, Node, and System operation.
 
 
 
@@ -36,20 +36,11 @@ python -m pip install api4jenkins
 ...   </builders>
 ... </project>"""
 >>> j.create_job('freestylejob', xml)
->>> job = j.get_job('freestylejob')
->>> print(job)
-<FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
->>> print(job.parent)
-<Jenkins: http://127.0.0.1:8080/>
->>> print(job.jenkins)
-<Jenkins: http://127.0.0.1:8080/>
 >>> import time
->>> item = job.build()
+>>> item = j.build_job('freestylejob')
 >>> while not item.get_build():
 ...      time.sleep(1)
 >>> build = item.get_build()
->>> print(build)
-<FreeStyleBuild: http://127.0.0.1:8080/job/freestylejob/1/>
 >>> for line in build.progressive_output():
 ...     print(line)
 ...

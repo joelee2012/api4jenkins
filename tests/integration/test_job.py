@@ -22,6 +22,7 @@ class TestFolder:
                                             ('Level2_Folder1', Folder)])
     def test_get(self, folder, name, type_):
         assert isinstance(folder.get(name), type_)
+        assert isinstance(folder[name], type_)
 
     def test_iter(self, folder):
         assert len(list(folder.iter())) == 1

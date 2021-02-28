@@ -60,14 +60,14 @@ Then we can access attribute(**must be snake case of json key**) of Jenkins obje
     >>> j.node_description
     'the master Jenkins node
 
-Call `j.attrs` to get the attributes list of an Item
+Call `j.dynamic_attrs` to get the dynamic attributes of an Item::
 
-    >>> j.attrs
+    >>> j.dynamic_attrs
     ['_class', 'mode', 'node_description', 'node_name', 'num_executors', 'description', 'quieting_down', 'slave_agent_port', 'use_crumbs', 'use_security']
 
-With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management:
+With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management::
 
-create job with `j.create_job()`:
+create job with `j.create_job()`::
 
     >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
     ... <project>
@@ -79,13 +79,16 @@ create job with `j.create_job()`:
     ... </project>"""
     >>> j.create_job('freestylejob', xml)
 
-once job is created, we can get it by call `j.get_job()` which will return a :class:`Job <api4jenkins.job.Job>` object.
+once job is created, we can get it by call `j.get_job()` or by subscript `j['freestylejob']` which will return a :class:`Job <api4jenkins.job.Job>` object::
 
     >>> job = j.get_job('freestylejob')
     >>> print(job)
     <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
 
-now let's copy a new job and delete new:
+    # optional you can get job by accessing j['freestylejob']
+    >>> job = j['freestylejob']
+
+now let's copy a new job and delete new::
 
     >>> j.copy_job('freestylejob', 'dump-freestylejob')
     >>> dump_job = j.get_job('dump-freestylejob')
@@ -96,7 +99,7 @@ now let's copy a new job and delete new:
     >>> print(dump_job)
     None
 
-call `j.build_job()` to trigger job to build if it is buildable, it will return a :class:`QueueItem <api4jenkins.queue.QueueItem>` which can be used for retriving the :class:`Build <api4jenkins.build.Build>`.
+call `j.build_job()` to trigger job to build if it is buildable, it will return a :class:`QueueItem <api4jenkins.queue.QueueItem>` which can be used for retriving the :class:`Build <api4jenkins.build.Build>`::
 
     >>> item = j.build_job('freestylejob')
     >>> import time
@@ -125,9 +128,25 @@ build with parameters is supported too::
 
     >>> item = j.build_job('freestylejob', arg1='string1', arg2='string2')
 
-it's also possiable to iterate jobs of Jenkins, default depth is 0 which means to iterate jobs in first level::
+it's also possiable to iterate jobs of Jenkins,  iterate jobs in first level::
 
+    # call function straightforward
     >>> for job in j.iter_jobs():
+    ...     print(job)
+
+    # or pythonic
+    >>> for job in j:
+    ...     print(job)
+
+    >>> for job in j(0):
+    ...     print(job)
+
+or iterate with depth ::
+
+    >>> for job in j.iter_jobs(3):
+    ...     print(job)
+
+    >>> for job in j(3):
     ...     print(job)
 
 
@@ -162,7 +181,7 @@ Job
 
 to list all attributes are avaliable in json data
 
-    >>> job.attrs
+    >>> job.dynamic_attrs
     ['_class', 'description', 'display_name', 'full_display_name', 'full_name', 'name', 'url', 'buildable', 'color', 'in_queue', 'keep_dependencies', 'next_build_number', 'concurrent_build', 'disabled']
 
 get the parent of `Job`
@@ -312,26 +331,38 @@ create new job under the folder:
     ... </project>"""
     >>> folder.create('freestylejob', xml)
 
-get one job in the folder
+get one job in the folder::
 
     >>> job = folder.get('freestylejob')
 
-copy job in same folder
+or with subscript::
+
+    >>> job = folder['freestylejob']
+
+copy job in same folder::
 
     >>> folder.copy('freestylejob', 'freestylejob2')
 
-reload folder
+reload folder::
 
     >>> folder.reload()
 
-iterate jobs in folder, following are same, set depth for function `Folder.iter()` to iterate folder recursively.
+iterate jobs in folder, set depth for function `Folder.iter()` or obejct `folder` to iterate folder recursively::
 
+    # iter jobs in first level
     >>> for job in folder:
     ...     print(job)
-    ...
+    >>> for job in folder(0):
+    ...     print(job)
     >>> for job in folder.iter():
     ...     print(job)
-    ...
+
+    # iter jobs with depth recursively
+    >>> for job in folder(3):
+    ...     print(job)
+
+    >>> for job in folder.iter(3):
+    ...     print(job)
 
 you can also manage folder based `View`_, `Credential`_
 
@@ -403,19 +434,32 @@ WorkflowRun
 ------------
 WorkflowRun is kind of `Build`, more detail to see: https://www.jenkins.io/doc/book/pipeline/
 
-it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as :
+it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as this::
 
     >>> while not build.get_pending_input():
-    >>>     time.sleep(1)
+    ...     time.sleep(1)
     >>> build.get_pending_input().submit(arg1='xyz', arg2=time.asctime())
 
-or if without parameters
+or if without parameters::
 
     >>> build.get_pending_input().submit()
 
-and abort input
+and abort input::
 
     >>> build.get_pending_input().abort()
+
+WorkflowRun supports `archive artfacts <https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts>`_,  you can also process with api4jenkins::
+
+save file you interest::
+
+    >>> for artifacts in build.get_artifacts():
+    ...     if artifacts.name == 'you need':
+    ...         artfacts.save('filename')
+
+save artifacts as zip::
+
+    >>> build.save_artifacts('filename.zip')
+
 
 Credential
 -------------
@@ -790,9 +834,9 @@ check if item exists
 
     >>> item.exists()
 
-list and access attributes(**must be snake case of json key**) come from json data
+list and access dynamic attributes(**must be snake case of json key**) come from json data
 
-    >>> item.attrs
+    >>> item.dynamic_attrs
     >>> item.url
 
 get Jenkins object from item

@@ -4,7 +4,6 @@ from api4jenkins.build import WorkflowRun
 from api4jenkins.input import PendingInputAction
 
 
-
 class TestBuild:
     def test_console_text(self, workflowrun, mock_resp):
         body = b'a\nb'
@@ -46,3 +45,18 @@ class TestWorkflowRun:
             mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
                           json=[{'abortUrl': 'x'}])
         assert isinstance(workflowrun.get_pending_input(), obj)
+
+    @pytest.mark.parametrize('data, count', [([], 0),
+                                             ([{"url": 'abcd'}], 1)],
+                             ids=["empty", "no empty"])
+    def test_get_artifacts(self, workflowrun, mock_resp, data, count):
+        mock_resp.add('GET', f'{workflowrun.url}wfapi/artifacts', json=data)
+        artifacts = workflowrun.get_artifacts()
+        assert len(artifacts) == count
+
+    def test_save_artifacts(self, workflowrun, mock_resp, tmp_path):
+        mock_resp.add(
+            'GET', f'{workflowrun.url}artifact/*zip*/archive.zip', body='abc')
+        filename = tmp_path / 'my_archive.zip'
+        workflowrun.save_artifacts(filename)
+        assert filename.exists()

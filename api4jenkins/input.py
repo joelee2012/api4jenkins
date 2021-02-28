@@ -1,9 +1,10 @@
 import json
 
 from .item import Item
+from .mix import RawJsonMixIn
 
 
-class PendingInputAction(Item):
+class PendingInputAction(RawJsonMixIn, Item):
     ''' this class implement functionality to process
     `input step <https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step/>`_
     '''
@@ -13,9 +14,6 @@ class PendingInputAction(Item):
             jenkins, f"{jenkins.url}{raw['abortUrl'].rstrip('abort')}")
         self.raw = raw
         self.raw['_class'] = 'PendingInputAction'
-
-    def api_json(self, tree='', depth=0):
-        return self.raw
 
     def abort(self):
         '''submit `input step <https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step/>`_'''
@@ -42,5 +40,4 @@ class PendingInputAction(Item):
             data = {'proceed': self.raw['proceedText'],
                     'json': json.dumps({'parameter': params})}
             return self.handle_req('POST', 'submit', data=data)
-        else:
-            return self.handle_req('POST', 'proceedEmpty')
+        return self.handle_req('POST', 'proceedEmpty')

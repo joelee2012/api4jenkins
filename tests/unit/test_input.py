@@ -1,6 +1,6 @@
 import pytest
 from api4jenkins.input import PendingInputAction
-
+import socketserver
 
 @pytest.fixture
 def pending_input(jenkins):

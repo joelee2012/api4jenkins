@@ -17,6 +17,7 @@ class Users(Item):
         for user in self.api_json(depth=2, tree=self.tree)['users']:
             if id == user['user']['id'] or full_name == user['user']['fullName']:
                 return User(self.jenkins, user['user']['absoluteUrl'])
+        return None
 
 
 ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])

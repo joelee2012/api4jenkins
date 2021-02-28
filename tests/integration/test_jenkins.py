@@ -15,6 +15,7 @@ class TestJenkins:
     def test_get_job(self, jenkins, name, type_):
         job = jenkins.get_job(name)
         assert isinstance(job, type_)
+        assert isinstance(jenkins[name], type_)
 
     @pytest.mark.parametrize('name, exception', [('Level1_Folder1', "A job already exists "
                                                   "with the name  Level1_Folder1"),
@@ -63,6 +64,8 @@ class TestJenkins:
     def test_iter_jobs(self, jenkins):
         assert len(list(jenkins.iter_jobs())) == 1
         assert len(list(jenkins.iter_jobs(2))) == 2
+        assert len(list(jenkins)) == 1
+        assert len(list(jenkins(2))) == 2
 
     def test_credential(self, jenkins, credential_xml):
         assert len(list(jenkins.credentials)) == 0
