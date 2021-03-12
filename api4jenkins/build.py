@@ -7,6 +7,7 @@ from .artifact import Artifact, save_response_to
 from .input import PendingInputAction
 from .item import Item
 from .mix import DeletionMixIn, DescriptionMixIn
+from .result import TestResult
 
 
 class Build(Item, DescriptionMixIn, DeletionMixIn):
@@ -54,6 +55,10 @@ class Build(Item, DescriptionMixIn, DeletionMixIn):
         '''get job of this build'''
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return self.jenkins.get_job(job_name)
+
+    def get_test_result(self):
+        tr = TestResult(self.jenkins, self.url + 'testReport')
+        return tr if tr.exists() else None
 
 
 class WorkflowRun(Build):
