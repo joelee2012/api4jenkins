@@ -1,4 +1,4 @@
-from .item import Item, camel
+from .item import Item, camel, snake
 
 
 class GetMixIn:
@@ -24,12 +24,19 @@ class ResultBase:
     def __str__(self):
         return f'<{type(self).__name__}: {self.name}>'
 
+    def __dir__(self):
+        return super().__dir__() + [snake(k) for k in self.raw]
 
-class TestResult(Item, GetMixIn):
+
+class TestReport(Item, GetMixIn):
 
     def __iter__(self):
         for suite in self.api_json()['suites']:
             yield TestSuite(suite)
+
+    @property
+    def suites(self):
+        yield from self
 
 
 class TestSuite(ResultBase, GetMixIn):
@@ -37,6 +44,10 @@ class TestSuite(ResultBase, GetMixIn):
     def __iter__(self):
         for case in self.raw['cases']:
             yield TestCase(case)
+
+    @property
+    def cases(self):
+        yield from self
 
 
 class TestCase(ResultBase):

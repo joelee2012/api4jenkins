@@ -1,5 +1,9 @@
 Release History
 ===============
+1.4 (2021-03-31)
+-----------------
+- Support to retrieve test report for build
+
 1.3 (2021-02-28)
 -----------------
 - Add capability to get/save artifacts for `WorkflowRun`.
