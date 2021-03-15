@@ -3,6 +3,7 @@ Release History
 1.4 (2021-03-31)
 -----------------
 - Support to retrieve test report for build
+- Support to validate Jenkinsfile
 
 1.3 (2021-02-28)
 -----------------

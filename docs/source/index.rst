@@ -5,6 +5,18 @@
 
 Welcome to api4jenkins's documentation!
 =========================================
+.. image:: https://img.shields.io/github/license/joelee2012/api4jenkins
+    :target: https://pypi.org/project/api4jenkins/
+
+.. image:: https://img.shields.io/pypi/wheel/api4jenkins
+    :target: https://pypi.org/project/api4jenkins/
+
+.. image:: https://img.shields.io/pypi/v/api4jenkins
+    :target: https://pypi.org/project/api4jenkins/
+
+.. image:: https://img.shields.io/pypi/pyversions/api4jenkins
+    :target: https://pypi.org/project/api4jenkins/
+
 
 
 `Api4jenkins <https://github.com/joelee2012/api4jenkins>`_ is an object oriented `Python <https://www.python.org/>`_ project that provides access to the `Jenkins <https://jenkins.io/>`_ `Remote access API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_ programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API.

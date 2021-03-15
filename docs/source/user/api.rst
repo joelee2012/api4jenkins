@@ -58,6 +58,11 @@ API reference
    :undoc-members:
    :inherited-members:
 
+.. automodule:: api4jenkins.report
+   :members:
+   :undoc-members:
+   :inherited-members:
+
 .. automodule:: api4jenkins.item
    :members:
    :undoc-members:

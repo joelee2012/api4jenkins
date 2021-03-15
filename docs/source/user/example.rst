@@ -150,6 +150,12 @@ or iterate with depth ::
     ...     print(job)
 
 
+use `j.validate_jenkinsfile(content)` to validate your Jenkinsfile, content can be string or file object,
+it returns string '**Jenkinsfile successfully validated.**' if validate successful or error message.::
+
+    >>> j.validate_jenkinsfile('content')
+
+
 Job
 ----------------------------------
 :class:`Job <api4jenkins.job.Job>` is user configured item in Jenkins, it's the base class of :class:`Folder <api4jenkins.job.Folder>` and its subclass :class:`WorkflowMultiBranchProject <api4jenkins.job.WorkflowMultiBranchProject>`; :class:`Project <api4jenkins.job.Project>` and its subclass
