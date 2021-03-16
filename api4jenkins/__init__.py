@@ -198,7 +198,7 @@ class Jenkins(Item):
             content (str, file): string or file object to be validated
 
         Returns:
-            Response: http response
+            str: 'Jenkinsfile successfully validated.' if validate successful or error message
         """
         if hasattr(content, 'read'):
             content = content.read()
