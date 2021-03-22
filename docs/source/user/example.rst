@@ -65,7 +65,7 @@ Call `j.dynamic_attrs` to get the dynamic attributes of an Item::
     >>> j.dynamic_attrs
     ['_class', 'mode', 'node_description', 'node_name', 'num_executors', 'description', 'quieting_down', 'slave_agent_port', 'use_crumbs', 'use_security']
 
-With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management::
+With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management.
 
 create job with `j.create_job()`::
 
@@ -150,7 +150,7 @@ or iterate with depth ::
     ...     print(job)
 
 
-use `j.validate_jenkinsfile(content)` to validate your Jenkinsfile, content can be string or file object,
+use `j.validate_jenkinsfile(content)` to validate your Jenkinsfile,
 it returns string '**Jenkinsfile successfully validated.**' if validate successful or error message.::
 
     >>> j.validate_jenkinsfile('content')

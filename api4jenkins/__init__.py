@@ -192,16 +192,16 @@ class Jenkins(Item):
         return 'is an unsafe character' in resp.text
 
     def validate_jenkinsfile(self, content):
-        """validate Jenkinsfile
+        """validate Jenkinsfile, see
+        https://www.jenkins.io/doc/book/pipeline/development/#linter
 
         Args:
-            content (str, file): string or file object to be validated
+            content (str): content of Jenkinsfile
 
         Returns:
-            str: 'Jenkinsfile successfully validated.' if validate successful or error message
+            str: 'Jenkinsfile successfully validated.' if validate successful
+            or error message
         """
-        if hasattr(content, 'read'):
-            content = content.read()
         data = {'jenkinsfile': content}
         return self.handle_req(
             'POST', 'pipeline-model-converter/validate', data=data).text
