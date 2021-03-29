@@ -24,7 +24,8 @@ class TestView:
     def test_iter(self, view):
         assert len(list(view)) == 2
 
-    @pytest.mark.parametrize('action, entry', [('include', 'addJobToView'), ('exclude', 'removeJobFromView')])
+    @pytest.mark.parametrize('action, entry', [('include', 'addJobToView'),
+                                               ('exclude', 'removeJobFromView')])
     def test_include_exclude(self, view, mock_resp, action, entry):
         req_url = f'{view.url}{entry}?name=folder1'
         mock_resp.add('POST', req_url, json={'name': 'folder1'})

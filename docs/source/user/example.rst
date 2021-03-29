@@ -65,7 +65,7 @@ Call `j.dynamic_attrs` to get the dynamic attributes of an Item::
     >>> j.dynamic_attrs
     ['_class', 'mode', 'node_description', 'node_name', 'num_executors', 'description', 'quieting_down', 'slave_agent_port', 'use_crumbs', 'use_security']
 
-With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management::
+With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management.
 
 create job with `j.create_job()`::
 
@@ -148,6 +148,12 @@ or iterate with depth ::
 
     >>> for job in j(3):
     ...     print(job)
+
+
+use `j.validate_jenkinsfile(content)` to validate your Jenkinsfile,
+it returns string '**Jenkinsfile successfully validated.**' if validate successful or error message.::
+
+    >>> j.validate_jenkinsfile('content')
 
 
 Job
@@ -429,6 +435,15 @@ delete build
     >>> build.delete()
     >>> build.exists()
     False
+
+Jenkins has plugin `Junit <https://plugins.jenkins.io/junit/>`_ for publishing XML test reports
+generated during the builds and provides some graphical visualization of the historical test results.
+you can retrieve test reports::
+
+    >>> tr = build.get_test_report()
+
+see `TestReport`_, `TestSuite`_ , `TestCase`_  for more detail
+
 
 WorkflowRun
 ------------
@@ -846,3 +861,60 @@ get Jenkins object from item
 customize requests:
 
     >>> item.handle_req('POST', entry, params=params)
+
+
+TestReport
+----------
+Class for test report which was published by `JUnit <https://plugins.jenkins.io/junit/>`_,
+you can retrieve from build::
+
+    >>> tr = build.get_test_report()
+
+list dynamic attributes::
+
+    >>> print(tr.dynamic_attrs)
+
+get test suite by name::
+
+    >>> suite = tr.get('name of suite')
+
+iterate each suite of `TestReport`::
+
+    >>> for suite in tr: # same as `for suite in tr.suites`
+    ...     print(suite)
+
+show the attributes of `tr`::
+
+    >>> print(tr.dynamic_attrs)
+
+TestSuite
+---------
+Class for test suite, you can get test case for it::
+
+    >>> case = suite.get('case name')
+
+iterate each test case::
+
+    >>> for case in suite: # same as `for case in suite.cases`
+    ...     print(case)
+
+
+show the attributes of `suite`::
+
+    >>> dir(suite)
+
+
+TestCase
+--------
+Class for test case
+
+show the attributes of `case`::
+
+    >>> dir(case)
+
+iterate all case in test report and filter by status ::
+
+    >>> for suite in tr:
+    ...     for case in suite:
+    ...         if case.status == 'PASSED':
+    ...             print(case)

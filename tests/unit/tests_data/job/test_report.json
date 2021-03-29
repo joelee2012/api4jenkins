@@ -1,0 +1,39 @@
+{
+    "_class": "hudson.tasks.junit.TestResult",
+    "testActions": [],
+    "duration": 74.678,
+    "empty": false,
+    "failCount": 2,
+    "passCount": 37,
+    "skipCount": 0,
+    "suites": [
+        {
+            "cases": [
+                {
+                    "testActions": [],
+                    "age": 0,
+                    "className": "tests.integration.test_jenkins.TestJenkins",
+                    "duration": 0.645,
+                    "errorDetails": null,
+                    "errorStackTrace": null,
+                    "failedSince": 0,
+                    "name": "test_exists",
+                    "skipped": false,
+                    "skippedMessage": null,
+                    "status": "PASSED",
+                    "stderr": null,
+                    "stdout": null
+                }
+            ],
+            "duration": 74.678,
+            "enclosingBlockNames": [],
+            "enclosingBlocks": [],
+            "id": null,
+            "name": "pytest",
+            "nodeId": null,
+            "stderr": null,
+            "stdout": null,
+            "timestamp": "2021-02-22T17:33:40.266004"
+        }
+    ]
+}

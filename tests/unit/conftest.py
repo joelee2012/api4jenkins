@@ -13,6 +13,7 @@ from api4jenkins import PluginsManager
 from api4jenkins import Queue
 from api4jenkins.node import Nodes
 from api4jenkins.view import AllView
+from api4jenkins.report import TestReport
 
 DATA = Path(__file__).with_name('tests_data')
 
@@ -38,6 +39,8 @@ def _api_json(self, tree='', depth=0):
         return load_json('node/computer.json')
     elif isinstance(self, AllView):
         return load_json('view/allview.json')
+    elif isinstance(self, TestReport):
+        return load_json('job/test_report.json')
     raise TypeError(f'unknow item: {type(self)}')
 
 
@@ -95,3 +98,8 @@ def view(jenkins):
 def mock_resp():
     with responses.RequestsMock() as r:
         yield r
+
+
+@pytest.fixture
+def test_report(jenkins, workflow):
+    return TestReport(jenkins, workflow.url + 'testReport')

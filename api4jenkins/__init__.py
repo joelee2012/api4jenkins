@@ -191,6 +191,21 @@ class Jenkins(Item):
         resp = self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' in resp.text
 
+    def validate_jenkinsfile(self, content):
+        """validate Jenkinsfile, see
+        https://www.jenkins.io/doc/book/pipeline/development/#linter
+
+        Args:
+            content (str): content of Jenkinsfile
+
+        Returns:
+            str: 'Jenkinsfile successfully validated.' if validate successful
+            or error message
+        """
+        data = {'jenkinsfile': content}
+        return self.handle_req(
+            'POST', 'pipeline-model-converter/validate', data=data).text
+
     def _url2name(self, url):
         '''Covert job url to full name
 
