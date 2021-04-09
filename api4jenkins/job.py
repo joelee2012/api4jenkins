@@ -155,6 +155,8 @@ class Project(Job, EnableMixIn):
         for item in self.api_json(tree='builds[number,url]')['builds']:
             yield self._new_instance_by_item('api4jenkins.build', item)
 
+    def __getitem__(self, number):
+        return self.get_build(number)
 
 class WorkflowJob(Project):
     pass

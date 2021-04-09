@@ -1,5 +1,8 @@
 # encoding: utf-8
+import json
 from functools import partial
+
+from .artifact import save_response_to
 from .item import Item, snake
 from .mix import RunScriptMixIn
 
@@ -19,6 +22,22 @@ class System(Item, RunScriptMixIn):
                       'safeExit', 'quietDown', 'cancelQuietDown']:
             setattr(self, snake(entry), partial(_post, entry))
 
+    def reload_jcasc(self):
+        return self.handle_req('POST', 'configuration-as-code/reload')
+
+    def export_jcasc(self, filename='jenkins.yaml'):
+        with self.handle_req('POST', 'configuration-as-code/export') as resp:
+            save_response_to(resp, filename)
+
+    def apply_jcasc(self, new):
+        params = {"newSource": new}
+        resp = self.handle_req(
+            'POST', 'configuration-as-code/checkNewSource', params=params)
+        if resp.text.startswith('<div class=error>'):
+            raise ValueError(resp.text)
+        d = {'json': json.dumps(params),
+             'replace': 'Apply new configuration'}
+        return self.handle_req('POST', 'configuration-as-code/replace', data=d)
 
 # TODO add groovy to print credential
     # def show_credential(self):

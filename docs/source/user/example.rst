@@ -282,6 +282,10 @@ get build with given number
 
     >>> build = job.get_build(1)
 
+or subscript with build number
+
+    >>> build = job[1]
+
 other shortcut methods to get special build:
 
     >>> job.get_first_build()
