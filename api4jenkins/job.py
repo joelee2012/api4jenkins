@@ -102,7 +102,8 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
         return self.handle_req('POST', 'build', params={'delay': delay})
 
     def get_scan_log(self, stream=False):
-        with self.handle_req('GET', 'indexing/consoleText', stream=stream) as resp:
+        with self.handle_req('GET', 'indexing/consoleText',
+                             stream=stream) as resp:
             for line in resp.iter_lines():
                 yield line
 
@@ -157,6 +158,7 @@ class Project(Job, EnableMixIn):
 
     def __getitem__(self, number):
         return self.get_build(number)
+
 
 class WorkflowJob(Project):
     pass

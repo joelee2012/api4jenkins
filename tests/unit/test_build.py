@@ -34,6 +34,13 @@ class TestBuild:
         getattr(workflowrun, action)()
         assert mock_resp.calls[0].request.url == req_url
 
+    def test_get_parameters(self, workflowrun):
+        params = workflowrun.get_parameters()
+        assert params[0].name == 'parameter1'
+        assert params[0].value == 'value1'
+        assert params[1].name == 'parameter2'
+        assert params[1].value == 'value2'
+
 
 class TestWorkflowRun:
 
