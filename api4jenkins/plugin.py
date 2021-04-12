@@ -35,7 +35,7 @@ class PluginsManager(Item):
 
     def set_site(self, url):
         self.handle_req('POST', 'siteConfigure', params={'site': url})
-        self.check_update_server()
+        self.check_updates_server()
 
     def check_updates_server(self):
         self.handle_req('POST', 'checkUpdatesServer')
