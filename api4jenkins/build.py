@@ -2,18 +2,15 @@
 
 import re
 import time
-from collections import namedtuple
 
 from .artifact import Artifact, save_response_to
 from .input import PendingInputAction
 from .item import Item
-from .mix import DeletionMixIn, DescriptionMixIn
+from .mix import DeletionMixIn, DescriptionMixIn, CauseMixIn
 from .report import TestReport
 
-Parameter = namedtuple('Parameter', ['class_name', 'name', 'value'])
 
-
-class Build(Item, DescriptionMixIn, DeletionMixIn):
+class Build(Item, DescriptionMixIn, DeletionMixIn, CauseMixIn):
 
     def console_text(self, stream=False):
         with self.handle_req('GET', 'consoleText', stream=stream) as resp:
@@ -62,16 +59,6 @@ class Build(Item, DescriptionMixIn, DeletionMixIn):
     def get_test_report(self):
         tr = TestReport(self.jenkins, f'{self.url}testReport')
         return tr if tr.exists() else None
-
-    def get_parameters(self):
-        parameters = []
-        for action in self.api_json()['actions']:
-            if 'parameters' in action:
-                for raw in action['parameters']:
-                    parameters.append(Parameter(raw['_class'], raw['name'],
-                                                raw.get('value', '')))
-                break
-        return parameters
 
 
 class WorkflowRun(Build):

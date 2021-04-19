@@ -11,6 +11,7 @@ from api4jenkins import Credentials
 from api4jenkins.credential import Credential
 from api4jenkins import PluginsManager
 from api4jenkins import Queue
+from api4jenkins.queue import QueueItem
 from api4jenkins.node import Nodes
 from api4jenkins.view import AllView
 from api4jenkins.report import TestReport
@@ -41,6 +42,8 @@ def _api_json(self, tree='', depth=0):
         return load_json('view/allview.json')
     elif isinstance(self, TestReport):
         return load_json('job/test_report.json')
+    elif isinstance(self, QueueItem):
+        return load_json('queue/waitingitem.json')
     raise TypeError(f'unknow item: {type(self)}')
 
 

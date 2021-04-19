@@ -448,6 +448,11 @@ you can retrieve test reports::
 
 see `TestReport`_, `TestSuite`_ , `TestCase`_  for more detail
 
+get parameters or causes of build ::
+
+    >>> paramters = build.get_parameters()
+    >>> causes = build.get_causes()
+
 
 WorkflowRun
 ------------

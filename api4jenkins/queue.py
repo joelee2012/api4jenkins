@@ -1,6 +1,7 @@
 # encoding: utf-8
 import re
 from .item import Item
+from .mix import CauseMixIn
 
 
 class Queue(Item):
@@ -31,7 +32,7 @@ class Queue(Item):
 #                                     +---(rarely)---+
 
 
-class QueueItem(Item):
+class QueueItem(Item, CauseMixIn):
 
     def __init__(self, jenkins, url):
         if not url.startswith('https') and jenkins.url.startswith('https'):

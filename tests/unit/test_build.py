@@ -41,6 +41,11 @@ class TestBuild:
         assert params[1].name == 'parameter2'
         assert params[1].value == 'value2'
 
+    def test_get_causes(self, workflowrun):
+        causes = workflowrun.get_causes()
+        assert causes[0]['shortDescription'] == 'Started by user admin'
+        assert causes[1]['shortDescription'] == 'Replayed #1'
+
 
 class TestWorkflowRun:
 

@@ -1,5 +1,10 @@
 Release History
 ===============
+1.5 (2021-04-??)
+-----------------
+- Add methods to get parameters and causes for build and queue item
+- Add methods to manage jcasc
+
 1.4 (2021-03-31)
 -----------------
 - Support to retrieve test report for build
