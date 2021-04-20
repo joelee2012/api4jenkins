@@ -52,7 +52,7 @@ class RawJsonMixIn:
 Parameter = namedtuple('Parameter', ['class_name', 'name', 'value'])
 
 
-class CauseMixIn:
+class ActionsMixIn:
 
     def get_parameters(self):
         parameters = []

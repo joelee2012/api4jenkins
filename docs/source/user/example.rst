@@ -625,6 +625,11 @@ get build from queue item
 
     >>> build = item.get_build()
 
+get parameters or causes of queue item ::
+
+    >>> paramters = item.get_parameters()
+    >>> causes = item.get_causes()
+
 get build from queue item until build is avaliable:
 
     >>> while not item.get_build():
@@ -735,6 +740,20 @@ restart/safe restart/quiet_down/cancel_quiet_down, see `how to start/stop/restar
 run groovy script
 
     >>> j.system.run_script('println "this is test"')
+
+it also supports to manage `jcasc <https://www.jenkins.io/projects/jcasc/>`_ ::
+
+to reload jcase
+
+    >>> j.system.reload_jcasc()
+
+to download the jcasc, default file name is jenkins.yaml
+
+    >>> j.system.export_jcasc()
+
+to apply new jcasc
+
+    >>> j.system.apply_jcasc('http://host/new_jcasc.yaml')
 
 
 Node

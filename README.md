@@ -10,16 +10,16 @@
 
 # Api4jenkins
 
-[Api4jenkins](https://github.com/joelee2012/api4jenkins) is a Jenkins REST API client for [Python3](https://www.python.org/) to access [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It provides full functionalities to control Job, Build, Credential, View, Queue, Plugins, Node, and System operation.
+[Api4jenkins](https://github.com/joelee2012/api4jenkins) is a Jenkins REST API client for [Python3](https://www.python.org/) to access [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It provides full functionalities to manage Job, Build, Credential, View, Queue, Plugins, Node, and System.
 
 # Features
 
 - Object oriented, each Jenkins item has corresponding class, easy to use and extend
 - Base on `api/json`, easy to query/filter attribute of item
 - Setup relationship between class just like Jenkins item
-- Almost support api for every Jenkins item
+- Support api for almost every Jenkins item
 - Pythonic
-- Integration test with latest Jenkins LTS
+- Test with latest Jenkins LTS
 
 # Installation
 
@@ -65,5 +65,5 @@ False
   ```
 
 # Documentation
-API Reference and User Guide is available on [Read the Docs](https://api4jenkins.readthedocs.io/)
+User Guide and API Reference is available on [Read the Docs](https://api4jenkins.readthedocs.io/)
 
