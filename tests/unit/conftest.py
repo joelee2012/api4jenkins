@@ -6,13 +6,13 @@ import responses
 from api4jenkins import Jenkins
 from api4jenkins import Item, Folder
 from api4jenkins.job import WorkflowJob, WorkflowMultiBranchProject
-from api4jenkins.build import WorkflowRun
+from api4jenkins.build import WorkflowRun, FreeStyleBuild
 from api4jenkins import Credentials
 from api4jenkins.credential import Credential
 from api4jenkins import PluginsManager
 from api4jenkins import Queue
 from api4jenkins.queue import QueueItem
-from api4jenkins.node import Nodes
+from api4jenkins.node import Nodes, Node
 from api4jenkins.view import AllView
 from api4jenkins.report import TestReport
 
@@ -28,6 +28,8 @@ def _api_json(self, tree='', depth=0):
         return load_json('job/pipeline.json')
     elif isinstance(self, WorkflowRun):
         return load_json('run/workflowrun.json')
+    elif isinstance(self, FreeStyleBuild):
+        return load_json('run/freestylebuild.json')
     elif isinstance(self, Credentials):
         return load_json('credential/credentials.json')
     elif isinstance(self, Credential):
@@ -37,7 +39,9 @@ def _api_json(self, tree='', depth=0):
     elif isinstance(self, Queue):
         return load_json('queue/queue.json')
     elif isinstance(self, Nodes):
-        return load_json('node/computer.json')
+        return load_json('node/nodes.json')
+    elif isinstance(self, Node):
+        return load_json('node/node.json')
     elif isinstance(self, AllView):
         return load_json('view/allview.json')
     elif isinstance(self, TestReport):

@@ -4,7 +4,7 @@ import json
 import re
 
 from .exceptions import ItemNotFoundError
-from .item import Item
+from .item import Item, new_item
 from .mix import ConfigurationMixIn, DeletionMixIn, RunScriptMixIn
 
 
@@ -42,20 +42,38 @@ class Nodes(Item):
         return None
 
     def iter_builds(self):
-        tree = 'computer[oneOffExecutors[currentExecutable[url]]]'
-        for computer in self.api_json(tree, 2)['computer']:
-            for executor in computer.get('oneOffExecutors'):
-                # in case of issue:
-                # https://github.com/joelee2012/api4jenkins/issues/16
-                if not executor['currentExecutable']:
-                    continue
-                yield self._new_instance_by_item('api4jenkins.build',
-                                                 executor['currentExecutable'])
+        builds = {}
+        # iterate 'executors', 'oneOffExecutors' in order,
+        # cause freestylebuild is in executors, and _class of workflowbuild in
+        # executors is PlaceholderExecutable
+        for kind in ['executors', 'oneOffExecutors']:
+            tree = f'computer[{kind}[currentExecutable[url]]]'
+            for computer in self.api_json(tree, 2)['computer']:
+                _parse_builds(computer.get(kind), builds)
+
+        yield from _new_items(self.jenkins, builds)
 
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
             item['url'] = f"{self.url}{item['displayName']}/"
             yield self._new_instance_by_item(__name__, item)
+
+
+# following two functions should be used in this module only
+def _new_items(jenkins, builds):
+    for url, class_name in builds.items():
+        item = {'url': url, '_class': class_name}
+        yield new_item(jenkins, 'api4jenkins.build', item)
+
+
+def _parse_builds(executors, builds):
+    for executor in executors:
+        # in case of issue:
+        # https://github.com/joelee2012/api4jenkins/issues/16
+        execable = executor['currentExecutable']
+        if not execable:
+            continue
+        builds[execable['url']] = execable['_class']
 
 
 class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
@@ -71,10 +89,17 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
                             params={'offlineMessage': msg})
 
     def iter_builds(self):
-        tree = 'oneOffExecutors[currentExecutable[url]]'
-        for executor in self.api_json(tree, 2)['oneOffExecutors']:
-            yield self._new_instance_by_item('api4jenkins.build',
-                                             executor['currentExecutable'])
+        builds = {}
+        # iterate 'executors', 'oneOffExecutors' in order,
+        # cause freestylebuild is in executors
+        for kind in ['executors', 'oneOffExecutors']:
+            tree = f'{kind}[currentExecutable[url]]'
+            _parse_builds(self.api_json(tree, 2)[kind], builds)
+
+        yield from _new_items(self.jenkins, builds)
+
+    def __iter__(self):
+        yield from self.iter_builds()
 
 
 class MasterComputer(Node):
