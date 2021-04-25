@@ -46,10 +46,10 @@ class Nodes(Item):
         # iterate 'executors', 'oneOffExecutors' in order,
         # cause freestylebuild is in executors, and _class of workflowbuild in
         # executors is PlaceholderExecutable
-        for kind in ['executors', 'oneOffExecutors']:
-            tree = f'computer[{kind}[currentExecutable[url]]]'
-            for computer in self.api_json(tree, 2)['computer']:
-                _parse_builds(computer.get(kind), builds)
+        tree = ('computer[executors[currentExecutable[url]],'
+                'oneOffExecutors[currentExecutable[url]]]')
+        for computer in self.api_json(tree, 2)['computer']:
+            _parse_builds(computer, builds)
 
         yield from _new_items(self.jenkins, builds)
 
@@ -66,14 +66,15 @@ def _new_items(jenkins, builds):
         yield new_item(jenkins, 'api4jenkins.build', item)
 
 
-def _parse_builds(executors, builds):
-    for executor in executors:
-        # in case of issue:
-        # https://github.com/joelee2012/api4jenkins/issues/16
-        execable = executor['currentExecutable']
-        if not execable:
-            continue
-        builds[execable['url']] = execable['_class']
+def _parse_builds(data, builds):
+    for kind in ['executors', 'oneOffExecutors']:
+        for executor in data.get(kind):
+            # in case of issue:
+            # https://github.com/joelee2012/api4jenkins/issues/16
+            execable = executor['currentExecutable']
+            if not execable:
+                continue
+            builds[execable['url']] = execable['_class']
 
 
 class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
@@ -92,10 +93,9 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
         builds = {}
         # iterate 'executors', 'oneOffExecutors' in order,
         # cause freestylebuild is in executors
-        for kind in ['executors', 'oneOffExecutors']:
-            tree = f'{kind}[currentExecutable[url]]'
-            _parse_builds(self.api_json(tree, 2)[kind], builds)
-
+        tree = ('executors[currentExecutable[url]],'
+                'oneOffExecutors[currentExecutable[url]]')
+        _parse_builds(self.api_json(tree, 2), builds)
         yield from _new_items(self.jenkins, builds)
 
     def __iter__(self):

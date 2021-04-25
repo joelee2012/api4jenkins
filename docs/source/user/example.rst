@@ -12,7 +12,7 @@ The first step is to initialize Jenkins object, it is very simple, just set `url
     >>> print(j)
     <Jenkins: http://127.0.0.1:8080/>
 
-if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to connect if access with username and password too much often, in  this case, you can enable dynamic api token when initialize Jenkins which will create new api token and revoke token when object is destoried by garbage collection.
+if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to connect if access with username and password too much often, in  this case, you can set **max_retries(default is 1)** to retry or enable dynamic api token when initialize Jenkins which will create new api token and revoke token when object is destoried by garbage collection.
 
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('username', 'password'), token=True)
 
