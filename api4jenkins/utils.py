@@ -1,5 +1,5 @@
-from .node import Node
 from .job import Project
+from .node import Node
 
 
 def filter_node_by_label(nodes, *labels):
