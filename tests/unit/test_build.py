@@ -34,6 +34,18 @@ class TestBuild:
         getattr(workflowrun, action)()
         assert mock_resp.calls[0].request.url == req_url
 
+    def test_get_parameters(self, workflowrun):
+        params = workflowrun.get_parameters()
+        assert params[0].name == 'parameter1'
+        assert params[0].value == 'value1'
+        assert params[1].name == 'parameter2'
+        assert params[1].value == 'value2'
+
+    def test_get_causes(self, workflowrun):
+        causes = workflowrun.get_causes()
+        assert causes[0]['shortDescription'] == 'Started by user admin'
+        assert causes[1]['shortDescription'] == 'Replayed #1'
+
 
 class TestWorkflowRun:
 

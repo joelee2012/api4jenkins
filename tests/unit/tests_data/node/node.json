@@ -1,0 +1,297 @@
+{
+  "_class": "hudson.model.Hudson$MasterComputer",
+  "actions": [
+    {}
+  ],
+  "assignedLabels": [
+    {
+      "actions": [
+        {}
+      ],
+      "busyExecutors": 2,
+      "clouds": [],
+      "description": null,
+      "idleExecutors": 0,
+      "loadStatistics": {
+        "_class": "hudson.model.Label$1",
+        "availableExecutors": {},
+        "busyExecutors": {},
+        "connectingExecutors": {},
+        "definedExecutors": {},
+        "idleExecutors": {},
+        "onlineExecutors": {},
+        "queueLength": {},
+        "totalExecutors": {}
+      },
+      "name": "master",
+      "nodes": [
+        {
+          "_class": "hudson.model.Hudson",
+          "assignedLabels": [
+            {
+              "name": "master"
+            }
+          ],
+          "mode": "NORMAL",
+          "nodeDescription": "the master Jenkins node",
+          "nodeName": "",
+          "numExecutors": 2,
+          "description": null,
+          "jobs": [],
+          "overallLoad": {},
+          "primaryView": {
+            "_class": "hudson.model.AllView",
+            "name": "all",
+            "url": "http://0.0.0.0:8080/"
+          },
+          "quietingDown": false,
+          "slaveAgentPort": 50000,
+          "unlabeledLoad": {
+            "_class": "jenkins.model.UnlabeledLoadStatistics"
+          },
+          "url": "http://0.0.0.0:8080/",
+          "useCrumbs": true,
+          "useSecurity": true,
+          "views": [
+            {
+              "_class": "hudson.model.AllView",
+              "name": "all",
+              "url": "http://0.0.0.0:8080/"
+            }
+          ]
+        }
+      ],
+      "offline": false,
+      "tiedJobs": [],
+      "totalExecutors": 2,
+      "propertiesList": []
+    }
+  ],
+  "description": "the master Jenkins node",
+  "displayName": "master",
+  "executors": [
+    {
+      "currentExecutable": {
+        "_class": "hudson.model.FreeStyleBuild",
+        "actions": [
+          {
+            "_class": "hudson.model.ParametersAction",
+            "parameters": [
+              {
+                "_class": "hudson.model.StringParameterValue",
+                "name": "arg",
+                "value": "value1"
+              }
+            ]
+          },
+          {
+            "_class": "hudson.model.CauseAction",
+            "causes": [
+              {
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user admin",
+                "userId": "admin",
+                "userName": "admin"
+              }
+            ]
+          },
+          {},
+          {},
+          {}
+        ],
+        "artifacts": [],
+        "building": true,
+        "description": null,
+        "displayName": "#14",
+        "duration": 0,
+        "estimatedDuration": 599342,
+        "executor": {},
+        "fullDisplayName": "Level1_freestylejob #14",
+        "id": "14",
+        "keepLog": false,
+        "number": 14,
+        "queueId": 151,
+        "result": null,
+        "timestamp": 1619167515987,
+        "url": "http://0.0.0.0:8080/job/Level1_freestylejob/14/",
+        "builtOn": "",
+        "changeSet": {
+          "_class": "hudson.scm.EmptyChangeLogSet",
+          "items": [],
+          "kind": null
+        },
+        "culprits": []
+      },
+      "idle": false,
+      "likelyStuck": false,
+      "number": 0,
+      "progress": 2
+    },
+    {
+      "currentExecutable": {
+        "_class": "org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution$PlaceholderTask$PlaceholderExecutable",
+        "displayName": "Level1_WorkflowJob1 #53 (echo)",
+        "estimatedDuration": 441604,
+        "fullDisplayName": "Level1_WorkflowJob1 #53 (echo)",
+        "number": 53,
+        "timestamp": 1619167520820,
+        "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/"
+      },
+      "idle": false,
+      "likelyStuck": false,
+      "number": 1,
+      "progress": 2
+    }
+  ],
+  "icon": "computer.png",
+  "iconClassName": "icon-computer",
+  "idle": false,
+  "jnlpAgent": false,
+  "launchSupported": true,
+  "loadStatistics": {
+    "_class": "hudson.model.Label$1",
+    "availableExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "busyExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "connectingExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "definedExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "idleExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "onlineExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "queueLength": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    },
+    "totalExecutors": {
+      "hour": {},
+      "min": {},
+      "sec10": {}
+    }
+  },
+  "manualLaunchAllowed": true,
+  "monitorData": {
+    "hudson.node_monitors.SwapSpaceMonitor": {
+      "_class": "hudson.node_monitors.SwapSpaceMonitor$MemoryUsage2",
+      "availablePhysicalMemory": 125194240,
+      "availableSwapSpace": 472117248,
+      "totalPhysicalMemory": 2084679680,
+      "totalSwapSpace": 1073737728
+    },
+    "hudson.node_monitors.TemporarySpaceMonitor": {
+      "_class": "hudson.node_monitors.DiskSpaceMonitorDescriptor$DiskSpace",
+      "timestamp": 1619165905476,
+      "path": "/tmp",
+      "size": 50694995968
+    },
+    "hudson.node_monitors.DiskSpaceMonitor": {
+      "_class": "hudson.node_monitors.DiskSpaceMonitorDescriptor$DiskSpace",
+      "timestamp": 1619165905018,
+      "path": "/var/jenkins_home",
+      "size": 416557895680
+    },
+    "hudson.node_monitors.ArchitectureMonitor": "Linux (amd64)",
+    "hudson.node_monitors.ResponseTimeMonitor": {
+      "_class": "hudson.node_monitors.ResponseTimeMonitor$Data",
+      "timestamp": 1619165905026,
+      "average": 0
+    },
+    "hudson.node_monitors.ClockMonitor": {
+      "_class": "hudson.util.ClockDifference",
+      "diff": 0
+    }
+  },
+  "numExecutors": 2,
+  "offline": false,
+  "offlineCause": null,
+  "offlineCauseReason": "",
+  "oneOffExecutors": [
+    {
+      "currentExecutable": {
+        "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+        "actions": [
+          {
+            "_class": "hudson.model.CauseAction",
+            "causes": [
+              {
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user admin",
+                "userId": "admin",
+                "userName": "admin"
+              }
+            ]
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "_class": "org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction"
+          },
+          {},
+          {},
+          {},
+          {
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction"
+          },
+          {},
+          {},
+          {},
+          {}
+        ],
+        "artifacts": [],
+        "building": true,
+        "description": null,
+        "displayName": "#53",
+        "duration": 0,
+        "estimatedDuration": 441604,
+        "executor": {
+          "_class": "hudson.model.OneOffExecutor"
+        },
+        "fullDisplayName": "Level1_WorkflowJob1 #53",
+        "id": "53",
+        "keepLog": false,
+        "number": 53,
+        "queueId": 152,
+        "result": null,
+        "timestamp": 1619167520803,
+        "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/",
+        "changeSets": [],
+        "culprits": [],
+        "nextBuild": null,
+        "previousBuild": {
+          "number": 52,
+          "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/52/"
+        }
+      },
+      "idle": false,
+      "likelyStuck": false,
+      "number": -1,
+      "progress": 2
+    }
+  ],
+  "temporarilyOffline": false
+}

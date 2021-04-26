@@ -1,0 +1,51 @@
+{
+  "_class": "hudson.model.FreeStyleBuild",
+  "actions": [
+    {
+      "_class": "hudson.model.ParametersAction",
+      "parameters": [
+        {
+          "_class": "hudson.model.StringParameterValue",
+          "name": "arg",
+          "value": "value1"
+        }
+      ]
+    },
+    {
+      "_class": "hudson.model.CauseAction",
+      "causes": [
+        {
+          "_class": "hudson.model.Cause$UserIdCause",
+          "shortDescription": "Started by user admin",
+          "userId": "admin",
+          "userName": "admin"
+        }
+      ]
+    },
+    {},
+    {},
+    {}
+  ],
+  "artifacts": [],
+  "building": false,
+  "description": null,
+  "displayName": "#14",
+  "duration": 599334,
+  "estimatedDuration": 599335,
+  "executor": null,
+  "fullDisplayName": "Level1_freestylejob #14",
+  "id": "14",
+  "keepLog": false,
+  "number": 14,
+  "queueId": 151,
+  "result": "SUCCESS",
+  "timestamp": 1619167515987,
+  "url": "http://0.0.0.0:8080/job/Level1_freestylejob/14/",
+  "builtOn": "",
+  "changeSet": {
+    "_class": "hudson.scm.EmptyChangeLogSet",
+    "items": [],
+    "kind": null
+  },
+  "culprits": []
+}

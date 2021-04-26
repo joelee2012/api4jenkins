@@ -1,0 +1,72 @@
+{
+    "_class": "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+    "actions": [
+        {},
+        {},
+        {},
+        {
+            "_class": "org.jenkinsci.plugins.github_branch_source.GitHubRepoMetadataAction"
+        },
+        {
+            "_class": "jenkins.scm.api.metadata.ObjectMetadataAction"
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+            "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction"
+        }
+    ],
+    "description": null,
+    "displayName": "Level1_multibranchjob",
+    "displayNameOrNull": null,
+    "fullDisplayName": "Level1_multibranchjob",
+    "fullName": "Level1_multibranchjob",
+    "name": "Level1_multibranchjob",
+    "url": "http://0.0.0.0:8080/job/Level1_multibranchjob/",
+    "healthReport": [
+        {
+            "description": "Worst health: Level1_multibranchjob » feature/github-commands: Build stability: All recent builds failed.",
+            "iconClassName": "icon-health-00to19",
+            "iconUrl": "health-00to19.png",
+            "score": 0
+        }
+    ],
+    "jobs": [
+        {
+            "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+            "name": "feature%2Fgithub-commands",
+            "url": "http://0.0.0.0:8080/job/Level1_multibranchjob/job/branch1/",
+            "color": "red"
+        },
+        {
+            "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+            "name": "master",
+            "url": "http://0.0.0.0:8080/job/Level1_multibranchjob/job/master/",
+            "color": "red"
+        }
+    ],
+    "primaryView": {
+        "_class": "jenkins.branch.MultiBranchProjectViewHolder$ViewImpl",
+        "name": "default",
+        "url": "http://0.0.0.0:8080/job/Level1_multibranchjob/"
+    },
+    "views": [
+        {
+            "_class": "jenkins.branch.MultiBranchProjectViewHolder$ViewImpl",
+            "name": "change-requests",
+            "url": "http://0.0.0.0:8080/job/Level1_multibranchjob/view/change-requests/"
+        },
+        {
+            "_class": "jenkins.branch.MultiBranchProjectViewHolder$ViewImpl",
+            "name": "default",
+            "url": "http://0.0.0.0:8080/job/Level1_multibranchjob/"
+        }
+    ],
+    "sources": [
+        {}
+    ]
+}

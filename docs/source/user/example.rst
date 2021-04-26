@@ -12,7 +12,7 @@ The first step is to initialize Jenkins object, it is very simple, just set `url
     >>> print(j)
     <Jenkins: http://127.0.0.1:8080/>
 
-if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to connect if access with username and password too much often, in  this case, you can enable dynamic api token when initialize Jenkins which will create new api token and revoke token when object is destoried by garbage collection.
+if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to connect if access with username and password too much often, in  this case, you can set **max_retries(default is 1)** to retry or enable dynamic api token when initialize Jenkins which will create new api token and revoke token when object is destoried by garbage collection.
 
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('username', 'password'), token=True)
 
@@ -282,6 +282,10 @@ get build with given number
 
     >>> build = job.get_build(1)
 
+or subscript with build number
+
+    >>> build = job[1]
+
 other shortcut methods to get special build:
 
     >>> job.get_first_build()
@@ -443,6 +447,11 @@ you can retrieve test reports::
     >>> tr = build.get_test_report()
 
 see `TestReport`_, `TestSuite`_ , `TestCase`_  for more detail
+
+get parameters or causes of build ::
+
+    >>> paramters = build.get_parameters()
+    >>> causes = build.get_causes()
 
 
 WorkflowRun
@@ -616,6 +625,11 @@ get build from queue item
 
     >>> build = item.get_build()
 
+get parameters or causes of queue item ::
+
+    >>> paramters = item.get_parameters()
+    >>> causes = item.get_causes()
+
 get build from queue item until build is avaliable:
 
     >>> while not item.get_build():
@@ -726,6 +740,20 @@ restart/safe restart/quiet_down/cancel_quiet_down, see `how to start/stop/restar
 run groovy script
 
     >>> j.system.run_script('println "this is test"')
+
+it also supports to manage `jcasc <https://www.jenkins.io/projects/jcasc/>`_ ::
+
+to reload jcase
+
+    >>> j.system.reload_jcasc()
+
+to download the jcasc, default file name is jenkins.yaml
+
+    >>> j.system.export_jcasc()
+
+to apply new jcasc
+
+    >>> j.system.apply_jcasc('http://host/new_jcasc.yaml')
 
 
 Node

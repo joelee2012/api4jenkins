@@ -6,11 +6,11 @@ import time
 from .artifact import Artifact, save_response_to
 from .input import PendingInputAction
 from .item import Item
-from .mix import DeletionMixIn, DescriptionMixIn
+from .mix import DeletionMixIn, DescriptionMixIn, ActionsMixIn
 from .report import TestReport
 
 
-class Build(Item, DescriptionMixIn, DeletionMixIn):
+class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
 
     def console_text(self, stream=False):
         with self.handle_req('GET', 'consoleText', stream=stream) as resp:

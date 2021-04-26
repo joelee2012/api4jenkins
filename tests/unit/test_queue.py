@@ -52,3 +52,13 @@ class TestQueueItem:
         monkeypatch.setattr(item, 'api_json', _api_json)
         build = item.get_build()
         assert isinstance(build, obj)
+
+    def test_get_parameters(self, jenkins):
+        item = QueueItem(jenkins, f'{jenkins.url}queue/item/668/')
+        params = item.get_parameters()
+        assert len(params) == 0
+
+    def test_get_causes(self, jenkins):
+        item = QueueItem(jenkins, f'{jenkins.url}queue/item/668/')
+        causes = item.get_causes()
+        assert causes[0]['shortDescription'] == 'Triggered by'

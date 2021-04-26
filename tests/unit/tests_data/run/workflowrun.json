@@ -1,7 +1,36 @@
 {
   "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
   "actions": [
-
+    {
+      "_class": "hudson.model.CauseAction",
+      "causes": [
+        {
+          "_class": "hudson.model.Cause$UserIdCause",
+          "shortDescription": "Started by user admin",
+          "userId": "admin",
+          "userName": "admin"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayCause",
+          "shortDescription": "Replayed #1"
+        }
+      ]
+    },
+    {
+      "_class": "hudson.model.ParametersAction",
+      "parameters": [
+        {
+          "_class": "hudson.model.StringParameterValue",
+          "name": "parameter1",
+          "value": "value1"
+        },
+        {
+          "_class": "hudson.model.StringParameterValue",
+          "name": "parameter2",
+          "value": "value2"
+        }
+      ]
+    }
   ],
   "artifacts": [],
   "building": false,
