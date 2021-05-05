@@ -74,6 +74,8 @@ def _parse_builds(data, builds):
             execable = executor['currentExecutable']
             if not execable:
                 continue
+            if execable['_class'].endswith('PlaceholderExecutable'):
+                execable['_class'] = 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
             builds[execable['url']] = execable['_class']
 
 
