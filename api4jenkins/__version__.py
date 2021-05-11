@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = '1.5'
+__version__ = '1.5.1'
 __title__ = 'api4jenkins'
 __description__ = 'Jenkins REST API client'
 __url__ = 'https://github.com/joelee2012/api4jenkins'

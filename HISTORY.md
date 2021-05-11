@@ -1,5 +1,9 @@
 Release History
 ===============
+1.5.1 (2021-05-11)
+-----------------
+- Bugfix for nodes.iter_builds
+
 1.5 (2021-04-29)
 -----------------
 - Add methods to get parameters and causes for `Build` and `QueueItem`
