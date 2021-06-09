@@ -38,7 +38,8 @@ def _new_item():
         class_name = delimiter.split(item['_class'])[-1]
         module = import_module(module)
         if not hasattr(module, class_name):
-            raise AttributeError(f'{module} has no class {class_name}, '
+            raise AttributeError(f'{module} has no class {class_name} to '
+                                 f'describe {item["url"]}, '
                                  'Patch new class with api4jenkins._patch_to')
         _class = getattr(module, class_name)
         return _class(jenkins, item['url'])
