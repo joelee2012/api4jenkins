@@ -25,12 +25,12 @@ Jenkins Python Client
 Features
 --------
 
-    - Object oriented, each Jenkins item has corresponding class, easy to use and extend
-    - Base on `api/json`, easy to query/filter attribute of item
-    - Setup relationship between class just like Jenkins item
-    - Support api for almost every Jenkins item
-    - Pythonic
-    - Test with latest Jenkins LTS
+- Object oriented, each Jenkins item has corresponding class, easy to use and extend
+- Base on `api/json`, easy to query/filter attribute of item
+- Setup relationship between class just like Jenkins item
+- Support api for almost every Jenkins item
+- Pythonic
+- Test with latest Jenkins LTS
 
 
 Quick start
