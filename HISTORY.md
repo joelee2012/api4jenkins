@@ -1,5 +1,11 @@
 Release History
 ===============
+1.6 (2021-07-18)
+-----------------
+- Support NestedView
+- Support decrypt credential in Jenkins
+- Update doc
+
 1.5.1 (2021-05-11)
 -----------------
 - Bugfix for nodes.iter_builds
