@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to api4jenkins's documentation!
-=========================================
+Jenkins Python Client
+=================================================
 .. image:: https://img.shields.io/github/license/joelee2012/api4jenkins
     :target: https://pypi.org/project/api4jenkins/
 
@@ -19,20 +19,18 @@ Welcome to api4jenkins's documentation!
 
 
 
-`Api4jenkins <https://github.com/joelee2012/api4jenkins>`_ is an object oriented `Python <https://www.python.org/>`_ project that provides access to the `Jenkins <https://jenkins.io/>`_ `Remote access API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_ programmatically. It assiciates/constructs python class/object with Jenkins's items and JSON API.
+`Python3 <https://www.python.org/>`_ client library for `Jenkins API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_.
 
 
-It provides but not limits functionalities to manage Job, Build, Node, View, Credential, BuildQueue, Plugins and System:
+Features
+--------
 
-- get/delete/create/move/rename/copy/build/enable/disable job or folder, iterate children jobs with depth, folder based views/credentials functionalities
-- get/iterate builds of project, stop/term/kill build, get progressive console output.
-- get/delete/create/iterate views for jenkins or folder. add/remove jobs to/from view.
-- get/delete/create/iterate credentials for system or folder.
-- get/delete/create/iterate nodes, run groovy script on node.
-- get/cancel/iterate queue item, get job/build from queue item.
-- restart/safe restart/quiet down/cancel quiet down/run groovy script for master
-- get item status(int, bool, str) by accessing attribute of python object.
-- install/uninstall/iterate plugin, check installation status, change update site and set proxy
+    - Object oriented, each Jenkins item has corresponding class, easy to use and extend
+    - Base on `api/json`, easy to query/filter attribute of item
+    - Setup relationship between class just like Jenkins item
+    - Support api for almost every Jenkins item
+    - Pythonic
+    - Test with latest Jenkins LTS
 
 
 Quick start

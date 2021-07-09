@@ -5,22 +5,29 @@ Examples
 
 Jenkins
 ----------------------------------------
-The first step is to initialize Jenkins object, it is very simple, just set `url`, `username` and `password` or `api token`:
+The first step is to initialize Jenkins object, it is very simple, just set
+`url`, `username` and `password` or `api token`:
 
     >>> from api4jenkins import Jenkins
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('username', 'password or token'))
     >>> print(j)
     <Jenkins: http://127.0.0.1:8080/>
 
-if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to connect if access with username and password too much often, in  this case, you can set **max_retries(default is 1)** to retry or enable dynamic api token when initialize Jenkins which will create new api token and revoke token when object is destoried by garbage collection.
+if Jenkins integrated with LDAP server, sometimes LDAP server will refuse to
+connect if access with username and password too much often, in  this case,
+you can set **max_retries(default is 1)** to retry or enable dynamic api token
+when initialize Jenkins which will create new api token and revoke token when
+object is destoried by garbage collection.
 
     >>> j = Jenkins('http://127.0.0.1:8080/', auth=('username', 'password'), token=True)
 
 .. note::
 
-    Any parameter supported by `requests.Session.request <https://requests.readthedocs.io/en/latest/api/#requests.Session.request>`_ can be passed to initialize Jenkins object.
+    Any parameter supported by `requests.Session.request <https://requests.readthedocs.io/en/latest/api/#requests.Session.request>`_
+    can be passed to initialize Jenkins object.
 
-Now, we have a :class:`Jenkins <api4jenkins.Jenkins>` object `j`, let's check if Jenkins exists and retrive its version and crumb value::
+Now, we have a :class:`Jenkins <api4jenkins.Jenkins>` object `j`, let's check
+if Jenkins exists and retrive its version and crumb value::
 
     >>> j.exists()
     True
@@ -29,8 +36,11 @@ Now, we have a :class:`Jenkins <api4jenkins.Jenkins>` object `j`, let's check if
     >>> j.crumb
     {'_class': 'hudson.security.csrf.DefaultCrumbIssuer', 'crumb': 'ccc8a8388c8288140361e12526ca8b37aa8b05a33956905976bd57959832a225', 'crumbRequestField': 'Jenkins-Crumb'}
 
-In `api4jenkins <https://github.com/joelee2012/api4jenkins>`_, all classes are inheriented
-from class :class:`Item <api4jenkins.item.Item>` which provides many common methods and capability to access any `int, str, bool, none` value of key as attribute(**must be snake case of json key**) of object that returned by requesting `<item url>/api/json`.
+In `api4jenkins <https://github.com/joelee2012/api4jenkins>`_, all classes are
+inheriented from class :class:`Item <api4jenkins.item.Item>` which provides
+many common methods and capability to access any `int, str, bool, none` value
+of key as attribute(**must be snake case of json key**) of object that returned
+ by requesting `<item url>/api/json`.
 
 For example, we call `j.api_json()` to get data of Jenkins::
 
@@ -50,7 +60,8 @@ For example, we call `j.api_json()` to get data of Jenkins::
         .....
     }
 
-Then we can access attribute(**must be snake case of json key**) of Jenkins object to get value of key in json::
+Then we can access attribute(**must be snake case of json key**) of Jenkins
+object to get value of key in json::
 
     # attribute name should be snake case of key in json
     >>> j.description
@@ -65,7 +76,9 @@ Call `j.dynamic_attrs` to get the dynamic attributes of an Item::
     >>> j.dynamic_attrs
     ['_class', 'mode', 'node_description', 'node_name', 'num_executors', 'description', 'quieting_down', 'slave_agent_port', 'use_crumbs', 'use_security']
 
-With Jenkins object you can manage many Items including: `Job`_, `Credential`_, `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with `Job`_ management.
+With Jenkins object you can manage many Items including: `Job`_, `Credential`_,
+ `Node`_, `View`_, `Queue`_, `Plugin`_, `System`_ and so on. let's start with
+`Job`_ management.
 
 create job with `j.create_job()`::
 
@@ -79,7 +92,8 @@ create job with `j.create_job()`::
     ... </project>"""
     >>> j.create_job('freestylejob', xml)
 
-once job is created, we can get it by call `j.get_job()` or by subscript `j['freestylejob']` which will return a :class:`Job <api4jenkins.job.Job>` object::
+once job is created, we can get it by call `j.get_job()` or by subscript
+`j['freestylejob']` which will return a :class:`Job <api4jenkins.job.Job>` object::
 
     >>> job = j.get_job('freestylejob')
     >>> print(job)
@@ -99,7 +113,9 @@ now let's copy a new job and delete new::
     >>> print(dump_job)
     None
 
-call `j.build_job()` to trigger job to build if it is buildable, it will return a :class:`QueueItem <api4jenkins.queue.QueueItem>` which can be used for retriving the :class:`Build <api4jenkins.build.Build>`::
+call `j.build_job()` to trigger job to build if it is buildable, it will
+return a :class:`QueueItem <api4jenkins.queue.QueueItem>` which can be used
+for retriving the :class:`Build <api4jenkins.build.Build>`::
 
     >>> item = j.build_job('freestylejob')
     >>> import time
@@ -151,16 +167,28 @@ or iterate with depth ::
 
 
 use `j.validate_jenkinsfile(content)` to validate your Jenkinsfile,
-it returns string '**Jenkinsfile successfully validated.**' if validate successful or error message.::
+it returns string '**Jenkinsfile successfully validated.**' if validate
+successful or error message.::
 
     >>> j.validate_jenkinsfile('content')
 
 
 Job
 ----------------------------------
-:class:`Job <api4jenkins.job.Job>` is user configured item in Jenkins, it's the base class of :class:`Folder <api4jenkins.job.Folder>` and its subclass :class:`WorkflowMultiBranchProject <api4jenkins.job.WorkflowMultiBranchProject>`; :class:`Project <api4jenkins.job.Project>` and its subclass
-:class:`FreeStyleProject <api4jenkins.job.FreeStyleProject>`, :class:`GitHubSCMNavigator <api4jenkins.job.GitHubSCMNavigator>`, :class:`IvyModuleSet <api4jenkins.job.IvyModuleSet>`, :class:`MatrixProject <api4jenkins.job.MatrixProject>`,
-:class:`MavenModuleSet <api4jenkins.job.MavenModuleSet>`, :class:`MultiJobProject <api4jenkins.job.MultiJobProject>`, :class:`WorkflowJob <api4jenkins.job.WorkflowJob>`, :class:`MavenModuleSet <api4jenkins.job.MavenModuleSet>`. as :class:`Job <api4jenkins.job.Job>` is subclass of Item, so we can retrive attributes from json returned by requesting `<Job>/api/json` as well::
+:class:`Job <api4jenkins.job.Job>` is user configured item in Jenkins, it's
+the base class of :class:`Folder <api4jenkins.job.Folder>` and its subclass
+:class:`WorkflowMultiBranchProject <api4jenkins.job.WorkflowMultiBranchProject>`;
+:class:`Project <api4jenkins.job.Project>` and its subclass
+:class:`FreeStyleProject <api4jenkins.job.FreeStyleProject>`,
+:class:`GitHubSCMNavigator <api4jenkins.job.GitHubSCMNavigator>`,
+:class:`IvyModuleSet <api4jenkins.job.IvyModuleSet>`,
+:class:`MatrixProject <api4jenkins.job.MatrixProject>`,
+:class:`MavenModuleSet <api4jenkins.job.MavenModuleSet>`,
+:class:`MultiJobProject <api4jenkins.job.MultiJobProject>`,
+:class:`WorkflowJob <api4jenkins.job.WorkflowJob>`,
+:class:`MavenModuleSet <api4jenkins.job.MavenModuleSet>`. as
+:class:`Job <api4jenkins.job.Job>` is subclass of Item, so we can retrive
+attributes from json returned by requesting `<Job>/api/json` as well::
 
     >>> job.api_json()
     {
@@ -188,7 +216,9 @@ Job
 to list all attributes are avaliable in json data
 
     >>> job.dynamic_attrs
-    ['_class', 'description', 'display_name', 'full_display_name', 'full_name', 'name', 'url', 'buildable', 'color', 'in_queue', 'keep_dependencies', 'next_build_number', 'concurrent_build', 'disabled']
+    ['_class', 'description', 'display_name', 'full_display_name', 'full_name',
+    'name', 'url', 'buildable', 'color', 'in_queue', 'keep_dependencies',
+    'next_build_number', 'concurrent_build', 'disabled']
 
 get the parent of `Job`
 
@@ -219,7 +249,8 @@ get/update configuration:
 
 .. note::
 
-    method `configure()` is avaliable for Job, View, Credential, Node to get/set the xml configuration.
+    method `configure()` is avaliable for Job, View, Credential, Node to
+    get/set the xml configuration.
 
 get/set description of job:
 
@@ -242,9 +273,13 @@ check if job exists:
 
 Project
 ----------------------------------
-:class:`Project <api4jenkins.job.Project>` is a kind of **buildable** Item in Jenkins, it's also subclass of Job. besides the methods come from Job, it has following additional methods.
+:class:`Project <api4jenkins.job.Project>` is a kind of **buildable** Item in
+Jenkins, it's also subclass of Job. besides the methods come from Job, it has
+following additional methods.
 
-call `Project.build()` will start a :class:`Build <api4jenkins.build.Build>`, it will return a :class:`QueueItem <api4jenkins.queue.QueueItem>` which can be used for retriving build item.
+call `Project.build()` will start a :class:`Build <api4jenkins.build.Build>`,
+it will return a :class:`QueueItem <api4jenkins.queue.QueueItem>` which can be
+used for retriving build item.
 
     >>> item = job.build()
     >>> import time
@@ -315,7 +350,9 @@ see `Build`_
 
 Folder
 ----------------------------------
-:class:`Folder <api4jenkins.job.Folder>` is organizational container in Jenkins, besides methods inheriented from :class:`Job <api4jenkins.job.Job>`, following methods are avaliable:
+:class:`Folder <api4jenkins.job.Folder>` is organizational container in
+Jenkins, besides methods inheriented from :class:`Job <api4jenkins.job.Job>`,
+following methods are avaliable:
 
 create empty folder::
 
@@ -357,7 +394,8 @@ reload folder::
 
     >>> folder.reload()
 
-iterate jobs in folder, set depth for function `Folder.iter()` or obejct `folder` to iterate folder recursively::
+iterate jobs in folder, set depth for function `Folder.iter()` or obejct
+`folder` to iterate folder recursively::
 
     # iter jobs in first level
     >>> for job in folder:
@@ -378,7 +416,8 @@ you can also manage folder based `View`_, `Credential`_
 
 WorkflowMultiBranchProject
 --------------------------
-WorkflowMultiBranchProject is a kind of `Folder`. it has few dedicated methods, assume you have one WorkflowMultiBranchProject object `branch_project`
+WorkflowMultiBranchProject is a kind of `Folder`. it has few dedicated methods,
+assume you have one WorkflowMultiBranchProject object `branch_project`
 
     >>> branch_project.scan()
     >>> for line in branch_project.get_scan_log():
@@ -386,7 +425,8 @@ WorkflowMultiBranchProject is a kind of `Folder`. it has few dedicated methods, 
 
 Build
 -----------------------------------
-Build is result of a single execution of a Project, you can get it from :class:`QueueItem <api4jenkins.queue.QueueItem>` or :class:`Project <api4jenkins.job.Project>`
+Build is result of a single execution of a Project, you can get it from
+:class:`QueueItem <api4jenkins.queue.QueueItem>` or :class:`Project <api4jenkins.job.Project>`
 
 check status and result of build::
 
@@ -458,7 +498,10 @@ WorkflowRun
 ------------
 WorkflowRun is kind of `Build`, more detail to see: https://www.jenkins.io/doc/book/pipeline/
 
-it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current build until you input something. api4jenkins let you can process it programmatically. assume you have build object which requires two parameters, you can submit as this::
+it provides an step `input <https://www.jenkins.io/doc/book/pipeline/syntax/#input>`_ to pause current
+build until you input something. api4jenkins let you can process it
+programmatically. assume you have build object which requires two parameters,
+you can submit as this::
 
     >>> while not build.get_pending_input():
     ...     time.sleep(1)
@@ -472,7 +515,8 @@ and abort input::
 
     >>> build.get_pending_input().abort()
 
-WorkflowRun supports `archive artfacts <https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts>`_,  you can also process with api4jenkins::
+WorkflowRun supports `archive artfacts <https://www.jenkins.io/doc/pipeline/steps/core/#archiveartifacts-archive-the-artifacts>`_,
+ you can also process with api4jenkins::
 
 save file you interest::
 
@@ -487,7 +531,10 @@ save artifacts as zip::
 
 Credential
 -------------
-Credential is for saving secret data, `api4jenkins` support to manage system and folder based credentials, all credentials must be in default domain(_). more detail can be found: `using credentials <https://www.jenkins.io/doc/book/using/using-credentials/>`_ and `credentials plugin user.doc <https://github.com/jenkinsci/credentials-plugin/blob/master/docs/user.adoc>`_
+Credential is for saving secret data, `api4jenkins` support to manage system
+and folder based credentials, all credentials must be in default domain(_).
+more detail can be found: `using credentials <https://www.jenkins.io/doc/book/using/using-credentials/>`_
+and `credentials plugin user.doc <https://github.com/jenkinsci/credentials-plugin/blob/master/docs/user.adoc>`_
 
 create/get folder based credential::
 
@@ -536,7 +583,9 @@ iterate system credentials::
 
 View
 -------
-Views in Jenkins allow us to organize jobs and content into tabbed categories, which are displayed on the main dashboard. `api4jenkins` support to manage system and folder based views
+Views in Jenkins allow us to organize jobs and content into tabbed categories,
+which are displayed on the main dashboard. `api4jenkins` support to manage
+system and folder based views
 
 create/get folder based view
 
@@ -584,6 +633,10 @@ iterate views of folder
     >>> for view in folder.views:
     ...     print(view)
 
+iterate views of view (for NestedView only)
+
+    >>> for view in view.views:
+    ...     print(view)
 
 get job from view
 
@@ -728,7 +781,8 @@ System
 -----------
 Perform admin operation,
 
-restart/safe restart/quiet_down/cancel_quiet_down, see `how to start/stop/restart Jenkins <https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance->`_
+restart/safe restart/quiet_down/cancel_quiet_down, see
+`how to start/stop/restart Jenkins <https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance->`_
 
     >>> j.system.restart()
     >>> j.system.safe_restart()
@@ -844,7 +898,9 @@ generate/revoke api token for current user, `Jenkins.me` is alias of `Jenkins.us
     >>> j.user.revoke_token('3d6a2b51-26cd-4788-9395-c218de5e732a')
 
 
-iterate all known “users”, including login identities which the current security realm can enumerate, as well as people mentioned in commit messages in recorded changelogs.
+iterate all known `users`, including login identities which the current
+security realm can enumerate, as well as people mentioned in commit messages
+in recorded changelogs.
 
 
     >>> for user in j.users:
@@ -866,9 +922,11 @@ delete user:
 
 Item
 ----
-An entity in the web UI corresponding to either a: Folder, Pipeline, or Project. Item is base class in api4jenkins. it provides many common methods.
+An entity in the web UI corresponding to either a: Folder, Pipeline, or
+Project. Item is base class in api4jenkins. it provides many common methods.
 
-get json/xml data by calling `item.api_json()` or `item.api_xml()`, both of them are support depth and tree, see https://ci.jenkins.io/api/
+get json/xml data by calling `item.api_json()` or `item.api_xml()`,
+both of them are support depth and tree, see https://ci.jenkins.io/api/
 
     >>> item.api_json()
     >>> item.api_xml()
@@ -946,3 +1004,14 @@ iterate all case in test report and filter by status ::
     ...     for case in suite:
     ...         if case.status == 'PASSED':
     ...             print(case)
+
+
+Patch
+----------------
+Some times, the library does not define class to describe an item, you can
+define and patch yours, for example to patch new class NewTypeProject to api4jenkins.job::
+
+    from api4jenkins import _patch_to
+    class NewTypeProject(Project):
+        pass
+    _patch_to('api4jenkins.job', NewTypeProject)
