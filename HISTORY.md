@@ -1,6 +1,6 @@
 Release History
 ===============
-1.6 (2021-07-18)
+1.6 (2021-08-01)
 -----------------
 - Support NestedView
 - Support decrypt credential in Jenkins
