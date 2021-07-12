@@ -194,3 +194,7 @@ class BitbucketSCMNavigator(Project):
 
 class GitHubSCMNavigator(Project):
     pass
+
+
+class PipelineMultiBranchDefaultsProject(Project):
+    pass
