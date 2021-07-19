@@ -78,8 +78,8 @@ class TestFolder:
 
     def test_parent(self, folder, jenkins, monkeypatch):
         folder2 = folder.get('Level2_Folder1')
-        monkeypatch.setattr(folder2, 'full_name',
-                            'Level1_Folder1/Level2_Folder1')
+        # monkeypatch.setattr(folder2, 'full_name',
+        #                     'Level1_Folder1/Level2_Folder1')
         assert folder.parent == jenkins
         assert folder2.parent == folder
         assert folder2.parent.parent == jenkins
@@ -116,6 +116,7 @@ class TestWorkflowMultiBranchProject:
         mock_resp.add(
             'GET', f'{multibranchproject.url}indexing/consoleText', body=body)
         assert list(multibranchproject.get_scan_log()) == body.split(b'\n')
+
 
 class TestProject:
 
