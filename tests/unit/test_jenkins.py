@@ -3,7 +3,7 @@ import weakref
 import pytest
 from api4jenkins import Folder, Jenkins
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
-from api4jenkins.item import snake
+from api4jenkins.item import new_item, snake
 from api4jenkins.job import WorkflowJob
 
 
@@ -144,3 +144,8 @@ class TestJenkins:
     def test_iter_jobs(self, jenkins):
         assert len(list(jenkins.iter_jobs())) == 2
         assert len(list(jenkins)) == 2
+
+    def test_no_class_for_item(self, jenkins):
+        with pytest.raises(AttributeError) as e:
+            new_item(jenkins, 'api4jenkins.job', {
+                     '_class': 'NotExistItem', 'url': 'abc'})
