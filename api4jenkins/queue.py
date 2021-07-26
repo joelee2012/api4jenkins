@@ -57,7 +57,9 @@ class QueueItem(Item, ActionsMixIn):
                     'api4jenkins.build', executable)
             elif _class.endswith(('$BuildableItem', '$WaitingItem')):
                 for build in self.jenkins.nodes.iter_builds():
-                    if int(build.queue_id) + 1 == self.id:
+                    # https://javadoc.jenkins.io/hudson/model/Run.html#getQueueId--
+                    # https://javadoc.jenkins.io/hudson/model/Queue.Item.html#getId--
+                    if int(build.queue_id) == self.id:
                         self._build = build
                         break
         return self._build
