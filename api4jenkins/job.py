@@ -1,8 +1,7 @@
 # encoding: utf-8
 import json
+from functools import partial
 from pathlib import PurePosixPath
-
-from _functools import partial
 
 from .credential import Credentials
 from .item import Item, append_slash, snake
