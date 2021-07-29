@@ -5,6 +5,7 @@ Release History
 - Support NestedView
 - Support decrypt credential in Jenkins
 - Update doc
+- bugfix for `queue.get_build`
 
 1.5.1 (2021-05-11)
 -----------------
