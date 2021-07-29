@@ -1,5 +1,12 @@
 Release History
 ===============
+1.6 (2021-08-01)
+-----------------
+- Support NestedView
+- Support decrypt credential in Jenkins
+- Update doc
+- bugfix for `queue.get_build`
+
 1.5.1 (2021-05-11)
 -----------------
 - Bugfix for nodes.iter_builds

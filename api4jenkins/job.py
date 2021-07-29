@@ -1,8 +1,7 @@
 # encoding: utf-8
 import json
+from functools import partial
 from pathlib import PurePosixPath
-
-from _functools import partial
 
 from .credential import Credentials
 from .item import Item, append_slash, snake
@@ -39,6 +38,10 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
         if path.parent.name == '':
             return self.jenkins
         return self.jenkins.get_job(str(path.parent))
+
+    @property
+    def full_name(self):
+        return self.jenkins._url2name(self.url)
 
 
 class Folder(Job):
@@ -193,4 +196,8 @@ class BitbucketSCMNavigator(Project):
 
 
 class GitHubSCMNavigator(Project):
+    pass
+
+
+class PipelineMultiBranchDefaultsProject(Project):
     pass

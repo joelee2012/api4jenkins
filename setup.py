@@ -29,6 +29,7 @@ setup(
     python_requires='>=3.6',
     install_requires=requires,
     license=about['__license__'],
+    keywords=["RESTAPI", "Jenkins"],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

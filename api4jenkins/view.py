@@ -52,7 +52,9 @@ class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
 class AllView(View):
     def __init__(self, jenkins, url):
-        super().__init__(jenkins, url + 'view/all/')
+        # name of all view for jenkins is 'all', but for folder is 'All'
+        name = 'view/all' if jenkins.url == url else 'view/All'
+        super().__init__(jenkins, url + name)
 
 
 class MyView(View):
@@ -61,3 +63,14 @@ class MyView(View):
 
 class ListView(View):
     pass
+
+
+class Dashboard(View):
+    pass
+
+
+class NestedView(View):
+
+    @property
+    def views(self):
+        return Views(self)

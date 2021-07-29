@@ -19,6 +19,10 @@ class ConfigurationMixIn:
         return self.handle_req('POST', 'config.xml',
                                headers=self.headers, data=xml)
 
+    @property
+    def name(self):
+        return self.url.split('/')[-2]
+
 
 class DescriptionMixIn:
 

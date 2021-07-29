@@ -8,9 +8,9 @@
 ![GitHub](https://img.shields.io/github/license/joelee2012/api4jenkins)
 
 
-# Api4jenkins
+# Jenkins Python Client
 
-[Api4jenkins](https://github.com/joelee2012/api4jenkins) is a Jenkins REST API client for [Python3](https://www.python.org/) to access [Jenkins](https://jenkins.io/) [Remote access API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API) programmatically. It provides full functionalities to manage Job, Build, Credential, View, Queue, Plugins, Node, and System.
+[Python3](https://www.python.org/) client library for [Jenkins API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API).
 
 # Features
 

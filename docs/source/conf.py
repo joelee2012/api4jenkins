@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'api4jenkins'
-copyright = '2020, Joe Lee'
+copyright = '2021, Joe Lee'
 author = 'Joe Lee'
 
 import api4jenkins

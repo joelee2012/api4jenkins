@@ -39,6 +39,6 @@ class System(Item, RunScriptMixIn):
              'replace': 'Apply new configuration'}
         return self.handle_req('POST', 'configuration-as-code/replace', data=d)
 
-# TODO add groovy to print credential
-    # def show_credential(self):
-    #     pass
+    def decrypt_secret(self, text):
+        cmd = f'println(hudson.util.Secret.decrypt("{text}"))'
+        return self.run_script(cmd)
