@@ -40,7 +40,7 @@ In `api4jenkins <https://github.com/joelee2012/api4jenkins>`_, all classes are
 inheriented from class :class:`Item <api4jenkins.item.Item>` which provides
 many common methods and capability to access any `int, str, bool, none` value
 of key as attribute(**must be snake case of json key**) of object that returned
- by requesting `<item url>/api/json`.
+by requesting `<item url>/api/json`.
 
 For example, we call `j.api_json()` to get data of Jenkins::
 
