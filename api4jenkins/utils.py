@@ -13,18 +13,18 @@ def filter_node_by_status(nodes, *, online):
     yield from filter(lambda node: online != node.offline, nodes)
 
 
-def filter_building_builds(node):
+def filter_building_builds_on_node(node):
     if not isinstance(node, (Node, Project)):
         raise ValueError('Must be Node or Project')
     yield from filter(lambda build: build.building, node)
 
 
-def filter_building_builds_on_nodes(nodes):
+def filter_all_building_builds(nodes):
     for node in nodes:
-        yield from filter_building_builds(node)
+        yield from filter_building_builds_on_node(node)
 
 
-def filter_build_by_result(job, *, result):
+def filter_job_build_by_result(job, *, result):
     """filter build by build results, avaliable results are:
     'SUCCESS', 'UNSTABLE', 'FAILURE', 'NOT_BUILT', 'ABORTED'
     see: https://javadoc.jenkins-ci.org/hudson/model/Result.html

@@ -14,7 +14,7 @@ from api4jenkins import Queue
 from api4jenkins.queue import QueueItem
 from api4jenkins.node import Nodes, Node
 from api4jenkins.view import AllView
-from api4jenkins.report import TestReport
+from api4jenkins.report import CoverageReport, CoverageResult, TestReport
 
 DATA = Path(__file__).with_name('tests_data')
 
@@ -45,7 +45,11 @@ def _api_json(self, tree='', depth=0):
     elif isinstance(self, AllView):
         return load_json('view/allview.json')
     elif isinstance(self, TestReport):
-        return load_json('job/test_report.json')
+        return load_json('report/test_report.json')
+    elif isinstance(self, CoverageReport):
+        return load_json('report/coverage_report.json')
+    elif isinstance(self, CoverageResult):
+        return load_json('report/coverage_result.json')
     elif isinstance(self, QueueItem):
         return load_json('queue/waitingitem.json')
     raise TypeError(f'unknow item: {type(self)}')
@@ -92,6 +96,7 @@ def workflowrun(jenkins):
 def multibranchproject(jenkins):
     return WorkflowMultiBranchProject(jenkins, f'{jenkins.url}job/Level1_WorkflowMultiBranchProject/')
 
+
 @pytest.fixture(scope='module')
 def credential(jenkins):
     return Credential(jenkins, f'{jenkins.url}credentials/store/system/domain/_/test-user/')
@@ -101,6 +106,7 @@ def credential(jenkins):
 def view(jenkins):
     return AllView(jenkins, jenkins.url)
 
+
 @pytest.fixture
 def mock_resp():
     with responses.RequestsMock() as r:
@@ -108,5 +114,9 @@ def mock_resp():
 
 
 @pytest.fixture
-def test_report(jenkins, workflow):
-    return TestReport(jenkins, workflow.url + 'testReport')
+def test_report(jenkins, workflowrun):
+    return TestReport(jenkins, workflowrun.url + 'testReport')
+
+# @pytest.fixture
+# def coverage_report(jenkins, workflow):
+#     return workflow.get

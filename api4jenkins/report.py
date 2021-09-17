@@ -66,13 +66,24 @@ class CoverageReport(Item, GetMixIn):
         if attr not in self.report_types:
             raise AttributeError(
                 f"'CoverageReport' object has no attribute '{name}'")
-        return self.get(name)
+        return self.get(attr)
 
     def __iter__(self):
         for k, v in self.api_json().items():
-            if k != '_class':
+            if k != '_class' and k != 'previousResult':
                 v['name'] = k
                 yield Coverage(v)
+
+    def trends(self, count=2):
+        def _resolve(data):
+            if data['previousResult']:
+                yield from _resolve(data['previousResult'])
+            for k, v in data.items():
+                if k != '_class' and k != 'previousResult':
+                    v['name'] = k
+                    yield Coverage(v)
+
+        yield from _resolve(self.api_json(depth=count))
 
 
 class Coverage(ResultBase):
@@ -89,3 +100,17 @@ class CoverageResult(Item, GetMixIn):
 
 class CoverageElement(ResultBase):
     pass
+
+
+class CoverageTrends(Item, GetMixIn):
+    def __iter__(self):
+        for trend in self.api_json(depth=1)['trends']:
+            trend['name'] = trend['buildName']
+            yield CoverageTrend(trend)
+
+
+class CoverageTrend(ResultBase):
+
+    def __iter__(self):
+        for element in self.raw['elementes']:
+            yield CoverageElement(element)

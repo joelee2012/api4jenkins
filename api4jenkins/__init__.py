@@ -229,6 +229,8 @@ class Jenkins(Item):
 
     def _resolve_name(self, full_name):
         '''Resolve folder and job name from full name'''
+        if full_name.startswith(('http://', 'https://')):
+            full_name = self._url2name(full_name)
         path = PurePosixPath(full_name)
         parent = str(path.parent) if path.parent.name else ''
         return Folder(self, self._name2url(parent)), path.name
