@@ -112,5 +112,5 @@ class CoverageTrends(Item, GetMixIn):
 class CoverageTrend(ResultBase):
 
     def __iter__(self):
-        for element in self.raw['elementes']:
+        for element in self.raw['elements']:
             yield CoverageElement(element)
