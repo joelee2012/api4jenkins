@@ -1,0 +1,76 @@
+{
+  "_class": "io.jenkins.plugins.coverage.targets.CoverageTrendTree",
+  "children": [
+    {
+      "children": [
+        {}
+      ],
+      "name": "istanbul: cov.xml",
+      "trends": [
+        {},
+        {}
+      ]
+    }
+  ],
+  "name": "All reports",
+  "trends": [
+    {
+      "buildName": "#5",
+      "elements": [
+        {
+          "denominator": 1,
+          "name": "Report",
+          "numerator": 1,
+          "ratio": 100
+        },
+        {
+          "denominator": 1,
+          "name": "Directory",
+          "numerator": 1,
+          "ratio": 100
+        },
+        {
+          "denominator": 19,
+          "name": "File",
+          "numerator": 18,
+          "ratio": 94.73684
+        },
+        {
+          "denominator": 866,
+          "name": "Line",
+          "numerator": 726,
+          "ratio": 83.83372
+        }
+      ]
+    },
+    {
+      "buildName": "#3",
+      "elements": [
+        {
+          "denominator": 1,
+          "name": "Report",
+          "numerator": 1,
+          "ratio": 100
+        },
+        {
+          "denominator": 1,
+          "name": "Directory",
+          "numerator": 1,
+          "ratio": 100
+        },
+        {
+          "denominator": 19,
+          "name": "File",
+          "numerator": 18,
+          "ratio": 94.73684
+        },
+        {
+          "denominator": 866,
+          "name": "Line",
+          "numerator": 726,
+          "ratio": 83.83372
+        }
+      ]
+    }
+  ]
+}

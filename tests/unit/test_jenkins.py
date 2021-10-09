@@ -37,6 +37,7 @@ class TestJenkins:
     @pytest.mark.parametrize('name,type_', [('not exist', type(None)),
                                             ('Level1_Folder1', Folder),
                                             ('Level1_Folder1/Level2_Folder1', Folder),
+                                            ('http://0.0.0.0:8080/job/Level1_Folder1/job/Level2_Folder1', Folder),
                                             ('Level1_Folder1/Level2_WorkflowJob',
                                              WorkflowJob),
                                             ('Level1_Folder1/not exist', type(None))])

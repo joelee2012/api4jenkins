@@ -1,0 +1,136 @@
+{
+  "_class": "hudson.plugins.jacoco.report.CoverageReport",
+  "branchCoverage": {
+    "covered": 244,
+    "missed": 1588,
+    "percentage": 13,
+    "percentageFloat": 13.318777,
+    "total": 1832
+  },
+  "classCoverage": {
+    "covered": 38,
+    "missed": 21,
+    "percentage": 64,
+    "percentageFloat": 64.406784,
+    "total": 59
+  },
+  "complexityScore": {
+    "covered": 398,
+    "missed": 1218,
+    "percentage": 25,
+    "percentageFloat": 24.628712,
+    "total": 1616
+  },
+  "instructionCoverage": {
+    "covered": 4205,
+    "missed": 9220,
+    "percentage": 31,
+    "percentageFloat": 31.32216,
+    "total": 13425
+  },
+  "lineCoverage": {
+    "covered": 712,
+    "missed": 562,
+    "percentage": 56,
+    "percentageFloat": 55.88697,
+    "total": 1274
+  },
+  "methodCoverage": {
+    "covered": 320,
+    "missed": 380,
+    "percentage": 46,
+    "percentageFloat": 45.714287,
+    "total": 700
+  },
+  "previousResult": {
+    "_class": "hudson.plugins.jacoco.report.CoverageReport",
+    "branchCoverage": {
+      "covered": 244,
+      "missed": 1588,
+      "percentage": 13,
+      "percentageFloat": 13.318777,
+      "total": 1832
+    },
+    "classCoverage": {
+      "covered": 38,
+      "missed": 21,
+      "percentage": 64,
+      "percentageFloat": 64.406784,
+      "total": 59
+    },
+    "complexityScore": {
+      "covered": 398,
+      "missed": 1218,
+      "percentage": 25,
+      "percentageFloat": 24.628712,
+      "total": 1616
+    },
+    "instructionCoverage": {
+      "covered": 4205,
+      "missed": 9220,
+      "percentage": 31,
+      "percentageFloat": 31.32216,
+      "total": 13425
+    },
+    "lineCoverage": {
+      "covered": 712,
+      "missed": 562,
+      "percentage": 56,
+      "percentageFloat": 55.88697,
+      "total": 1274
+    },
+    "methodCoverage": {
+      "covered": 320,
+      "missed": 380,
+      "percentage": 46,
+      "percentageFloat": 45.714287,
+      "total": 700
+    },
+    "previousResult": {
+      "_class": "hudson.plugins.jacoco.report.CoverageReport",
+      "branchCoverage": {
+        "covered": 0,
+        "missed": 1820,
+        "percentage": 0,
+        "percentageFloat": 0,
+        "total": 1820
+      },
+      "classCoverage": {
+        "covered": 0,
+        "missed": 59,
+        "percentage": 0,
+        "percentageFloat": 0,
+        "total": 59
+      },
+      "complexityScore": {
+        "covered": 0,
+        "missed": 1605,
+        "percentage": 0,
+        "percentageFloat": 0,
+        "total": 1605
+      },
+      "instructionCoverage": {
+        "covered": 0,
+        "missed": 13339,
+        "percentage": 0,
+        "percentageFloat": 0,
+        "total": 13339
+      },
+      "lineCoverage": {
+        "covered": 0,
+        "missed": 1256,
+        "percentage": 0,
+        "percentageFloat": 0,
+        "total": 1256
+      },
+      "methodCoverage": {
+        "covered": 0,
+        "missed": 695,
+        "percentage": 0,
+        "percentageFloat": 0,
+        "total": 695
+      },
+      "previousResult": null
+    }
+  }
+}
