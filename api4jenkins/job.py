@@ -150,6 +150,13 @@ class Project(Job, EnableMixIn):
         self.handle_req('POST', 'nextbuildnumber/submit',
                         params={'nextBuildNumber': number})
 
+    def get_parameters(self):
+        params = []
+        for p in self.api_json()['property']:
+            if 'parameterDefinitions' in p:
+                params = p['parameterDefinitions']
+        return params
+
     @property
     def building(self):
         builds = self.api_json(tree='builds[building]')['builds']

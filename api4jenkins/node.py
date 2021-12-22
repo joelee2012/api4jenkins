@@ -106,7 +106,7 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
 
 class MasterComputer(Node):
     def __init__(self, jenkins, url):
-        super().__init__(jenkins, re.sub(r'/master/$', '/(master)/', url))
+        super().__init__(jenkins, re.sub(r'/Built-In Node/$', '/(built-in)/', url))
 
 
 class SlaveComputer(Node):
