@@ -106,7 +106,9 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
 
 class MasterComputer(Node):
     def __init__(self, jenkins, url):
-        super().__init__(jenkins, re.sub(r'/Built-In Node/$', '/(built-in)/', url))
+        # rename built-in node: https://www.jenkins.io/doc/upgrade-guide/2.319/
+        name = 'master' if url.endswith('/master/') else 'built-in'
+        super().__init__(jenkins, f'{jenkins.url}computer/({name})/')
 
 
 class SlaveComputer(Node):
