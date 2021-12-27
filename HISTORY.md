@@ -1,6 +1,6 @@
 Release History
 ===============
-1.8 (2021-12-??)
+1.8 (2021-12-27)
 -----------------
 - Rename built-in node as https://www.jenkins.io/doc/book/managing/built-in-node-migration/
 - Get parameters for job

@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 import json
-import re
 
 from .exceptions import ItemNotFoundError
 from .item import Item, new_item
