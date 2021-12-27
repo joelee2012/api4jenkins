@@ -33,3 +33,8 @@ def filter_job_build_by_result(job, *, result):
     if result not in expect:
         raise ValueError(f'Expect one of {expect}')
     yield from filter(lambda build: build.result == result, job)
+
+
+def iter_all_builds(job):
+    for item in job.api_json(tree='allBuilds[number,url]')['allBuilds']:
+        yield job._new_instance_by_item('api4jenkins.build', item)

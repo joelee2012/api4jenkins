@@ -299,6 +299,10 @@ build with parameters
 
     >>> item = job.build(arg1='string1', arg2='string2')
 
+get job parameters
+
+    >>> parameters = job.get_parameters()
+
 disable/enable project to
 
     >>> job.disable()
@@ -336,7 +340,7 @@ set next build number (requires `next-build-number` plugin)
 
     >>> job.set_next_build_number(1)
 
-iterate all builds of this project, following are same
+iterate builds(latest 100 builds) of this project, following are same
 
     >>> for build in job:
     ...     print(build)
