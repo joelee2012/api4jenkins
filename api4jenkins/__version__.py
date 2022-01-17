@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# encoding: utf-8
 __version__ = '1.8'
 __title__ = 'api4jenkins'
 __description__ = 'Jenkins Python Client'

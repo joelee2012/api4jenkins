@@ -1,4 +1,4 @@
-from importlib import import_module
+# encoding: utf-8
 from .item import Item, camel, snake
 
 

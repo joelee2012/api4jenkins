@@ -40,8 +40,16 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
         return self.jenkins.get_job(str(path.parent))
 
     @property
+    def name(self):
+        return self.full_name.split('/')[-1]
+
+    @property
     def full_name(self):
         return self.jenkins._url2name(self.url)
+
+    @property
+    def full_display_name(self):
+        return self.full_name.replace('/', ' » ')
 
 
 class Folder(Job):

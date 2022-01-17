@@ -1,5 +1,4 @@
 # encoding: utf-8
-import time
 import weakref
 from importlib import import_module
 from pathlib import PurePosixPath

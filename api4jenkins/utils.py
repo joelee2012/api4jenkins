@@ -1,3 +1,4 @@
+# encoding: utf-8
 from .job import Project
 from .node import Node
 
