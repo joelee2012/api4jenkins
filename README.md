@@ -1,6 +1,7 @@
 ![Tests](https://github.com/joelee2012/api4jenkins/workflows/Tests/badge.svg?branch=master)
 ![CodeQL](https://github.com/joelee2012/api4jenkins/workflows/CodeQL/badge.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/joelee2012/api4jenkins/badge.svg?branch=master)](https://coveralls.io/github/joelee2012/api4jenkins?branch=master)
+[![codecov](https://codecov.io/gh/joelee2012/api4jenkins/branch/master/graph/badge.svg?token=YGM4CIB149)](https://codecov.io/gh/joelee2012/api4jenkins)
 ![PyPI](https://img.shields.io/pypi/v/api4jenkins)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/api4jenkins)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/api4jenkins)
