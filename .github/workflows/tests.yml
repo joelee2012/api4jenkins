@@ -17,28 +17,58 @@ jobs:
             os: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
-    - name: Run pylint & codestyle & unit tests
-      run: |
-        tox
-    - name: Publish coverage report
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        coveralls --service=github
-    - name: Run twine check
-      run: |
-        python setup.py sdist bdist_wheel
-        twine check dist/*
-    - name: Run integration tests
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
-      run: |
-        tox -e integration
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
+
+      - name: Run pylint & codestyle & unit tests
+        run: tox
+
+      - name: Publish coverage report
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
+
+      - name: Run twine check
+        run: |
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+
+      - name: Start Jenkins
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        id: start-jenkins
+        shell: bash
+        run: |
+          set -e
+          sudo docker run -dt --rm --name jenkins-master joelee2012/standalone-jenkins:latest
+          echo 'Waiting for Jenkins to start...'
+          until sudo docker logs jenkins-master | grep -q 'Jenkins is fully up and running'; do
+            sleep 1
+          done
+          ip=$(sudo docker inspect --format='{{.NetworkSettings.IPAddress}}' jenkins-master)
+          password=$(sudo docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)
+          version=$(sudo docker exec jenkins-master sh -c 'echo "$JENKINS_VERSION"')
+          port=8080
+          echo "::set-output name=url::http://${ip}:${port}/"
+          echo "::set-output name=user::admin"
+          echo "::set-output name=password::${password}"
+          echo "::set-output name=version::${version}"
+
+      - name: Run integration tests
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        env:
+          JENKINS_URL: ${{ steps.start-jenkins.outputs.url  }}
+          JENKINS_USER: ${{ steps.start-jenkins.outputs.user  }}
+          JENKINS_PASSWORD: ${{ steps.start-jenkins.outputs.password  }}
+          JENKINS_VERSION: ${{ steps.start-jenkins.outputs.version  }}
+        run: tox -e integration
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        uses: codecov/codecov-action@v1

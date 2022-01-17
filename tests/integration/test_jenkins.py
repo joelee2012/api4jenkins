@@ -74,7 +74,7 @@ class TestJenkins:
         c = jenkins.credentials.get('user-id')
         assert c.id == 'user-id'
         c.delete()
-        assert c.exists() == False
+        assert c.exists()
 
     def test_view(self, jenkins, view_xml):
         assert len(list(jenkins.views)) == 1
@@ -90,4 +90,4 @@ class TestJenkins:
         v.exclude('Level1_Folder1')
         assert len(list(v)) == 0
         v.delete()
-        assert v.exists() == False
+        assert v.exists()
