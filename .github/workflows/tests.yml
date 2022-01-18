@@ -75,3 +75,4 @@ jobs:
         with:
           directory: ./tests/integration/
           files: cov.xml
+          flags: integration
