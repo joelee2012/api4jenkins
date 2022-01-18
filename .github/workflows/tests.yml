@@ -73,4 +73,5 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
         uses: codecov/codecov-action@v2
         with:
-          directory: tests/integration/
+          directory: ./tests/integration/
+          files: cov.xml
