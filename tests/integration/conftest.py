@@ -1,10 +1,9 @@
+import os
 import time
 from pathlib import Path
 
 import pytest
 from api4jenkins import Jenkins
-
-from . import setup_jenkins
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
 
@@ -16,7 +15,7 @@ def load_xml(name):
 
 @pytest.fixture(scope='module')
 def jenkins():
-    return Jenkins(setup_jenkins.URL, auth=(setup_jenkins.USER, setup_jenkins.PASSWORD))
+    return Jenkins(os.environ['JENKINS_URL'], auth=(os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
 @pytest.fixture(scope='module')
@@ -42,6 +41,7 @@ def credential_xml():
 @pytest.fixture(scope='module')
 def view_xml():
     return load_xml('view.xml')
+
 
 @pytest.fixture
 def freejob(jenkins, freejob_xml):
