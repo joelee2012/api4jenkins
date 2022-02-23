@@ -2,6 +2,7 @@
 import json
 from functools import partial
 from pathlib import PurePosixPath
+from urllib.parse import unquote_plus
 
 from .credential import Credentials
 from .item import Item, append_slash, snake
@@ -49,7 +50,7 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
     @property
     def full_display_name(self):
-        return self.full_name.replace('/', ' » ')
+        return unquote_plus(unquote_plus(self.full_name.replace('/', ' » ')))
 
 
 class Folder(Job):

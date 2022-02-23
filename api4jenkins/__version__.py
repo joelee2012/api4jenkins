@@ -1,5 +1,5 @@
 # encoding: utf-8
-__version__ = '1.8'
+__version__ = '1.9'
 __title__ = 'api4jenkins'
 __description__ = 'Jenkins Python Client'
 __url__ = 'https://github.com/joelee2012/api4jenkins'
