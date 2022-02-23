@@ -46,11 +46,11 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
     @property
     def full_name(self):
-        return self.jenkins._url2name(self.url)
+        return unquote_plus(self.jenkins._url2name(self.url))
 
     @property
     def full_display_name(self):
-        return unquote_plus(unquote_plus(self.full_name.replace('/', ' » ')))
+        return unquote_plus(self.full_name.replace('/', ' » '))
 
 
 class Folder(Job):
