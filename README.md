@@ -12,7 +12,7 @@
 # Jenkins Python Client
 
 [Python3](https://www.python.org/) client library for [Jenkins API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API).
-> If you are programing with [Golang](https://golang.org/), see [go-jenkins](https://github.com/joelee2012/go-jenkins).
+
 
 # Features
 
