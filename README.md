@@ -13,7 +13,6 @@
 
 [Python3](https://www.python.org/) client library for [Jenkins API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API).
 
-
 # Features
 
 - Object oriented, each Jenkins item has corresponding class, easy to use and extend

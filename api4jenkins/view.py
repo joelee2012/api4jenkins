@@ -75,5 +75,6 @@ class NestedView(View):
     def views(self):
         return Views(self)
 
+
 class SectionedView(View):
     pass

@@ -53,9 +53,7 @@ class Nodes(Item):
         yield from _new_items(self.jenkins, builds)
 
     def iter_building_builds(self):
-        for build in self.iter_builds():
-            if build.building:
-                yield build
+        yield from filter(lambda build: build.building, self.iter_builds())
 
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
@@ -118,9 +116,7 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
         yield from self.iter_builds()
 
     def iter_building_builds(self):
-        for build in self.iter_builds():
-            if build.building:
-                yield build
+        yield from filter(lambda build: build.building, self.iter_builds())
 
 
 class MasterComputer(Node):

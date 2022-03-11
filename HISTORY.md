@@ -1,5 +1,11 @@
 Release History
 ===============
+1.9 (2022-03-12)
+-----------------
+- Add new properties for `Job`
+- Add new methods for `Node`, `Job`
+- Support `SectionedView` and `OrganizationFolder`
+
 1.8 (2021-12-27)
 -----------------
 - Rename built-in node as https://www.jenkins.io/doc/book/managing/built-in-node-migration/
