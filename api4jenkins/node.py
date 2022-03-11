@@ -52,13 +52,28 @@ class Nodes(Item):
 
         yield from _new_items(self.jenkins, builds)
 
+    def iter_building_builds(self):
+        for build in self.iter_builds():
+            if build.building:
+                yield build
+
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
             item['url'] = f"{self.url}{item['displayName']}/"
             yield self._new_instance_by_item(__name__, item)
 
+    def filter_node_by_label(self, *labels):
+        for node in self:
+            for label in node.api_json()['assignedLabels']:
+                if label['name'] in labels:
+                    yield node
+
+    def filter_node_by_status(self, *, online):
+        yield from filter(lambda node: online != node.offline, self)
 
 # following two functions should be used in this module only
+
+
 def _new_items(jenkins, builds):
     for url, class_name in builds.items():
         item = {'url': url, '_class': class_name}
@@ -101,6 +116,11 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
 
     def __iter__(self):
         yield from self.iter_builds()
+
+    def iter_building_builds(self):
+        for build in self.iter_builds():
+            if build.building:
+                yield build
 
 
 class MasterComputer(Node):

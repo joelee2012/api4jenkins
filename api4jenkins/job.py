@@ -108,6 +108,10 @@ class Folder(Job):
         return self.get(name)
 
 
+class OrganizationFolder(Folder):
+    pass
+
+
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
 
     def scan(self, delay=0):
@@ -155,6 +159,10 @@ class Project(Job, EnableMixIn):
     def iter_builds(self):
         yield from self
 
+    def iter_all_builds(self):
+        for item in self.api_json(tree='allBuilds[number,url]')['allBuilds']:
+            yield self._new_instance_by_item('api4jenkins.build', item)
+
     def set_next_build_number(self, number):
         self.handle_req('POST', 'nextbuildnumber/submit',
                         params={'nextBuildNumber': number})
@@ -177,6 +185,16 @@ class Project(Job, EnableMixIn):
 
     def __getitem__(self, number):
         return self.get_build(number)
+
+    def filter_job_build_by_result(self, *, result):
+        """filter build by build results, avaliable results are:
+        'SUCCESS', 'UNSTABLE', 'FAILURE', 'NOT_BUILT', 'ABORTED'
+        see: https://javadoc.jenkins-ci.org/hudson/model/Result.html
+        """
+        expect = ['SUCCESS', 'UNSTABLE', 'FAILURE', 'NOT_BUILT', 'ABORTED']
+        if result not in expect:
+            raise ValueError(f'Expect one of {expect}')
+        yield from filter(lambda build: build.result == result, self)
 
 
 class WorkflowJob(Project):
