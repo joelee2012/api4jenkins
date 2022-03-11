@@ -74,3 +74,7 @@ class NestedView(View):
     @property
     def views(self):
         return Views(self)
+
+
+class SectionedView(View):
+    pass

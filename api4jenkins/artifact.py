@@ -1,3 +1,4 @@
+# encoding: utf-8
 from .item import Item
 from .mix import RawJsonMixIn
 
