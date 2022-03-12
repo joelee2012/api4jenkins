@@ -2,8 +2,8 @@ Release History
 ===============
 1.9 (2022-03-12)
 -----------------
-- Add new properties for `Job`
-- Add new methods for `Node`, `Job`
+- Resolve `name`, `full_name`, `full_display_name` from url for `Job`
+- Add new methods for `Nodes`, `Project`
 - Support `SectionedView` and `OrganizationFolder`
 
 1.8 (2021-12-27)

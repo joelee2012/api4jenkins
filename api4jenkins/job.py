@@ -186,7 +186,7 @@ class Project(Job, EnableMixIn):
     def __getitem__(self, number):
         return self.get_build(number)
 
-    def filter_job_build_by_result(self, *, result):
+    def filter_builds_by_result(self, *, result):
         """filter build by build results, avaliable results are:
         'SUCCESS', 'UNSTABLE', 'FAILURE', 'NOT_BUILT', 'ABORTED'
         see: https://javadoc.jenkins-ci.org/hudson/model/Result.html
