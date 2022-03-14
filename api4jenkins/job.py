@@ -108,10 +108,6 @@ class Folder(Job):
         return self.get(name)
 
 
-class OrganizationFolder(Folder):
-    pass
-
-
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
 
     def scan(self, delay=0):
@@ -122,6 +118,10 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
                              stream=stream) as resp:
             for line in resp.iter_lines():
                 yield line
+
+
+class OrganizationFolder(WorkflowMultiBranchProject):
+    pass
 
 
 class Project(Job, EnableMixIn):
