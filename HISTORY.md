@@ -1,5 +1,10 @@
 Release History
 ===============
+1.9.1 (2022-03-29)
+-----------------
+- change OrganizationFolder to inherit from WorkflowMultiBranchProject
+- `Jenkins.get_job` return consistent result
+
 1.9 (2022-03-12)
 -----------------
 - Resolve `name`, `full_name`, `full_display_name` from url for `Job`
