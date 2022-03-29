@@ -73,7 +73,8 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
         folder, name = self._resolve_name(full_name)
-        return folder.get(name)
+        if folder.exists():
+            return folder.get(name)
 
     def iter_jobs(self, depth=0):
         '''Iterate jobs with depth
