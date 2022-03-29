@@ -1,5 +1,6 @@
 # encoding: utf-8
 import json
+import xml.etree.ElementTree as ET
 from functools import partial
 from pathlib import PurePosixPath
 from urllib.parse import unquote_plus
@@ -118,6 +119,10 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
                              stream=stream) as resp:
             for line in resp.iter_lines():
                 yield line
+
+    @property
+    def buildable(self):
+        return ET.XML(self.configure()).find('disabled').text == 'false'
 
 
 class OrganizationFolder(WorkflowMultiBranchProject):
