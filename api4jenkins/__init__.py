@@ -120,6 +120,8 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
         folder, name = self._resolve_name(full_name)
+        if not folder.exists():
+            self.create_job(folder.full_name, EMPTY_FOLDER_XML)
         return folder.create(name, xml)
 
     def copy_job(self, full_name, dest):
