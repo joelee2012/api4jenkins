@@ -21,7 +21,7 @@ from .user import User, Users
 from .view import Views
 
 EMPTY_FOLDER_XML = '''<?xml version='1.0' encoding='UTF-8'?>
-    <com.cloudbees.hudson.plugins.folder.Folder/>'''
+<com.cloudbees.hudson.plugins.folder.Folder/>'''
 
 
 class Jenkins(Item):
