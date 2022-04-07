@@ -25,9 +25,12 @@ class TestJenkins:
         with pytest.raises(BadRequestError, match=exception):
             jenkins.create_job(name, folder_xml)
 
-    def test_create_job_succ(self, jenkins, folder_xml):
-        jenkins.create_job('Level1_Folder1/new_folder', folder_xml)
-        assert jenkins.get_job('Level1_Folder1/new_folder')
+    @pytest.mark.parametrize('name, recursive', [('Level1_Folder1/new_folder', False),
+                                                 ('Level1_Folder1/Level2_Folder2/Level3_Folder1', True)],
+                             ids=['recursive=False', 'recursive=True'])
+    def test_create_job_succ(self, jenkins, folder_xml, name, recursive):
+        jenkins.create_job(name, folder_xml, recursive=recursive)
+        assert jenkins.get_job(name)
 
     def test_copy_job(self, jenkins):
         jenkins.copy_job('Level1_Folder1/Level2_Folder1', 'new_folder')
