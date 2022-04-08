@@ -20,6 +20,9 @@ from .system import System
 from .user import User, Users
 from .view import Views
 
+EMPTY_FOLDER_XML = '''<?xml version='1.0' encoding='UTF-8'?>
+<com.cloudbees.hudson.plugins.folder.Folder/>'''
+
 
 class Jenkins(Item):
     r'''Constructs  :class:`Jenkins <Jenkins>`.
@@ -94,11 +97,12 @@ class Jenkins(Item):
         folder = Folder(self, self.url)
         yield from folder.iter(depth)
 
-    def create_job(self, full_name, xml):
+    def create_job(self, full_name, xml, recursive=False):
         '''Create new jenkins job with given xml configuration
 
         :param full_name: ``str``, full name of job
         :param xml: xml configuration string
+        :param recursive: (optional) Boolean, recursively create folder if not existed
 
         Usage::
 
@@ -118,6 +122,8 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
         '''
         folder, name = self._resolve_name(full_name)
+        if recursive and not folder.exists():
+            self.create_job(folder.full_name, EMPTY_FOLDER_XML)
         return folder.create(name, xml)
 
     def copy_job(self, full_name, dest):
