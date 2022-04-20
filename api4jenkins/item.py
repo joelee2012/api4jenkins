@@ -28,7 +28,7 @@ snake = _snake()
 
 
 def append_slash(url):
-    return url if url[-1] == '/' else url + '/'
+    return url if url[-1] == '/' else f'{url}/'
 
 
 def _new_item():

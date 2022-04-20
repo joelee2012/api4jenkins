@@ -252,9 +252,7 @@ class Jenkins(Item):
         except ConnectionError:
             return False
         except HTTPError as e:
-            if e.response.status_code in [401, 403]:
-                return True
-            return False
+            return e.response.status_code in [401, 403]
 
     @property
     def crumb(self):
@@ -262,12 +260,12 @@ class Jenkins(Item):
         if self._crumb is None:
             try:
                 _crumb = self.send_req(
-                    'GET', self.url + 'crumbIssuer/api/json').json()
+                    'GET', f'{self.url}crumbIssuer/api/json').json()
                 self._crumb = {_crumb['crumbRequestField']: _crumb['crumb']}
             except HTTPError as e:
                 if e.response.status_code in [401, 403]:
                     raise AuthenticationError(
-                        'Invalid authorization for %s' % self) from e
+                        f'Invalid authorization for {self}') from e
                 self._crumb = {}
         return self._crumb
 
