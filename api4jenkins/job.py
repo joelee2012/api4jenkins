@@ -117,8 +117,7 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
     def get_scan_log(self, stream=False):
         with self.handle_req('GET', 'indexing/consoleText',
                              stream=stream) as resp:
-            for line in resp.iter_lines():
-                yield line
+            yield from resp.iter_lines()
 
     @property
     def buildable(self):

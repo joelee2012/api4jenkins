@@ -32,8 +32,8 @@ python3 -m pip install api4jenkins
 
 ```python
 >>> from api4jenkins import Jenkins
->>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
->>> j.version
+>>> client = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
+>>> client.version
 '2.176.2'
 >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
 ... <project>
@@ -43,9 +43,9 @@ python3 -m pip install api4jenkins
 ...     </hudson.tasks.Shell>
 ...   </builders>
 ... </project>"""
->>> j.create_job('freestylejob', xml)
+>>> client.create_job('path/to/job', xml)
 >>> import time
->>> item = j.build_job('freestylejob')
+>>> item = client.build_job('path/to/job')
 >>> while not item.get_build():
 ...      time.sleep(1)
 >>> build = item.get_build()

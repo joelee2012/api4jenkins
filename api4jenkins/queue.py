@@ -59,7 +59,8 @@ class QueueItem(Item, ActionsMixIn):
                 for build in self.jenkins.nodes.iter_builds():
                     # https://javadoc.jenkins.io/hudson/model/Run.html#getQueueId--
                     # https://javadoc.jenkins.io/hudson/model/Queue.Item.html#getId--
-                    if int(build.queue_id) == self.id:
+                    # ensure build exists, see https://github.com/joelee2012/api4jenkins/issues/49
+                    if build.exists() and int(build.queue_id) == self.id:
                         self._build = build
                         break
         return self._build
