@@ -1,5 +1,11 @@
 Release History
 ===============
+1.10 (2022-05-17)
+-----------------
+- recursively create parent of job if it does not exist
+- add buildable property for multibranchproject
+- set dependency version
+
 1.9.1 (2022-03-29)
 -----------------
 - change OrganizationFolder to inherit from WorkflowMultiBranchProject
