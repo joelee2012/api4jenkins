@@ -123,7 +123,7 @@ class Jenkins(Item):
         '''
         folder, name = self._resolve_name(full_name)
         if recursive and not folder.exists():
-            self.create_job(folder.full_name, EMPTY_FOLDER_XML)
+            self.create_job(folder.full_name, EMPTY_FOLDER_XML, recursive=recursive)
         return folder.create(name, xml)
 
     def copy_job(self, full_name, dest):

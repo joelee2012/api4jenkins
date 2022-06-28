@@ -31,8 +31,8 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
         self.url = append_slash(resp.headers['Location'])
         return resp
 
-    def duplicate(self, path):
-        self.jenkins.create_job(path, self.configure())
+    def duplicate(self, path, recursive=False):
+        self.jenkins.create_job(path, self.configure(), recursive=recursive)
 
     @property
     def parent(self):
