@@ -69,6 +69,8 @@ class Item:
 
     def handle_req(self, method, entry, **kwargs):
         self._add_crumb(kwargs)
+        if 'data' in kwargs:
+            kwargs['data'] = kwargs['data'].encode('utf-8')
         try:
             return self.jenkins.send_req(method, self.url + entry, **kwargs)
         except HTTPError as e:
