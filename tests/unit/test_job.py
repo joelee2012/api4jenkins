@@ -144,6 +144,8 @@ class TestProject:
     def test_get_build(self, workflow, number, obj):
         build = workflow.get_build(number)
         assert isinstance(build, obj)
+        build = workflow.get_build(f'#{number}')
+        assert isinstance(build, obj)
 
     @pytest.mark.parametrize('key', ['firstBuild', 'lastBuild', 'lastCompletedBuild',
                                      'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',

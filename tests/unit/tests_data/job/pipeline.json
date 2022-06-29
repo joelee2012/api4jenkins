@@ -36,48 +36,56 @@
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 52,
+      "displayName": "#52",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 51,
+      "displayName": "#51",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/51/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 50,
+      "displayName": "#50",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/50/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 49,
+      "displayName": "#49",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 48,
+      "displayName": "#48",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/48/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 47,
+      "displayName": "#47",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/47/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 46,
+      "displayName": "#46",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/46/",
       "building": false
     },
     {
       "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
       "number": 45,
+      "displayName": "#45",
       "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/45/",
       "building": false
     }
@@ -86,6 +94,7 @@
   "firstBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 45,
+    "displayName": "#45",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/45/"
   },
   "healthReport": [
@@ -101,37 +110,42 @@
   "lastBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 52,
+    "displayName": "#52",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
   },
   "lastCompletedBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 52,
+    "displayName": "#52",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
   },
   "lastFailedBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 52,
+    "displayName": "#52",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
   },
   "lastStableBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 49,
+    "displayName": "#49",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/"
   },
   "lastSuccessfulBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 49,
+    "displayName": "#49",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/"
   },
   "lastUnstableBuild": null,
   "lastUnsuccessfulBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 52,
+    "displayName": "#52",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
   },
   "nextBuildNumber": 53,
-  "property": [
-  ],
+  "property": [],
   "queueItem": null,
   "concurrentBuild": true,
   "resumeBlocked": false
