@@ -1,5 +1,11 @@
 Release History
 ===============
+1.11 (2022-07-08)
+-----------------
+- encode request data with utf-8
+- add parameter "recursive" for `Job.duplicate`
+- fix issue for `Jenkins.crate_job`
+
 1.10 (2022-05-17)
 -----------------
 - recursively create parent of job if it does not exist
