@@ -146,4 +146,3 @@ class DockerComputer(Node):
 
 class EC2Computer(Node):
     pass
-
