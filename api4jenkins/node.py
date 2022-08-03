@@ -142,3 +142,7 @@ class KubernetesComputer(Node):
 
 class DockerComputer(Node):
     pass
+
+
+class EC2Computer(Node):
+    pass
