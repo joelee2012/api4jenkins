@@ -1,5 +1,9 @@
 Release History
 ===============
+1.12 (2022-08-04)
+-----------------
+- Add EC2Computer as Node child class (#58)
+
 1.11 (2022-07-08)
 -----------------
 - encode request data with utf-8
