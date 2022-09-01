@@ -119,6 +119,15 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
                              stream=stream) as resp:
             yield from resp.iter_lines()
 
+    def build(self, branch, **params):
+        reserved = ['token', 'delay']
+        if not params or all(k in reserved for k in params):
+            entry = 'job/%s/build' % branch
+        else:
+            entry = 'job/%s/buildWithParameters' % branch
+        resp = self.handle_req('POST', entry, params=params)
+        return QueueItem(self.jenkins, resp.headers['Location'])
+
     @property
     def buildable(self):
         return ET.XML(self.configure()).find('disabled').text == 'false'
