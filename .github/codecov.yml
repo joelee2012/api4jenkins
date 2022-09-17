@@ -1,0 +1,16 @@
+flag_management:
+  individual_flags:
+    - name: unittest
+      paths:
+        - tests/unit/
+      statuses:
+        - type: project
+          target: 100%
+          threshold: 1%
+    - name: integration
+      paths:
+        - tests/integration/
+      statuses:
+        - type: project
+          target: auto
+          threshold: 1%
