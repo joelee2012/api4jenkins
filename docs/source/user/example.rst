@@ -317,13 +317,15 @@ check if any build of project is running
     >>> job.building
     True
 
-get build with given number
+get build with given number or display name
 
     >>> build = job.get_build(1)
+    >>> build = job.get_build("some new build name")
 
 or subscript with build number
 
     >>> build = job[1]
+    >>> build = job["some new build name"]
 
 other shortcut methods to get special build:
 

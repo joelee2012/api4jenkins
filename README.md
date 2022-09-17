@@ -11,7 +11,7 @@
 
 # Jenkins Python Client
 
-[Python3](https://www.python.org/) client library for [Jenkins API](https://wiki.jenkins.io/display/JENKINS/Remote+access+API).
+[Python3](https://www.python.org/) client library for [Jenkins API](https://www.jenkins.io/doc/book/using/remote-access-api/).
 
 # Features
 

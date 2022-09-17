@@ -155,8 +155,8 @@ class Project(Job, EnableMixIn):
         return QueueItem(self.jenkins, resp.headers['Location'])
 
     def get_build(self, number):
-        for item in self.api_json(tree='builds[number,url]')['builds']:
-            if int(number) == int(item['number']):
+        for item in self.api_json(tree='builds[number,displayName,url]')['builds']:
+            if number == item['number'] or number == item['displayName']:
                 return self._new_instance_by_item('api4jenkins.build', item)
         return None
 
