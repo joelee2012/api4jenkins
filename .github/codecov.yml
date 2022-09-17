@@ -2,6 +2,7 @@ flag_management:
   individual_flags:
     - name: unittest
       paths:
+        - api4jenkins
         - tests/unit/
       statuses:
         - type: project
@@ -9,6 +10,7 @@ flag_management:
           threshold: 1%
     - name: integration
       paths:
+        - api4jenkins
         - tests/integration/
       statuses:
         - type: project
