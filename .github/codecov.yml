@@ -6,7 +6,7 @@ flag_management:
         - tests/unit/
       statuses:
         - type: project
-          target: 100%
+          target: 80%
           threshold: 1%
     - name: integration
       paths:
