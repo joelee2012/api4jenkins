@@ -1,0 +1,18 @@
+flag_management:
+  individual_flags:
+    - name: unittest
+      paths:
+        - api4jenkins
+        - tests/unit/
+      statuses:
+        - type: project
+          target: 80%
+          threshold: 1%
+    - name: integration
+      paths:
+        - api4jenkins
+        - tests/integration/
+      statuses:
+        - type: project
+          target: auto
+          threshold: 1%
