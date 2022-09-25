@@ -244,7 +244,7 @@ class Jenkins(Item):
     def exists(self):
         '''Check if Jenkins server is up
 
-        :returns: Ture or False
+        :returns: True or False
         '''
         try:
             self.send_req('GET', self.url)
