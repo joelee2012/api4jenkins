@@ -1,5 +1,10 @@
 Release History
 ===============
+1.13 (2022-10-01)
+-----------------
+- fix for approving the pending input when jenkins runs on subpath (#66)
+- support get build by display name for job (#63)
+
 1.12 (2022-08-04)
 -----------------
 - Add EC2Computer as Node child class (#58)
