@@ -50,12 +50,18 @@ class TestBuild:
 class TestWorkflowRun:
 
     @pytest.mark.parametrize('data, obj', [({"_links": {}}, type(None)),
-                                           ({"_links": {"pendingInputActions": 'x'}}, PendingInputAction)])
+                                           ({"_links": {"pendingInputActions": 't1' }}, PendingInputAction),
+                                           ({"_links": {"pendingInputActions": 't2' }}, PendingInputAction)])
     def test_get_pending_input(self, workflowrun, mock_resp, data, obj):
         mock_resp.add('GET', f'{workflowrun.url}wfapi/describe', json=data)
-        if data['_links']:
-            mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
-                          json=[{'abortUrl': 'x'}])
+        if data['_links'] and 'pendingInputActions' in data['_links']:
+            if data['_links']['pendingInputActions'] == "t1":
+                mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
+                                  json=[{'abortUrl': '/job/Test%20Workflow/11/input/Ef95dd500ae6ed3b27b89fb852296d12/abort'}])
+            elif data['_links']['pendingInputActions'] == "t2":
+                mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
+                                  json=[{'abortUrl': '/jenkins/job/Test%20Workflow/11/input/Ef95dd500ae6ed3b27b89fb852296d12/abort'}])
+
         assert isinstance(workflowrun.get_pending_input(), obj)
 
     @pytest.mark.parametrize('data, count', [([], 0),

@@ -83,6 +83,7 @@ class WorkflowRun(Build):
         if not data['_links'].get('pendingInputActions'):
             return None
         action = self.handle_req('GET', 'wfapi/pendingInputActions').json()[0]
+        action["abortUrl"] = action["abortUrl"][action["abortUrl"].index("/job/"):]
         return PendingInputAction(self.jenkins, action)
 
     def get_artifacts(self):
