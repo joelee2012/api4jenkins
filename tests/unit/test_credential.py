@@ -10,11 +10,11 @@ class TestCredentials:
     def test_get(self, jenkins, id_, obj):
         assert isinstance(jenkins.credentials.get(id_), obj)
 
-    def test_create(self, jenkins, mock_resp):
+    def test_create(self, jenkins, respx_mock):
         req_url = f'{jenkins.credentials.url}createCredentials'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         jenkins.credentials.create('xml')
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
 
     def test_iter(self, jenkins):
         creds = list(jenkins.credentials)
@@ -24,20 +24,20 @@ class TestCredentials:
 
 class TestCredential:
 
-    def test_delete(self, credential, mock_resp):
+    def test_delete(self, credential, respx_mock):
         req_url = f'{credential.url}doDelete'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         credential.delete()
-        assert mock_resp.calls[0].response.status_code == 200
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].response.status_code == 200
+        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('req, xml, body',
                              [('GET', None, '<xml/>'), ('POST', '<xml/>', '')],
                              ids=['get', 'set'])
-    def test_configure(self, credential, mock_resp, req, xml, body):
+    def test_configure(self, credential, respx_mock, req, xml, body):
         req_url = f'{credential.url}config.xml'
-        mock_resp.add(req, req_url, body=body)
+        respx_mock.route(method=req, url=req_url).respond(content=body)
         text = credential.configure(xml)
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
         if req == 'GET':
             assert text == body

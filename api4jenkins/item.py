@@ -1,12 +1,15 @@
 # encoding: utf-8
 
+from pprint import pformat
 import re
 from importlib import import_module
-
-from requests.exceptions import HTTPError
-
+import contextlib
+from httpx import HTTPStatusError
+import logging
 from .exceptions import (AuthenticationError, BadRequestError,
                          ItemNotFoundError, ServerError)
+
+logger = logging.getLogger(__name__)
 
 
 def camel(s):
@@ -50,6 +53,23 @@ def _new_item():
 new_item = _new_item()
 
 
+def check_response(response, object, entry):
+    if response.status_code == 404:
+        raise ItemNotFoundError(
+            f'Not found {entry} for item: {object}')
+    if response.status_code == 401:
+        raise AuthenticationError(
+            f'Invalid authorization for {object}')
+    if response.status_code == 403:
+        raise PermissionError(
+            f'No permission to {entry} for {object}')
+    if response.status_code == 400:
+        raise BadRequestError(response.headers['X-Error'])
+    if response.status_code == 500:
+        raise ServerError(response.text)
+    response.raise_for_status()
+
+
 class Item:
     '''
     classdocs
@@ -71,28 +91,31 @@ class Item:
         self._add_crumb(kwargs)
         if 'data' in kwargs and isinstance(kwargs['data'], str):
             kwargs['data'] = kwargs['data'].encode('utf-8')
-        try:
-            return self.jenkins.send_req(method, self.url + entry, **kwargs)
-        except HTTPError as e:
-            if e.response.status_code == 404:
-                raise ItemNotFoundError(
-                    f'Not found {entry} for item: {self}') from e
-            if e.response.status_code == 401:
-                raise AuthenticationError(
-                    f'Invalid authorization for {self}') from e
-            if e.response.status_code == 403:
-                raise PermissionError(
-                    f'No permission to {entry} for {self}') from e
-            if e.response.status_code == 400:
-                raise BadRequestError(e.response.headers['X-Error']) from e
-            if e.response.status_code == 500:
-                #                 import xml.etree.ElementTree as ET
-                #                 tree = ET.fromstring(e.response.text)
-                #                 stack_trace = tree.find(
-                #                     './/div[@id="error-description"]/pre').text
+        logger.debug('%s: %s with parameters: %s', method,
+                     self.url + entry, pformat(kwargs))
+        response = self.jenkins.send_req(method, self.url + entry, **kwargs)
+        logger.debug('Response: %s', response)
+        # redirect is disabled by default
+        # https://github.com/encode/httpx/discussions/1785
+        if response.is_success or response.is_redirect:
+            return response
+        check_response(response, self, entry)
 
-                raise ServerError(e.response.text) from e
-            raise
+    @contextlib.contextmanager
+    def handle_stream(self, method, entry, **kwargs):
+        self._add_crumb(kwargs)
+        if 'data' in kwargs and isinstance(kwargs['data'], str):
+            kwargs['data'] = kwargs['data'].encode('utf-8')
+        logger.debug('%s: %s with parameters: %s', method,
+                     self.url + entry, pformat(kwargs))
+        with self.jenkins.http_client.stream(method, self.url + entry, **kwargs) as response:
+            logger.debug('Response: %s', response)
+            # redirect is disabled by default
+            # https://github.com/encode/httpx/discussions/1785
+            if response.is_success or response.is_redirect:
+                yield response
+            logger.debug('Response: %s', response)
+            check_response(response, self, entry)
 
     def _add_crumb(self, kwargs):
         if self.jenkins.crumb:

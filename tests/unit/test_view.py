@@ -1,6 +1,8 @@
 # encoding: utf-8
 import pytest
 from api4jenkins.view import AllView
+
+
 class TestViews:
 
     def test_get(self, jenkins):
@@ -26,8 +28,8 @@ class TestView:
 
     @pytest.mark.parametrize('action, entry', [('include', 'addJobToView'),
                                                ('exclude', 'removeJobFromView')])
-    def test_include_exclude(self, view, mock_resp, action, entry):
+    def test_include_exclude(self, view, respx_mock, action, entry):
         req_url = f'{view.url}{entry}?name=folder1'
-        mock_resp.add('POST', req_url, json={'name': 'folder1'})
+        respx_mock.post(req_url).respond(json={'name': 'folder1'})
         getattr(view, action)('folder1')
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url

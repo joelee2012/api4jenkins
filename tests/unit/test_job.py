@@ -12,21 +12,21 @@ class TestFolder:
                                           "with the name 'Level1_Folder1'"},
                                          {'X-Error': '@  is an unsafe character'}],
                              ids=['exist', 'unsafe'])
-    def test_create_fail(self, folder, mock_resp, headers):
-        mock_resp.add('POST', f'{folder.url}createItem',
-                      headers=headers, status=400)
+    def test_create_fail(self, folder, respx_mock, headers):
+        respx_mock.post(f'{folder.url}createItem').respond(
+            headers=headers, status_code=400)
 
         with pytest.raises(BadRequestError, match=r'exists|unsafe'):
             folder.create('Level2_Folder1', '')
 
-        assert mock_resp.calls[0].response.status_code == 400
+        assert respx_mock.calls[0].response.status_code == 400
 
-    def test_create_succ(self, folder, mock_resp):
+    def test_create_succ(self, folder, respx_mock):
         req_url = f'{folder.url}createItem?name=new_job'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         folder.create('new_job', 'xmldata')
-        assert mock_resp.calls[0].response.status_code == 200
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].response.status_code == 200
+        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('name,type_', [('not exist', type(None)),
                                             ('Level2_Folder1', Folder),
@@ -44,36 +44,36 @@ class TestFolder:
                                           "with the name 'Level2_Folder1'"},
                                          {'X-Error': 'No such job: xxxx'}],
                              ids=['job exist', 'no source job'])
-    def test_copy_fail(self, folder, mock_resp, headers):
-        mock_resp.add('POST', f'{folder.url}createItem',
-                      headers=headers, status=400)
+    def test_copy_fail(self, folder, respx_mock, headers):
+        respx_mock.post(f'{folder.url}createItem').respond(
+            headers=headers, status_code=400)
         with pytest.raises(BadRequestError):
             folder.copy('not exist', 'Level2_Folder1')
 
-    def test_copy_succ(self, folder, mock_resp):
+    def test_copy_succ(self, folder, respx_mock):
         req_url = f'{folder.url}createItem?name=new_job&mode=copy&from=src_job'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         folder.copy('src_job', 'new_job')
-        assert mock_resp.calls[0].response.status_code == 200
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].response.status_code == 200
+        assert respx_mock.calls[0].request.url == req_url
 
-    def test_move(self, folder, mock_resp):
+    def test_move(self, folder, respx_mock):
         new_location = 'Level1_Folder2'
         headers = {'Location': f'{folder.jenkins.url}job/{new_location}/'
                    'job/Level1_Folder1/'}
         req_url = f'{folder.url}move/move'
-        mock_resp.add('POST', req_url, headers=headers)
+        respx_mock.post(req_url).respond(headers=headers)
         folder.move(new_location)
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
         assert folder.url == headers['Location']
 
-    def test_rename(self, folder, mock_resp):
+    def test_rename(self, folder, respx_mock):
         new_name = 'Level1_Folder3'
         headers = {'Location': f'{folder.jenkins.url}job/{new_name}/'}
         req_url = f'{folder.url}confirmRename?newName=Level1_Folder3'
-        mock_resp.add('POST', req_url, headers=headers)
+        respx_mock.post(req_url).respond(headers=headers)
         folder.rename(new_name)
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
         assert folder.url == headers['Location']
 
     def test_parent(self, folder, jenkins, monkeypatch):
@@ -84,38 +84,39 @@ class TestFolder:
         assert folder2.parent == folder
         assert folder2.parent.parent == jenkins
 
-    def test_delete(self, folder, mock_resp):
+    def test_delete(self, folder, respx_mock):
         req_url = f'{folder.url}doDelete'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         folder.delete()
-        assert mock_resp.calls[0].response.status_code == 200
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].response.status_code == 200
+        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('req, xml, body',
                              [('GET', None, '<xml/>'), ('POST', '<xml/>', '')],
                              ids=['get', 'set'])
-    def test_configure(self, folder, mock_resp, req, xml, body):
+    def test_configure(self, folder, respx_mock, req, xml, body):
         req_url = f'{folder.url}config.xml'
-        mock_resp.add(req, req_url, body=body)
+        respx_mock.route(method=req, url=req_url).respond(content=body)
         text = folder.configure(xml)
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
         if req == 'GET':
             assert text == body
 
 
 class TestWorkflowMultiBranchProject:
 
-    def test_scan(self, multibranchproject, mock_resp):
+    def test_scan(self, multibranchproject, respx_mock):
         req_url = f'{multibranchproject.url}build?delay=0'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         multibranchproject.scan()
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
 
-    def test_get_scan_log(self, multibranchproject, mock_resp):
+    def test_get_scan_log(self, multibranchproject, respx_mock):
         body = b'a\nb'
-        mock_resp.add(
-            'GET', f'{multibranchproject.url}indexing/consoleText', body=body)
-        assert list(multibranchproject.get_scan_log()) == body.split(b'\n')
+        respx_mock.get(
+            f'{multibranchproject.url}indexing/consoleText').respond(content=body)
+        assert list(multibranchproject.get_scan_log()) == [
+            'a\n', 'b']  # body.split(b'\n')
 
 
 class TestProject:
@@ -131,12 +132,12 @@ class TestProject:
                               ('Level1_WorkflowJob1', 'buildWithParameters?arg1=ab&delay=2&token=x', {
                                'arg1': 'ab', 'delay': 2, 'token': 'x'}),
                               ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token'])
-    def test_build(self, workflow, mock_resp, name, entry, params):
+    def test_build(self, workflow, respx_mock, name, entry, params):
         req_url = f'{workflow.url}{entry}'
-        mock_resp.add('POST', req_url, headers={
-                      'Location': f'{workflow.jenkins.url}/queue/123'})
+        respx_mock.post(req_url).respond(
+            headers={'Location': f'{workflow.jenkins.url}/queue/123'})
         workflow.build(**params)
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('number, obj',
                              [(52, WorkflowRun), (100, type(None))],
@@ -163,11 +164,11 @@ class TestProject:
         assert len(builds) == 8
 
     @pytest.mark.parametrize('action', ['enable', 'disable'])
-    def test_enable_disable(self, workflow, mock_resp, action):
+    def test_enable_disable(self, workflow, respx_mock, action):
         req_url = f'{workflow.url}{action}'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         getattr(workflow, action)()
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
 
     def test_building(self, workflow):
         assert workflow.building is False

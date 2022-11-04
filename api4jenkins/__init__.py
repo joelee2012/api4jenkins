@@ -3,13 +3,13 @@ import weakref
 from importlib import import_module
 from pathlib import PurePosixPath
 
-from requests.exceptions import ConnectionError, HTTPError
+from httpx import Client, ConnectError, HTTPStatusError, HTTPTransport
 
 from .__version__ import (__author__, __author_email__, __copyright__,
                           __description__, __license__, __title__, __url__,
                           __version__)
 from .credential import Credentials
-from .exceptions import ItemNotFoundError, AuthenticationError
+from .exceptions import AuthenticationError, ItemNotFoundError
 from .item import Item
 from .job import Folder
 from .node import Nodes
@@ -46,11 +46,13 @@ class Jenkins(Item):
 
     def __init__(self, url, **kwargs):
         token = kwargs.pop('token', None)
-        self.send_req = Requester(**kwargs)
+        transport = HTTPTransport(retries=kwargs.pop('max_retries', 1))
+        self.http_client = Client(transport=transport, **kwargs)
+        self.send_req = self.http_client.request
         super().__init__(self, url)
         self._crumb = None
         self._token = None
-        self._auth = kwargs.get('auth', None)
+        self._auth = kwargs.get('auth')
         self.user = None
         if self._auth:
             self.user = User(self, f'{self.url}user/{self._auth[0]}/')
@@ -59,7 +61,8 @@ class Jenkins(Item):
             weakref.finalize(self.user, self.user.revoke_token,
                              self._token.uuid)
             kwargs['auth'] = (self._auth[0], self._token.value)
-            self.send_req = Requester(**kwargs)
+            self.http_client = Client(transport=transport, **kwargs)
+            self.send_req = self.http_client.request
 
     def get_job(self, full_name):
         '''Get job by full name
@@ -123,7 +126,8 @@ class Jenkins(Item):
         '''
         folder, name = self._resolve_name(full_name)
         if recursive and not folder.exists():
-            self.create_job(folder.full_name, EMPTY_FOLDER_XML, recursive=recursive)
+            self.create_job(folder.full_name, EMPTY_FOLDER_XML,
+                            recursive=recursive)
         return folder.create(name, xml)
 
     def copy_job(self, full_name, dest):
@@ -247,22 +251,22 @@ class Jenkins(Item):
         :returns: True or False
         '''
         try:
-            self.send_req('GET', self.url)
+            self.handle_req('GET', '')
             return True
-        except ConnectionError:
-            return False
-        except HTTPError as e:
-            return e.response.status_code in [401, 403]
+        except Exception as e:
+            return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
     def crumb(self):
         '''Crumb of Jenkins'''
         if self._crumb is None:
             try:
-                _crumb = self.send_req(
-                    'GET', f'{self.url}crumbIssuer/api/json').json()
+                response = self.send_req(
+                    'GET', f'{self.url}crumbIssuer/api/json')
+                response.raise_for_status()
+                _crumb = response.json()
                 self._crumb = {_crumb['crumbRequestField']: _crumb['crumb']}
-            except HTTPError as e:
+            except HTTPStatusError as e:
                 if e.response.status_code in [401, 403]:
                     raise AuthenticationError(
                         f'Invalid authorization for {self}') from e

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
-import responses
+import respx
 from api4jenkins import Jenkins
 from api4jenkins import Item, Folder
 from api4jenkins.job import WorkflowJob, WorkflowMultiBranchProject
@@ -109,13 +109,13 @@ def view(jenkins):
 
 @pytest.fixture
 def mock_resp():
-    with responses.RequestsMock() as r:
-        yield r
+    with respx.mock() as respx_mock:
+        yield respx_mock
 
 
 @pytest.fixture
 def test_report(jenkins, workflowrun):
-    return TestReport(jenkins, workflowrun.url + 'testReport')
+    return TestReport(jenkins, f'{workflowrun.url}testReport')
 
 # @pytest.fixture
 # def coverage_report(jenkins, workflow):

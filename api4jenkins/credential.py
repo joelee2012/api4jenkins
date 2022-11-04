@@ -16,7 +16,7 @@ class Credentials(Item):
 
     def create(self, xml):
         self.handle_req('POST', 'createCredentials',
-                        headers=self.headers, data=xml)
+                        headers=self.headers, content=xml)
 
     def __iter__(self):
         for item in self.api_json(tree='credentials[id]')['credentials']:

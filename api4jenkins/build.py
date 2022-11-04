@@ -6,16 +6,15 @@ import time
 from .artifact import Artifact, save_response_to
 from .input import PendingInputAction
 from .item import Item
-from .mix import DeletionMixIn, DescriptionMixIn, ActionsMixIn
+from .mix import ActionsMixIn, DeletionMixIn, DescriptionMixIn
 from .report import CoverageReport, CoverageResult, CoverageTrends, TestReport
 
 
 class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
 
-    def console_text(self, stream=False):
-        with self.handle_req('GET', 'consoleText', stream=stream) as resp:
-            for line in resp.iter_lines():
-                yield line
+    def console_text(self):
+        with self.handle_stream('GET', 'consoleText') as resp:
+            yield from resp.iter_lines()
 
     def progressive_output(self, html=False):
         url = 'logText/progressiveHtml' if html else 'logText/progressiveText'
@@ -25,19 +24,19 @@ class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
             time.sleep(1)
             if start == resp.headers.get('X-Text-Size'):
                 continue
-            yield resp.text
+            yield from resp.iter_lines()
             if not resp.headers.get('X-More-Data'):
                 break
             start = resp.headers['X-Text-Size']
 
     def stop(self):
-        return self.handle_req('POST', 'stop', allow_redirects=False)
+        return self.handle_req('POST', 'stop')
 
     def term(self):
-        return self.handle_req('POST', 'term', allow_redirects=False)
+        return self.handle_req('POST', 'term')
 
     def kill(self):
-        return self.handle_req('POST', 'kill', allow_redirects=False)
+        return self.handle_req('POST', 'kill')
 
     def get_next_build(self):
         item = self.api_json(tree='nextBuild[url]')['nextBuild']
@@ -83,7 +82,8 @@ class WorkflowRun(Build):
         if not data['_links'].get('pendingInputActions'):
             return None
         action = self.handle_req('GET', 'wfapi/pendingInputActions').json()[0]
-        action["abortUrl"] = action["abortUrl"][action["abortUrl"].index("/job/"):]
+        action["abortUrl"] = action["abortUrl"][action["abortUrl"].index(
+            "/job/"):]
         return PendingInputAction(self.jenkins, action)
 
     def get_artifacts(self):
@@ -91,7 +91,7 @@ class WorkflowRun(Build):
         return [Artifact(self.jenkins, art) for art in artifacts]
 
     def save_artifacts(self, filename='archive.zip'):
-        with self.handle_req('GET', 'artifact/*zip*/archive.zip') as resp:
+        with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:
             save_response_to(resp, filename)
 
 

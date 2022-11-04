@@ -16,7 +16,7 @@ class System(Item, RunScriptMixIn):
         super().__init__(jenkins, url)
 
         def _post(entry):
-            return self.handle_req('POST', entry, allow_redirects=False)
+            return self.handle_req('POST', entry)
 
         for entry in ['restart', 'safeRestart', 'exit',
                       'safeExit', 'quietDown', 'cancelQuietDown']:

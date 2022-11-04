@@ -24,7 +24,7 @@ class Views(Item):
 
     def create(self, name, xml):
         self.handle_req('POST', 'createView', params={'name': name},
-                        headers=self.headers, data=xml)
+                        headers=self.headers, content=xml)
 
     def __iter__(self):
         for item in self.api_json(tree='views[name,url]')['views']:

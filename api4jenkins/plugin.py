@@ -24,7 +24,7 @@ class PluginsManager(Item):
             ET.SubElement(plugin_xml, 'install', {'plugin': name})
         self.handle_req('POST', 'installNecessaryPlugins',
                         headers=self.headers,
-                        data=ET.tostring(plugin_xml))
+                        content=ET.tostring(plugin_xml))
 
         while block and not self.installation_done:
             time.sleep(2)

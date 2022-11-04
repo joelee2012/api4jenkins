@@ -16,11 +16,11 @@ class Artifact(RawJsonMixIn, Item):
     def save(self, filename=None):
         if not filename:
             filename = self.name
-        with self.handle_req('GET', '') as resp:
+        with self.handle_stream('GET', '') as resp:
             save_response_to(resp, filename)
 
 
 def save_response_to(response, filename):
     with open(filename, 'wb') as fd:
-        for chunk in response.iter_content(chunk_size=128):
+        for chunk in response.iter_bytes(chunk_size=128):
             fd.write(chunk)

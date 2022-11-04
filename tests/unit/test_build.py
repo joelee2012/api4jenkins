@@ -2,20 +2,22 @@
 import pytest
 from api4jenkins.build import WorkflowRun
 from api4jenkins.input import PendingInputAction
+from respx import MockResponse
 
 
 class TestBuild:
-    def test_console_text(self, workflowrun, mock_resp):
+    def test_console_text(self, workflowrun, respx_mock):
         body = b'a\nb'
-        mock_resp.add('GET', f'{workflowrun.url}consoleText', body=body)
-        assert list(workflowrun.console_text()) == body.split(b'\n')
+        respx_mock.get(f'{workflowrun.url}consoleText').respond(content=body)
+        assert list(workflowrun.console_text()) == [
+            'a\n', 'b']  # body.split(b'\n')
 
-    def test_progressive_output(self, workflowrun, mock_resp):
+    def test_progressive_output(self, workflowrun, respx_mock):
         body = ['a', 'b']
         headers = {'X-More-Data': 'True', 'X-Text-Size': '1'}
         req_url = f'{workflowrun.url}logText/progressiveText'
-        mock_resp.add('GET', req_url, headers=headers, body=body[0])
-        mock_resp.add('GET', req_url, body=body[1])
+        respx_mock.get(req_url).mock(
+            side_effect=[MockResponse(headers=headers, content=body[0], status_code=200), MockResponse(content=body[1], status_code=200)])
         assert list(workflowrun.progressive_output()) == body
 
     def test_get_next_build(self, workflowrun):
@@ -28,11 +30,11 @@ class TestBuild:
         assert workflow == workflowrun.get_job()
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
-    def test_stop_term_kill(self, workflowrun, mock_resp, action):
+    def test_stop_term_kill(self, workflowrun, respx_mock, action):
         req_url = f'{workflowrun.url}{action}'
-        mock_resp.add('POST', req_url)
+        respx_mock.post(req_url)
         getattr(workflowrun, action)()
-        assert mock_resp.calls[0].request.url == req_url
+        assert respx_mock.calls[0].request.url == req_url
 
     def test_get_parameters(self, workflowrun):
         params = workflowrun.get_parameters()
@@ -50,31 +52,32 @@ class TestBuild:
 class TestWorkflowRun:
 
     @pytest.mark.parametrize('data, obj', [({"_links": {}}, type(None)),
-                                           ({"_links": {"pendingInputActions": 't1' }}, PendingInputAction),
-                                           ({"_links": {"pendingInputActions": 't2' }}, PendingInputAction)])
-    def test_get_pending_input(self, workflowrun, mock_resp, data, obj):
-        mock_resp.add('GET', f'{workflowrun.url}wfapi/describe', json=data)
+                                           ({"_links": {"pendingInputActions": 't1'}},
+                                            PendingInputAction),
+                                           ({"_links": {"pendingInputActions": 't2'}}, PendingInputAction)])
+    def test_get_pending_input(self, workflowrun, respx_mock, data, obj):
+        respx_mock.get(f'{workflowrun.url}wfapi/describe').respond(json=data)
         if data['_links'] and 'pendingInputActions' in data['_links']:
             if data['_links']['pendingInputActions'] == "t1":
-                mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
-                                  json=[{'abortUrl': '/job/Test%20Workflow/11/input/Ef95dd500ae6ed3b27b89fb852296d12/abort'}])
+                respx_mock.get(f'{workflowrun.url}wfapi/pendingInputActions').respond(
+                    json=[{'abortUrl': '/job/Test%20Workflow/11/input/Ef95dd500ae6ed3b27b89fb852296d12/abort'}])
             elif data['_links']['pendingInputActions'] == "t2":
-                mock_resp.add('GET', f'{workflowrun.url}wfapi/pendingInputActions',
-                                  json=[{'abortUrl': '/jenkins/job/Test%20Workflow/11/input/Ef95dd500ae6ed3b27b89fb852296d12/abort'}])
+                respx_mock.get(f'{workflowrun.url}wfapi/pendingInputActions').respond(
+                    json=[{'abortUrl': '/jenkins/job/Test%20Workflow/11/input/Ef95dd500ae6ed3b27b89fb852296d12/abort'}])
 
         assert isinstance(workflowrun.get_pending_input(), obj)
 
     @pytest.mark.parametrize('data, count', [([], 0),
                                              ([{"url": 'abcd'}], 1)],
                              ids=["empty", "no empty"])
-    def test_get_artifacts(self, workflowrun, mock_resp, data, count):
-        mock_resp.add('GET', f'{workflowrun.url}wfapi/artifacts', json=data)
+    def test_get_artifacts(self, workflowrun, respx_mock, data, count):
+        respx_mock.get(f'{workflowrun.url}wfapi/artifacts').respond(json=data)
         artifacts = workflowrun.get_artifacts()
         assert len(artifacts) == count
 
-    def test_save_artifacts(self, workflowrun, mock_resp, tmp_path):
-        mock_resp.add(
-            'GET', f'{workflowrun.url}artifact/*zip*/archive.zip', body='abc')
+    def test_save_artifacts(self, workflowrun, respx_mock, tmp_path):
+        respx_mock.get(
+            f'{workflowrun.url}artifact/*zip*/archive.zip').respond(content='abc')
         filename = tmp_path / 'my_archive.zip'
         workflowrun.save_artifacts(filename)
         assert filename.exists()

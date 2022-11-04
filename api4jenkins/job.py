@@ -19,15 +19,13 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
         path = path.strip('/')
         params = {'destination': f'/{path}',
                   'json': json.dumps({'destination': f'/{path}'})}
-        resp = self.handle_req('POST', 'move/move',
-                               data=params, allow_redirects=False)
+        resp = self.handle_req('POST', 'move/move', data=params)
         self.url = resp.headers['Location']
         return resp
 
     def rename(self, name):
         resp = self.handle_req('POST', 'confirmRename',
-                               params={'newName': name},
-                               allow_redirects=False)
+                               params={'newName': name})
         self.url = append_slash(resp.headers['Location'])
         return resp
 
@@ -58,7 +56,7 @@ class Folder(Job):
 
     def create(self, name, xml):
         return self.handle_req('POST', 'createItem', params={'name': name},
-                               headers=self.headers, data=xml)
+                               headers=self.headers, content=xml)
 
     def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
@@ -84,8 +82,7 @@ class Folder(Job):
 
     def copy(self, src, dest):
         params = {'name': dest, 'mode': 'copy', 'from': src}
-        return self.handle_req('POST', 'createItem', params=params,
-                               allow_redirects=False)
+        return self.handle_req('POST', 'createItem', params=params)
 
     def reload(self):
         return self.handle_req('POST', 'reload')
@@ -114,9 +111,8 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
     def scan(self, delay=0):
         return self.handle_req('POST', 'build', params={'delay': delay})
 
-    def get_scan_log(self, stream=False):
-        with self.handle_req('GET', 'indexing/consoleText',
-                             stream=stream) as resp:
+    def get_scan_log(self):
+        with self.handle_stream('GET', 'indexing/consoleText') as resp:
             yield from resp.iter_lines()
 
     @property

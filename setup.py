@@ -12,7 +12,7 @@ with open('README.md') as f:
     readme = f.read()
 
 requires = [
-    'requests >= 2.23.0'
+    'httpx >= 0.23.0'
 ]
 
 setup(

@@ -8,7 +8,7 @@ from collections import namedtuple
 class DeletionMixIn:
 
     def delete(self):
-        self.handle_req('POST', 'doDelete', allow_redirects=False)
+        self.handle_req('POST', 'doDelete')
 
 
 class ConfigurationMixIn:
@@ -17,7 +17,7 @@ class ConfigurationMixIn:
         if not xml:
             return self.handle_req('GET', 'config.xml').text
         return self.handle_req('POST', 'config.xml',
-                               headers=self.headers, data=xml)
+                               headers=self.headers, content=xml)
 
     @property
     def name(self):

@@ -23,8 +23,8 @@ class TestArtifact:
         assert artifact.url == f'{jenkins.url}job/test/1/artifact/target/hello2.jar'
         assert artifact.size == 6
 
-    def test_save(self, artifact, mock_resp, tmp_path):
-        mock_resp.add('GET', artifact.url, body='abcd')
+    def test_save(self, artifact, respx_mock, tmp_path):
+        respx_mock.get(artifact.url).respond(content='abcd')
         filename = tmp_path / artifact.name
         artifact.save(filename)
         assert filename.exists()
