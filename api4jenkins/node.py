@@ -146,3 +146,7 @@ class DockerComputer(Node):
 
 class EC2Computer(Node):
     pass
+
+
+class AnkaCloudComputer(Node):
+    pass
