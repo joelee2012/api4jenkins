@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
 
@@ -31,10 +31,10 @@ jobs:
           password=$(sudo docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)
           version=$(sudo docker exec jenkins-master sh -c 'echo "$JENKINS_VERSION"')
           port=8080
-          echo "::set-output name=url::http://${ip}:${port}/"
-          echo "::set-output name=user::admin"
-          echo "::set-output name=password::${password}"
-          echo "::set-output name=version::${version}"
+          echo "url=http://${ip}:${port}/" >> $GITHUB_OUTPUT
+          echo "user=admin" >> $GITHUB_OUTPUT
+          echo "password=${password}" >> $GITHUB_OUTPUT
+          echo "version=${version}" >> $GITHUB_OUTPUT
 
       - name: Run integration tests
         env:

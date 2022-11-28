@@ -1,4 +1,5 @@
-![Tests](https://github.com/joelee2012/api4jenkins/workflows/Tests/badge.svg?branch=master)
+[![Unit Test](https://github.com/joelee2012/api4jenkins/actions/workflows/unittest.yml/badge.svg?branch=master)](https://github.com/joelee2012/api4jenkins/actions/workflows/unittest.yml)
+[![Integration Test](https://github.com/joelee2012/api4jenkins/actions/workflows/integration.yml/badge.svg?branch=master)](https://github.com/joelee2012/api4jenkins/actions/workflows/integration.yml)
 ![CodeQL](https://github.com/joelee2012/api4jenkins/workflows/CodeQL/badge.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/joelee2012/api4jenkins/badge.svg?branch=master)](https://coveralls.io/github/joelee2012/api4jenkins?branch=master)
 [![codecov](https://codecov.io/gh/joelee2012/api4jenkins/branch/master/graph/badge.svg?token=YGM4CIB149)](https://codecov.io/gh/joelee2012/api4jenkins)
