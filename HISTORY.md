@@ -1,5 +1,10 @@
 Release History
 ===============
+1.14 (2022-11-28)
+-----------------
+- Add AnkaCloudComputer (#70)
+- Remove 3.6 support (#71)
+
 1.13 (2022-10-01)
 -----------------
 - fix for approving the pending input when jenkins runs on subpath (#66)
