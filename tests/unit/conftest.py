@@ -2,19 +2,17 @@ import json
 from pathlib import Path
 
 import pytest
-import respx
+
 from api4jenkins import Jenkins
-from api4jenkins import Item, Folder
-from api4jenkins.job import WorkflowJob, WorkflowMultiBranchProject
-from api4jenkins.build import WorkflowRun, FreeStyleBuild
-from api4jenkins import Credentials
-from api4jenkins.credential import Credential
-from api4jenkins import PluginsManager
-from api4jenkins import Queue
-from api4jenkins.queue import QueueItem
-from api4jenkins.node import Nodes, Node
-from api4jenkins.view import AllView
+from api4jenkins.build import FreeStyleBuild, WorkflowRun
+from api4jenkins.credential import Credential, Credentials
+from api4jenkins.item import Item
+from api4jenkins.job import Folder, WorkflowJob, WorkflowMultiBranchProject
+from api4jenkins.node import Node, Nodes
+from api4jenkins.plugin import PluginsManager
+from api4jenkins.queue import Queue, QueueItem
 from api4jenkins.report import CoverageReport, CoverageResult, TestReport
+from api4jenkins.view import AllView
 
 DATA = Path(__file__).with_name('tests_data')
 
@@ -83,7 +81,7 @@ def folder(jenkins):
 
 
 @pytest.fixture(scope='module')
-def workflow(jenkins):
+def pipeline(jenkins):
     return WorkflowJob(jenkins, f'{jenkins.url}job/Level1_WorkflowJob1/')
 
 
@@ -98,7 +96,7 @@ def multibranchproject(jenkins):
 
 
 @pytest.fixture(scope='module')
-def credential(jenkins):
+def new_credential(jenkins):
     return Credential(jenkins, f'{jenkins.url}credentials/store/system/domain/_/test-user/')
 
 
@@ -107,10 +105,10 @@ def view(jenkins):
     return AllView(jenkins, jenkins.url)
 
 
-@pytest.fixture
-def mock_resp():
-    with respx.mock() as respx_mock:
-        yield respx_mock
+# @pytest.fixture
+# def mock_resp():
+#     with respx.mock() as respx_mock:
+#         yield respx_mock
 
 
 @pytest.fixture

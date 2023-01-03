@@ -1,7 +1,7 @@
 # encoding: utf-8
 import re
-from .item import Item
-from .mix import ActionsMixIn
+from .item import Item, AsyncItem
+from .mix import ActionsMixIn, AsyncActionsMixIn
 
 
 class Queue(Item):
@@ -84,4 +84,89 @@ class LeftItem(QueueItem):
 
 
 class WaitingItem(QueueItem):
+    pass
+
+# async class
+
+
+class AsyncQueue(AsyncItem):
+
+    async def get(self, id):
+        async for item in self.api_json(tree='items[id,url]')['items']:
+            if item['id'] == int(id):
+                return AsyncQueueItem(self.jenkins,
+                                      f"{self.jenkins.url}{item['url']}")
+        return None
+
+    async def cancel(self, id):
+        await self.handle_req('POST', 'cancelItem', params={
+            'id': id}, allow_redirects=False)
+
+    async def __aiter__(self):
+        for item in (await self.api_json(tree='items[url]'))['items']:
+            yield AsyncQueueItem(self.jenkins, f"{self.jenkins.url}{item['url']}")
+
+# https://javadoc.jenkins.io/hudson/model/Queue.html#buildables
+#  (enter) --> waitingList --+--> blockedProjects
+#                            |        ^
+#                            |        |
+#                            |        v
+#                            +--> buildables ---> pending ---> left
+#                                     ^              |
+#                                     |              |
+#                                     +---(rarely)---+
+
+
+class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
+
+    def __init__(self, jenkins, url):
+        if not url.startswith('https') and jenkins.url.startswith('https'):
+            url = re.sub(r'^http[s]', 'https', url)
+        super().__init__(jenkins, url)
+        self.id = int(self.url.split('/')[-2])
+        self._build = None
+
+    async def get_job(self):
+        if self._class.endswith('$BuildableItem'):
+            return (await self.get_build()).get_job()
+        task = await self.api_json(tree='task[url]')['task']
+        return self._new_instance_by_item('api4jenkins.job', task)
+
+    async def get_build(self):
+        if not self._build:
+            _class = self._class
+            # BlockedItem does not have build
+            if _class.endswith('$LeftItem'):
+                executable = await self.api_json('executable[url]')['executable']
+                self._build = self._new_instance_by_item(
+                    'api4jenkins.build', executable)
+            elif _class.endswith(('$BuildableItem', '$WaitingItem')):
+                async for build in self.jenkins.nodes.iter_builds():
+                    # https://javadoc.jenkins.io/hudson/model/Run.html#getQueueId--
+                    # https://javadoc.jenkins.io/hudson/model/Queue.Item.html#getId--
+                    # ensure build exists, see https://github.com/joelee2012/api4jenkins/issues/49
+                    if await build.exists() and int(await build.queue_id) == self.id:
+                        self._build = build
+                        break
+        return self._build
+
+    async def cancel(self):
+        await self.jenkins.queue.cancel(self.id)
+
+# due to item type is dynamic
+
+
+class AsyncBuildableItem(AsyncQueueItem):
+    pass
+
+
+class AsyncBlockedItem(AsyncQueueItem):
+    pass
+
+
+class AsyncLeftItem(AsyncQueueItem):
+    pass
+
+
+class AsyncWaitingItem(AsyncQueueItem):
     pass

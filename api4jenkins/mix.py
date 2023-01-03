@@ -69,3 +69,67 @@ class ActionsMixIn:
 
     def get_causes(self):
         return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])
+
+# async classes
+
+
+class AsyncDeletionMixIn:
+
+    async def delete(self):
+        await self.handle_req('POST', 'doDelete')
+
+
+class AsyncConfigurationMixIn:
+
+    async def configure(self, xml=None):
+        if xml:
+            return await self.handle_req('POST', 'config.xml',
+                                         headers=self.headers, content=xml)
+        return (await self.handle_req('GET', 'config.xml')).text
+
+    @property
+    def name(self):
+        return self.url.split('/')[-2]
+
+
+class AsyncDescriptionMixIn:
+
+    async def set_description(self, text):
+        await self.handle_req('POST', 'submitDescription',
+                              params={'description': text})
+
+
+class AsyncRunScriptMixIn:
+
+    async def run_script(self, script):
+        return (await self.handle_req('POST', 'scriptText', data={'script': script})).text
+
+
+class AsyncEnableMixIn:
+
+    async def enable(self):
+        return await self.handle_req('POST', 'enable')
+
+    async def disable(self):
+        return await self.handle_req('POST', 'disable')
+
+
+class AsyncRawJsonMixIn:
+
+    def api_json(self, tree='', depth=0):
+        return self.raw
+
+
+class AsyncActionsMixIn:
+
+    async def get_parameters(self):
+        parameters = []
+        for action in self.api_json()['actions']:
+            if 'parameters' in action:
+                parameters.extend(Parameter(raw['_class'], raw['name'], raw.get(
+                    'value', '')) for raw in action['parameters'])
+                break
+        return parameters
+
+    async def get_causes(self):
+        return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])

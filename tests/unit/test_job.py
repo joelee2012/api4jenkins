@@ -112,11 +112,10 @@ class TestWorkflowMultiBranchProject:
         assert respx_mock.calls[0].request.url == req_url
 
     def test_get_scan_log(self, multibranchproject, respx_mock):
-        body = b'a\nb'
+        body = 'a\nb'
         respx_mock.get(
             f'{multibranchproject.url}indexing/consoleText').respond(content=body)
-        assert list(multibranchproject.get_scan_log()) == [
-            'a\n', 'b']  # body.split(b'\n')
+        assert list(multibranchproject.get_scan_log()) == body.split('\n')
 
 
 class TestProject:
@@ -132,43 +131,43 @@ class TestProject:
                               ('Level1_WorkflowJob1', 'buildWithParameters?arg1=ab&delay=2&token=x', {
                                'arg1': 'ab', 'delay': 2, 'token': 'x'}),
                               ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token'])
-    def test_build(self, workflow, respx_mock, name, entry, params):
-        req_url = f'{workflow.url}{entry}'
+    def test_build(self, pipeline, respx_mock, name, entry, params):
+        req_url = f'{pipeline.url}{entry}'
         respx_mock.post(req_url).respond(
-            headers={'Location': f'{workflow.jenkins.url}/queue/123'})
-        workflow.build(**params)
+            headers={'Location': f'{pipeline.jenkins.url}/queue/123'})
+        pipeline.build(**params)
         assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('number, obj',
                              [(52, WorkflowRun), (100, type(None))],
                              ids=['exist', 'not exist'])
-    def test_get_build(self, workflow, number, obj):
-        build = workflow.get_build(number)
+    def test_get_build(self, pipeline, number, obj):
+        build = pipeline.get_build(number)
         assert isinstance(build, obj)
-        build = workflow.get_build(f'#{number}')
+        build = pipeline.get_build(f'#{number}')
         assert isinstance(build, obj)
 
     @pytest.mark.parametrize('key', ['firstBuild', 'lastBuild', 'lastCompletedBuild',
                                      'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
                                      'lastSuccessfulBuild', 'lastUnsuccessfulBuild'])
-    def test_get_(self, workflow, key):
-        build = getattr(workflow, snake(f'get_{key}'))()
+    def test_get_(self, pipeline, key):
+        build = getattr(pipeline, snake(f'get_{key}'))()
         if key == 'lastUnstableBuild':
             assert build is None
         else:
             assert isinstance(build, WorkflowRun)
-            assert build.url == workflow.api_json()[key]['url']
+            assert build.url == pipeline.api_json()[key]['url']
 
-    def test_iter_builds(self, workflow):
-        builds = list(workflow.iter_builds())
+    def test_iter_builds(self, pipeline):
+        builds = list(pipeline.iter_builds())
         assert len(builds) == 8
 
     @pytest.mark.parametrize('action', ['enable', 'disable'])
-    def test_enable_disable(self, workflow, respx_mock, action):
-        req_url = f'{workflow.url}{action}'
+    def test_enable_disable(self, pipeline, respx_mock, action):
+        req_url = f'{pipeline.url}{action}'
         respx_mock.post(req_url)
-        getattr(workflow, action)()
+        getattr(pipeline, action)()
         assert respx_mock.calls[0].request.url == req_url
 
-    def test_building(self, workflow):
-        assert workflow.building is False
+    def test_building(self, pipeline):
+        assert pipeline.building is False

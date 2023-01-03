@@ -7,10 +7,9 @@ from respx import MockResponse
 
 class TestBuild:
     def test_console_text(self, workflowrun, respx_mock):
-        body = b'a\nb'
+        body = 'a\nb'
         respx_mock.get(f'{workflowrun.url}consoleText').respond(content=body)
-        assert list(workflowrun.console_text()) == [
-            'a\n', 'b']  # body.split(b'\n')
+        assert list(workflowrun.console_text()) == body.split('\n')
 
     def test_progressive_output(self, workflowrun, respx_mock):
         body = ['a', 'b']
@@ -26,8 +25,8 @@ class TestBuild:
     def test_get_previous_build(self, workflowrun):
         assert isinstance(workflowrun.get_previous_build(), WorkflowRun)
 
-    def test_get_job(self, workflowrun, workflow):
-        assert workflow == workflowrun.get_job()
+    def test_get_job(self, workflowrun, pipeline):
+        assert pipeline == workflowrun.get_job()
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     def test_stop_term_kill(self, workflowrun, respx_mock, action):

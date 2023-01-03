@@ -27,7 +27,7 @@ class TestQueueItem:
                               (599, 'leftitem'),
                                  (700, 'waitingitem'),
                                  (668, 'buildableitem')])
-    def test_get_job(self, jenkins, workflow, id_, type_, monkeypatch):
+    def test_get_job(self, jenkins, pipeline, id_, type_, monkeypatch):
         item = QueueItem(jenkins, f'{jenkins.url}queue/item/{id_}/')
 
         def _api_json(tree='', depth=0):
@@ -36,7 +36,7 @@ class TestQueueItem:
         monkeypatch.setattr(item, 'api_json', _api_json)
         job = item.get_job()
         assert isinstance(job, WorkflowJob)
-        assert job == workflow
+        assert job == pipeline
 
     @pytest.mark.parametrize('id_, type_, obj',
                              [(669, 'blockeditem', type(None)),

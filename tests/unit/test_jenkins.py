@@ -1,27 +1,16 @@
 import weakref
 
 import pytest
-from api4jenkins import Folder, Jenkins
+from api4jenkins import Jenkins
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
 from api4jenkins.item import new_item, snake
-from api4jenkins.job import WorkflowJob
+from api4jenkins.job import WorkflowJob, Folder
 
 
 class TestJenkins:
 
     def test_init(self, jenkins):
         assert str(jenkins), f'<Jenkins: {jenkins.url}>'
-
-    def test_init_with_token(self, jenkins, monkeypatch, respx_mock):
-        data = {'tokenName': 'n',  'tokenValue': 'v',  'tokenUuid': 'u'}
-        respx_mock.get(
-            f'{jenkins.url}crumbIssuer/api/json').respond(json=jenkins.crumb)
-        req_url = f'{jenkins.url}user/admin/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken?newTokenName='
-        respx_mock.post(req_url).respond(json={'data': data})
-        monkeypatch.setattr(weakref, 'finalize', lambda *args: None)
-        j = Jenkins(jenkins.url, auth=('admin', 'admin'), token=True)
-        assert j._token.name == data['tokenName']
-        assert j._token.value == data['tokenValue']
 
     def test_version(self, jenkins, respx_mock):
         respx_mock.get(jenkins.url).respond(headers={'X-Jenkins': '1.2.3'})

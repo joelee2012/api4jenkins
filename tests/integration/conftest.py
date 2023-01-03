@@ -1,9 +1,10 @@
+import contextlib
 import os
 import time
 from pathlib import Path
 
 import pytest
-from api4jenkins import Jenkins
+from api4jenkins import Jenkins, WorkflowJob, Folder, EMPTY_FOLDER_XML
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
 
@@ -13,70 +14,78 @@ def load_xml(name):
         return f.read()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def jenkins():
-    return Jenkins(os.environ['JENKINS_URL'], auth=(os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
+    yield Jenkins(os.environ['JENKINS_URL'], auth=(
+        os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def folder_xml():
-    return load_xml('folder.xml')
+    return EMPTY_FOLDER_XML
 
 
-@pytest.fixture(scope='module')
-def freejob_xml():
-    return load_xml('freestylejob.xml')
+# @pytest.fixture(scope='session')
+# def job_xml():
+#     return load_xml('job.xml')
 
 
-@pytest.fixture(scope='module')
-def workflow_xml():
-    return load_xml('pipeline.xml')
+# @pytest.fixture(scope='session')
+# def job_with_args_xml():
+#     return load_xml('job_params.xml')
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def credential_xml():
     return load_xml('credential.xml')
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def view_xml():
     return load_xml('view.xml')
 
 
-@pytest.fixture
-def freejob(jenkins, freejob_xml):
-    jenkins.create_job('Level1_FreeJob1', freejob_xml)
-    job = jenkins.get_job('Level1_FreeJob1')
-    yield job
-    job.delete()
+@pytest.fixture(scope='session')
+def folder(jenkins: Jenkins):
+    return Folder(jenkins, jenkins._name2url('folder'))
 
 
-@pytest.fixture
-def workflow(jenkins, workflow_xml):
-    jenkins.create_job('Level1_WorkflowJob1', workflow_xml)
-    job = jenkins.get_job('Level1_WorkflowJob1')
-    yield job
-    job.delete()
+@pytest.fixture(scope='session')
+def job(jenkins: Jenkins):
+    return WorkflowJob(jenkins, jenkins._name2url('folder/job'))
 
 
-@pytest.fixture
-def folder(jenkins):
-    return jenkins.get_job('Level1_Folder1')
+@pytest.fixture(scope='session')
+def args_job(jenkins: Jenkins):
+    return WorkflowJob(jenkins, jenkins._name2url('folder/args_job'))
 
 
-@pytest.fixture(autouse=True)
-def setup_folder(jenkins, folder_xml):
-    jenkins.create_job('Level1_Folder1', folder_xml)
-    jenkins.create_job('Level1_Folder1/Level2_Folder1', folder_xml)
+@pytest.fixture(scope='session', autouse=True)
+def setup(jenkins, credential_xml, view_xml):
+    jenkins.create_job('folder/folder', EMPTY_FOLDER_XML, True)
+    jenkins.create_job('folder/job', load_xml('job.xml'))
+    jenkins.create_job('folder/args_job', load_xml('args_job.xml'))
+    jenkins.create_job('folder/for_rename', EMPTY_FOLDER_XML)
+    jenkins.create_job('folder/for_move', EMPTY_FOLDER_XML)
+    jenkins.credentials.create(credential_xml)
+    jenkins.views.create('global-view', view_xml)
+    jenkins['folder'].credentials.create(credential_xml)
+    jenkins['folder'].views.create('folder-view', view_xml)
     yield
-    jenkins.delete_job('Level1_Folder1')
+    jenkins.delete_job('folder')
+    jenkins.credentials.get('user-id').delete()
+    jenkins.views.get('global-view').delete()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def retrive_build_and_output():
     def _retrive(item):
-        while not item.get_build():
+        for _ in range(10):
+            if item.get_build():
+                break
             time.sleep(1)
+        else:
+            raise TimeoutError('unable to get build in 10 seconds!!')
         build = item.get_build()
         output = []
         for line in build.progressive_output():
