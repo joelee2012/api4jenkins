@@ -1,25 +1,28 @@
 # encoding: utf-8
 
-
-class ItemNotFoundError(Exception):
+class JenkinsAPIException(Exception):
     pass
 
 
-class AuthenticationError(Exception):
+class ItemNotFoundError(JenkinsAPIException):
     pass
 
 
-class ItemExistsError(Exception):
+class AuthenticationError(JenkinsAPIException):
     pass
 
 
-class UnsafeCharacterError(Exception):
+class ItemExistsError(JenkinsAPIException):
     pass
 
 
-class BadRequestError(Exception):
+class UnsafeCharacterError(JenkinsAPIException):
     pass
 
 
-class ServerError(Exception):
+class BadRequestError(JenkinsAPIException):
+    pass
+
+
+class ServerError(JenkinsAPIException):
     pass
