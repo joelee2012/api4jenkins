@@ -1,5 +1,7 @@
 # encoding: utf-8
+
 import pytest
+import tempfile
 from api4jenkins.build import WorkflowRun
 from api4jenkins.exceptions import BadRequestError
 from api4jenkins.item import snake
@@ -130,7 +132,10 @@ class TestProject:
                                'buildWithParameters?arg1=ab', {'arg1': 'ab'}),
                               ('Level1_WorkflowJob1', 'buildWithParameters?arg1=ab&delay=2&token=x', {
                                'arg1': 'ab', 'delay': 2, 'token': 'x'}),
-                              ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token'])
+                              ('Level1_WorkflowJob1', 'buildWithParameters?delay=2',
+                               {'delay': 2, 'test_file': tempfile.TemporaryFile()}),
+                              ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token',
+                                      'with file params'])
     def test_build(self, workflow, mock_resp, name, entry, params):
         req_url = f'{workflow.url}{entry}'
         mock_resp.add('POST', req_url, headers={

@@ -151,7 +151,12 @@ class Project(Job, EnableMixIn):
             entry = 'build'
         else:
             entry = 'buildWithParameters'
-        resp = self.handle_req('POST', entry, params=params)
+        files = {}
+        for k in list(params):
+            v = params[k]
+            if hasattr(v, "seek") or hasattr(v, "read"):
+                files[k] = params.pop(k)
+        resp = self.handle_req('POST', entry, params=params, files=files)
         return QueueItem(self.jenkins, resp.headers['Location'])
 
     def get_build(self, number):
