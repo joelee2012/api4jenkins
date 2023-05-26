@@ -11,9 +11,16 @@ from .mix import (ConfigurationMixIn, DeletionMixIn, DescriptionMixIn,
                   EnableMixIn)
 from .queue import QueueItem
 from .view import Views
+from .exceptions import  ItemNotFoundError
 
 
 class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
+
+    def api_json(self, url=None, tree='', depth=0):
+        params = {'depth': depth}
+        if tree:
+            params['tree'] = tree
+        return self.handle_req('GET', 'api/json', url=url, params=params).json()
 
     def move(self, path):
         path = path.strip('/')
@@ -155,10 +162,13 @@ class Project(Job, EnableMixIn):
         return QueueItem(self.jenkins, resp.headers['Location'])
 
     def get_build(self, number):
-        for item in self.api_json(tree='allBuilds[number,displayName,url]')['allBuilds']:
-            if number == item['number'] or number == item['displayName']:
-                return self._new_instance_by_item('api4jenkins.build', item)
-        return None
+        try:
+            return self._new_instance_by_item(
+                'api4jenkins.build',
+                self.api_json(self.url + str(number) + "/"),
+            )
+        except ItemNotFoundError:
+            return None
 
     def iter_builds(self):
         yield from self

@@ -68,11 +68,12 @@ class Item:
         return self.handle_req('GET', 'api/json', params=params).json()
 
     def handle_req(self, method, entry, **kwargs):
+        url = kwargs.pop("url", None) or self.url
         self._add_crumb(kwargs)
         if 'data' in kwargs and isinstance(kwargs['data'], str):
             kwargs['data'] = kwargs['data'].encode('utf-8')
         try:
-            return self.jenkins.send_req(method, self.url + entry, **kwargs)
+            return self.jenkins.send_req(method, url + entry, **kwargs)
         except HTTPError as e:
             if e.response.status_code == 404:
                 raise ItemNotFoundError(
