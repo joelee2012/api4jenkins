@@ -16,12 +16,6 @@ from .exceptions import  ItemNotFoundError
 
 class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
-    def api_json(self, url=None, tree='', depth=0):
-        params = {'depth': depth}
-        if tree:
-            params['tree'] = tree
-        return self.handle_req('GET', 'api/json', url=url, params=params).json()
-
     def move(self, path):
         path = path.strip('/')
         params = {'destination': f'/{path}',

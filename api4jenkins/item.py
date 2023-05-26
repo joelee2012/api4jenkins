@@ -61,11 +61,11 @@ class Item:
         self.jenkins = jenkins
         self.url = append_slash(url)
 
-    def api_json(self, tree='', depth=0):
+    def api_json(self, url='', tree='', depth=0):
         params = {'depth': depth}
         if tree:
             params['tree'] = tree
-        return self.handle_req('GET', 'api/json', params=params).json()
+        return self.handle_req('GET', 'api/json', url=url, params=params).json()
 
     def handle_req(self, method, entry, **kwargs):
         url = kwargs.pop("url", None) or self.url
