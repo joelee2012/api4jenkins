@@ -39,6 +39,9 @@ class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
                 return self._new_instance_by_item('api4jenkins.job', item)
         return None
 
+    def __getitem__(self, name):
+        return self.get_job(name)
+
     def __iter__(self):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             yield self._new_instance_by_item('api4jenkins.job', item)

@@ -3,11 +3,17 @@
 import json
 
 from .exceptions import ItemNotFoundError
-from .item import Item, new_item
-from .mix import ConfigurationMixIn, DeletionMixIn, RunScriptMixIn
+from .item import Item, new_item, AsyncItem
+from .mix import ConfigurationMixIn, DeletionMixIn, RunScriptMixIn, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncRunScriptMixIn
 
 
-class Nodes(Item):
+class IterBuildingBuildsMixIn:
+    # pylint: disable=no-member
+    def iter_building_builds(self):
+        yield from filter(lambda build: build.building, self.iter_builds())
+
+
+class Nodes(Item, IterBuildingBuildsMixIn):
     '''
     classdocs
     '''
@@ -51,9 +57,6 @@ class Nodes(Item):
             _parse_builds(computer, builds)
 
         yield from _new_items(self.jenkins, builds)
-
-    def iter_building_builds(self):
-        yield from filter(lambda build: build.building, self.iter_builds())
 
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
@@ -115,9 +118,6 @@ class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn):
     def __iter__(self):
         yield from self.iter_builds()
 
-    def iter_building_builds(self):
-        yield from filter(lambda build: build.building, self.iter_builds())
-
 
 class MasterComputer(Node):
     def __init__(self, jenkins, url):
@@ -148,5 +148,127 @@ class EC2Computer(Node):
     pass
 
 
-class AnkaCloudComputer(Node):
+class AsyncIterBuildingBuildsMixIn:
+    # pylint: disable=no-member
+    async def iter_building_builds(self):
+        async for build in self.iter_builds():
+            if await build.building:
+                yield build
+
+
+class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
+    '''
+    classdocs
+    '''
+
+    async def create(self, name, **kwargs):
+        node_setting = {
+            'nodeDescription': '',
+            'numExecutors': 1,
+            'remoteFS': '/home/jenkins',
+            'labelString': '',
+            'mode': 'NORMAL',
+            'retentionStrategy': {
+                'stapler-class': 'hudson.slaves.RetentionStrategy$Always'
+            },
+            'nodeProperties': {'stapler-class-bag': 'true'},
+            'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
+        }
+        node_setting.update(kwargs)
+        params = {
+            'name': name,
+            'type': 'hudson.slaves.DumbSlave$DescriptorImpl',
+            'json': json.dumps(node_setting)
+        }
+        await self.handle_req('POST', 'doCreateItem', data=params)
+
+    async def get(self, name):
+        async for item in self.api_json(tree='computer[displayName]')['computer']:
+            if name == item['displayName']:
+                item['url'] = f"{self.url}{item['displayName']}/"
+                return self._new_instance_by_item(__name__, item)
+        return None
+
+    async def iter_builds(self):
+        builds = {}
+        # iterate 'executors', 'oneOffExecutors' in order,
+        # cause freestylebuild is in executors, and _class of workflowbuild in
+        # executors is PlaceholderExecutable
+        tree = ('computer[executors[currentExecutable[url]],'
+                'oneOffExecutors[currentExecutable[url]]]')
+        async for computer in self.api_json(tree, 2)['computer']:
+            _parse_builds(computer, builds)
+        for build in _new_items(self.jenkins, builds):
+            yield build
+
+    async def __aiter__(self):
+        async for item in self.api_json(tree='computer[displayName]')['computer']:
+            item['url'] = f"{self.url}{item['displayName']}/"
+            yield self._new_instance_by_item(__name__, item)
+
+    async def filter_node_by_label(self, *labels):
+        async for node in self:
+            async for label in node.api_json()['assignedLabels']:
+                if label['name'] in labels:
+                    yield node
+
+    async def filter_node_by_status(self, *, online):
+        async for node in self:
+            if online != await node.offline:
+                yield node
+
+
+class AsyncNode(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncRunScriptMixIn, AsyncIterBuildingBuildsMixIn):
+
+    async def enable(self):
+        if await self.offline:
+            await self.handle_req('POST', 'toggleOffline',
+                                  params={'offlineMessage': ''})
+
+    async def disable(self, msg=''):
+        if not await self.offline:
+            await self.handle_req('POST', 'toggleOffline',
+                                  params={'offlineMessage': msg})
+
+    async def iter_builds(self):
+        builds = {}
+        # iterate 'executors', 'oneOffExecutors' in order,
+        # cause freestylebuild is in executors
+        tree = ('executors[currentExecutable[url]],'
+                'oneOffExecutors[currentExecutable[url]]')
+        _parse_builds(await self.api_json(tree, 2), builds)
+        for build in _new_items(self.jenkins, builds):
+            yield build
+
+    async def __aiter__(self):
+        async for build in self.iter_builds():
+            yield build
+
+
+class AsyncMasterComputer(AsyncNode):
+    def __init__(self, jenkins, url):
+        # rename built-in node: https://www.jenkins.io/doc/upgrade-guide/2.319/
+        name = 'master' if url.endswith('/master/') else 'built-in'
+        super().__init__(jenkins, f'{jenkins.url}computer/({name})/')
+
+
+class AsyncSlaveComputer(AsyncNode):
+    pass
+
+
+class AsyncKubernetesComputer(AsyncNode):
+
+    async def exists(self):
+        try:
+            await self.handle_req('GET', '')
+            return True
+        except ItemNotFoundError:
+            return False
+
+
+class AsyncDockerComputer(AsyncNode):
+    pass
+
+
+class AsyncEC2Computer(AsyncNode):
     pass

@@ -1,17 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job">
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps">
-    <script>#!groovy
-pipeline {
-  agent any
-  stages {
-    stage('build'){
-      steps{
-        sh 'echo $JENKINS_VERSION'
-      }
-    }
-  }
-}</script>
+    <script>echo env.CI</script>
     <sandbox>true</sandbox>
   </definition>
   <disabled>false</disabled>

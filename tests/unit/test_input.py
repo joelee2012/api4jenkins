@@ -28,8 +28,6 @@ class TestPendingInput:
         assert pending_input.abort_url == "/job/input-pipeline/47/input/3eaa25d43fac6e39a12c3936942b72c8/abort"
 
     def test_abort(self, pending_input, respx_mock):
-        import logging
-        logging.basicConfig(level=logging.DEBUG)
         respx_mock.post(f'{pending_input.url}abort')
         pending_input.abort()
         assert respx_mock.calls[0].request.url == f'{pending_input.url}abort'
