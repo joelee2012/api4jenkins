@@ -39,14 +39,12 @@ class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
         return self.handle_req('POST', 'kill')
 
     def get_next_build(self):
-        item = self.api_json(tree='nextBuild[url]')['nextBuild']
-        if item:
+        if item := self.api_json(tree='nextBuild[url]')['nextBuild']:
             return self.__class__(self.jenkins, item['url'])
         return None
 
     def get_previous_build(self):
-        item = self.api_json(tree='previousBuild[url]')['previousBuild']
-        if item:
+        if item := self.api_json(tree='previousBuild[url]')['previousBuild']:
             return self.__class__(self.jenkins, item['url'])
         return None
 

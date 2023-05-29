@@ -12,7 +12,7 @@ from .__version__ import (__author__, __author_email__, __copyright__,
 from .credential import AsyncCredentials, Credentials
 from .exceptions import AuthenticationError, ItemNotFoundError
 from .item import AsyncItem, Item
-from .job import AsyncFolder, Folder, WorkflowJob, AsyncWorkflowJob
+from .job import AsyncFolder, Folder, WorkflowJob, AsyncWorkflowJob, AsyncProject
 from .node import AsyncNodes, Nodes
 from .plugin import AsyncPluginsManager, PluginsManager
 from .queue import AsyncQueue, Queue
