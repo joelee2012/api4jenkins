@@ -2,15 +2,6 @@ import pytest
 from api4jenkins import Folder
 from api4jenkins.job import WorkflowJob
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
-import contextlib
-
-
-@contextlib.contextmanager
-def new_job(jenkins, name, conf, recursive):
-    try:
-        yield jenkins.create_job(name, conf, recursive)
-    finally:
-        jenkins.delete_job(name)
 
 
 class TestJenkins:
@@ -88,3 +79,18 @@ class TestJenkins:
     def test_credential(self, jenkins):
         c = jenkins.credentials.get('user-id')
         assert c.id == 'user-id'
+
+
+@pytest.mark.asyncio
+class TestAsyncJenkins:
+
+    async def test_exists(self, async_jenkins):
+        assert await async_jenkins.exists()
+
+    @pytest.mark.parametrize('name,type_', [('not exist', type(None)),
+                                            ('folder', Folder),
+                                            ('folder/job', WorkflowJob),
+                                            ('folder/not exist', type(None))])
+    async def test_get_job(self, async_jenkins, name, type_):
+        assert isinstance(await async_jenkins.get_job(name), type_)
+        assert isinstance(await async_jenkins[name], type_)

@@ -4,7 +4,7 @@ import time
 from pathlib import Path
 
 import pytest
-from api4jenkins import Jenkins, WorkflowJob, Folder, EMPTY_FOLDER_XML
+from api4jenkins import Jenkins, WorkflowJob, Folder, EMPTY_FOLDER_XML, AsyncJenkins, AsyncFolder, AsyncWorkflowJob
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
 
@@ -17,6 +17,12 @@ def load_xml(name):
 @pytest.fixture(scope='session')
 def jenkins():
     yield Jenkins(os.environ['JENKINS_URL'], auth=(
+        os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
+
+
+@pytest.fixture(scope='session')
+def async_jenkins():
+    yield AsyncJenkins(os.environ['JENKINS_URL'], auth=(
         os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
@@ -51,8 +57,18 @@ def folder(jenkins: Jenkins):
 
 
 @pytest.fixture(scope='session')
+def async_folder(jenkins: Jenkins):
+    return AsyncFolder(jenkins, jenkins._name2url('folder'))
+
+
+@pytest.fixture(scope='session')
 def job(jenkins: Jenkins):
     return WorkflowJob(jenkins, jenkins._name2url('folder/job'))
+
+
+@pytest.fixture(scope='session')
+def async_job(jenkins: Jenkins):
+    return AsyncWorkflowJob(jenkins, jenkins._name2url('folder/job'))
 
 
 @pytest.fixture(scope='session')
