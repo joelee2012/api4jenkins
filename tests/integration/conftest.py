@@ -1,5 +1,7 @@
+import asyncio
 import contextlib
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -108,3 +110,14 @@ def retrive_build_and_output():
             output.append(str(line))
         return build, output
     return _retrive
+
+
+# workaround for https://github.com/pytest-dev/pytest-asyncio/issues/371
+@pytest.fixture(scope="session")
+def event_loop():
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    if loop.is_running():
+        asyncio.sleep(2)
+    loop.close()
