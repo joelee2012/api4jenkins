@@ -59,8 +59,8 @@ def folder(jenkins: Jenkins):
 
 
 @pytest.fixture(scope='session')
-def async_folder(jenkins: Jenkins):
-    return AsyncFolder(jenkins, jenkins._name2url('folder'))
+def async_folder(async_jenkins: AsyncJenkins):
+    return AsyncFolder(async_jenkins, async_jenkins._name2url('async_folder'))
 
 
 @pytest.fixture(scope='session')
@@ -69,8 +69,8 @@ def job(jenkins: Jenkins):
 
 
 @pytest.fixture(scope='session')
-def async_job(jenkins: Jenkins):
-    return AsyncWorkflowJob(jenkins, jenkins._name2url('folder/job'))
+def async_job(async_jenkins: AsyncJenkins):
+    return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/job'))
 
 
 @pytest.fixture(scope='session')
@@ -78,19 +78,30 @@ def args_job(jenkins: Jenkins):
     return WorkflowJob(jenkins, jenkins._name2url('folder/args_job'))
 
 
+@pytest.fixture(scope='session')
+def async_args_job(async_jenkins: AsyncJenkins):
+    return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/args_job'))
+
+
 @pytest.fixture(scope='session', autouse=True)
 def setup(jenkins, credential_xml, view_xml):
-    jenkins.create_job('folder/folder', EMPTY_FOLDER_XML, True)
-    jenkins.create_job('folder/job', load_xml('job.xml'))
-    jenkins.create_job('folder/args_job', load_xml('args_job.xml'))
-    jenkins.create_job('folder/for_rename', EMPTY_FOLDER_XML)
-    jenkins.create_job('folder/for_move', EMPTY_FOLDER_XML)
+    for name in ['folder/folder', 'folder/for_rename', 'folder/for_move', 'async_folder/folder', 'async_folder/for_rename', 'async_folder/for_move']:
+        jenkins.create_job(name, EMPTY_FOLDER_XML, True)
+
+    for name in ['folder/job', 'async_folder/job']:
+        jenkins.create_job(name, load_xml('job.xml'))
+
+    for name in ['folder/args_job', 'async_folder/args_job']:
+        jenkins.create_job(name, load_xml('args_job.xml'))
+
     jenkins.credentials.create(credential_xml)
     jenkins.views.create('global-view', view_xml)
     jenkins['folder'].credentials.create(credential_xml)
     jenkins['folder'].views.create('folder-view', view_xml)
+
     yield
     jenkins.delete_job('folder')
+    jenkins.delete_job('async_folder')
     jenkins.credentials.get('user-id').delete()
     jenkins.views.get('global-view').delete()
 

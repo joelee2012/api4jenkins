@@ -93,8 +93,7 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
             ...
         '''
-        folder = Folder(self, self.url)
-        yield from folder.iter(depth)
+        yield from Folder(self, self.url)(depth)
 
     def create_job(self, full_name, xml, recursive=False):
         '''Create new jenkins job with given xml configuration
@@ -401,8 +400,7 @@ class AsyncJenkins(AsyncItem):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
             ...
         '''
-        folder = Folder(self, self.url)
-        for job in await folder.iter(depth):
+        async for job in AsyncFolder(self, self.url)(depth):
             yield job
 
     async def create_job(self, full_name, xml, recursive=False):
@@ -501,6 +499,24 @@ class AsyncJenkins(AsyncItem):
         if job is None:
             raise ItemNotFoundError(f'No such job: {full_name}')
         return await job.build(**params)
+
+    async def rename_job(self, full_name, new_name):
+        job = self._get_job_and_check(full_name)
+        return await job.rename(new_name)
+
+    async def move_job(self, full_name, new_full_name):
+        job = self._get_job_and_check(full_name)
+        return await job.move(new_full_name)
+
+    async def duplicate_job(self, full_name, new_name, recursive=False):
+        job = self._get_job_and_check(full_name)
+        return await job.duplicate(new_name, recursive)
+
+    async def _get_job_and_check(self, full_name):
+        job = await self.get_job(full_name)
+        if job is None:
+            raise ItemNotFoundError(f'No such job: {full_name}')
+        return job
 
     async def check_job_name(self, name):
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
