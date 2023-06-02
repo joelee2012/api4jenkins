@@ -97,7 +97,9 @@ def setup(jenkins, credential_xml, view_xml):
     jenkins.credentials.create(credential_xml)
     jenkins.views.create('global-view', view_xml)
     jenkins['folder'].credentials.create(credential_xml)
+    jenkins['async_folder'].credentials.create(credential_xml)
     jenkins['folder'].views.create('folder-view', view_xml)
+    jenkins['async_folder'].views.create('folder-view', view_xml)
 
     yield
     jenkins.delete_job('folder')
@@ -123,7 +125,25 @@ def retrive_build_and_output():
     return _retrive
 
 
+@pytest.fixture(scope='session')
+async def async_retrive_build_and_output():
+    async def _retrive(item):
+        for _ in range(10):
+            if await item.get_build():
+                break
+            await asyncio.sleep(1)
+        else:
+            raise TimeoutError('unable to get build in 10 seconds!!')
+        build = await item.get_build()
+        output = []
+        async for line in build.progressive_output():
+            output.append(str(line))
+        return build, output
+    return _retrive
+
 # workaround for https://github.com/pytest-dev/pytest-asyncio/issues/371
+
+
 @pytest.fixture(scope="session")
 def event_loop():
     policy = asyncio.get_event_loop_policy()

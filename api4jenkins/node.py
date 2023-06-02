@@ -183,7 +183,8 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         await self.handle_req('POST', 'doCreateItem', data=params)
 
     async def get(self, name):
-        async for item in self.api_json(tree='computer[displayName]')['computer']:
+        data = await self.api_json(tree='computer[displayName]')
+        for item in data['computer']:
             if name == item['displayName']:
                 item['url'] = f"{self.url}{item['displayName']}/"
                 return self._new_instance_by_item(__name__, item)
@@ -196,19 +197,22 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         # executors is PlaceholderExecutable
         tree = ('computer[executors[currentExecutable[url]],'
                 'oneOffExecutors[currentExecutable[url]]]')
-        async for computer in self.api_json(tree, 2)['computer']:
+        data = await self.api_json(tree, 2)
+        for computer in data['computer']:
             _parse_builds(computer, builds)
         for build in _new_items(self.jenkins, builds):
             yield build
 
     async def __aiter__(self):
-        async for item in self.api_json(tree='computer[displayName]')['computer']:
+        data = await self.api_json(tree='computer[displayName]')
+        for item in data['computer']:
             item['url'] = f"{self.url}{item['displayName']}/"
             yield self._new_instance_by_item(__name__, item)
 
     async def filter_node_by_label(self, *labels):
         async for node in self:
-            async for label in node.api_json()['assignedLabels']:
+            data = await node.api_json()
+            async for label in data['assignedLabels']:
                 if label['name'] in labels:
                     yield node
 

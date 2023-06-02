@@ -9,7 +9,7 @@ from .credential import Credentials, AsyncCredentials
 from .item import AsyncItem, Item, append_slash, snake
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn, DeletionMixIn, DescriptionMixIn,
                   EnableMixIn)
-from .queue import QueueItem
+from .queue import AsyncQueueItem, QueueItem
 from .view import Views
 
 
@@ -259,7 +259,7 @@ class AsyncJob(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncD
         return resp
 
     async def duplicate(self, path, recursive=False):
-        await self.jenkins.create_job(path, self.configure(), recursive=recursive)
+        await self.jenkins.create_job(path, await self.configure(), recursive=recursive)
 
     @property
     async def parent(self):
@@ -354,7 +354,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         super().__init__(jenkins, url)
 
         async def _get_build_by_key(key):
-            item = self.api_json(tree=f'{key}[url]')[key]
+            item = (await self.api_json(tree=f'{key}[url]'))[key]
             if item is None:
                 return None
             return self._new_instance_by_item('api4jenkins.build', item)
@@ -372,20 +372,22 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         else:
             entry = 'buildWithParameters'
         resp = await self.handle_req('POST', entry, params=params)
-        return QueueItem(self.jenkins, resp.headers['Location'])
+        return AsyncQueueItem(self.jenkins, resp.headers['Location'])
 
     async def get_build(self, number):
-        async for item in self.api_json(tree='builds[number,displayName,url]')['builds']:
+        data = await self.api_json(tree='builds[number,displayName,url]')
+        for item in data['builds']:
             if number in [item['number'], item['displayName']]:
                 return self._new_instance_by_item('api4jenkins.build', item)
         return None
 
     async def iter_builds(self):
-        for build in self:
+        async for build in self:
             yield build
 
     async def iter_all_builds(self):
-        async for item in self.api_json(tree='allBuilds[number,url]')['allBuilds']:
+        data = await self.api_json(tree='allBuilds[number,url]')
+        for item in data['allBuilds']:
             yield self._new_instance_by_item('api4jenkins.build', item)
 
     async def set_next_build_number(self, number):
@@ -394,22 +396,23 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
 
     async def get_parameters(self):
         params = []
-        async for p in self.api_json()['property']:
+        for p in (await self.api_json())['property']:
             if 'parameterDefinitions' in p:
                 params = p['parameterDefinitions']
         return params
 
     @property
     async def building(self):
-        builds = self.api_json(tree='builds[building]')['builds']
-        return any(b['building'] for b in builds)
+        data = await self.api_json(tree='builds[building]')
+        return any(b['building'] for b in data['builds'])
 
     async def __aiter__(self):
-        async for item in self.api_json(tree='builds[number,url]')['builds']:
+        data = await self.api_json(tree='builds[number,url]')
+        for item in data['builds']:
             yield self._new_instance_by_item('api4jenkins.build', item)
 
     async def __getitem__(self, number):
-        return self.get_build(number)
+        return await self.get_build(number)
 
     async def filter_builds_by_result(self, *, result):
         """filter build by build results, avaliable results are:

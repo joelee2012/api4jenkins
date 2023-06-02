@@ -58,3 +58,56 @@ class TestProject:
         with pytest.raises(ValueError):
             assert list(job.filter_builds_by_result(
                 result='not a status')) == 'x'
+
+
+class TestAsyncFolder:
+    async def test_parent(self, async_jenkins, async_folder, async_job):
+        assert async_folder == await async_job.parent
+        assert async_jenkins == await async_folder.parent
+
+    async def test_credential(self, async_folder):
+        c = await async_folder.credentials.get('user-id')
+        assert await c.id == 'user-id'
+
+    async def test_iter_jobs(self, async_folder):
+        assert len([j async for j in async_folder(2)]) == 5
+        assert len([j async for j in async_folder]) == 4
+        assert await async_folder['job']
+
+
+class TestAsyncProject:
+    async def test_name(self, async_job):
+        assert async_job.name == 'job'
+        assert async_job.full_name == 'async_folder/job'
+        assert async_job.full_display_name == 'async_folder » job'
+
+    async def test_get_parameters(self, async_args_job):
+        assert (await async_args_job.get_parameters())[0]['name'] == 'ARG1'
+
+    async def test_get_build(self, async_job):
+        assert await async_job.get_build(0) is None
+        assert await async_job[1]
+
+    async def test_get_special_build(self, async_job):
+        assert await async_job.get_first_build()
+        assert await async_job.get_last_failed_build() is None
+
+    async def test_iter_build(self, async_job):
+        assert len([b async for b in async_job]) == 2
+        assert len([b async for b in async_job.iter_builds()]) == 2
+
+    async def test_iter_all_builds(self, async_job):
+        assert len([b async for b in async_job.iter_all_builds()]) == 2
+
+    async def test_building(self, async_job):
+        assert await async_job.building == False
+
+    async def test_set_next_build_number(self, async_job):
+        await async_job.set_next_build_number(10)
+        assert await async_job.next_build_number == 10
+
+    async def test_filter_builds_by_result(self, async_job):
+        assert len([b async for b in async_job.filter_builds_by_result(result='SUCCESS')]) == 2
+        assert not [b async for b in async_job.filter_builds_by_result(result='ABORTED')]
+        with pytest.raises(ValueError):
+            assert [b async for b in async_job.filter_builds_by_result(result='not a status')] == 'x'

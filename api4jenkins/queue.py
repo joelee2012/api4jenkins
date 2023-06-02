@@ -129,17 +129,17 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
     async def get_job(self):
         if self._class.endswith('$BuildableItem'):
             return (await self.get_build()).get_job()
-        task = await self.api_json(tree='task[url]')['task']
-        return self._new_instance_by_item('api4jenkins.job', task)
+        data = await self.api_json(tree='task[url]')
+        return self._new_instance_by_item('api4jenkins.job', data['task'])
 
     async def get_build(self):
         if not self._build:
-            _class = self._class
+            _class = await self._class
             # BlockedItem does not have build
             if _class.endswith('$LeftItem'):
-                executable = await self.api_json('executable[url]')['executable']
+                data = await self.api_json('executable[url]')
                 self._build = self._new_instance_by_item(
-                    'api4jenkins.build', executable)
+                    'api4jenkins.build', data['executable'])
             elif _class.endswith(('$BuildableItem', '$WaitingItem')):
                 async for build in self.jenkins.nodes.iter_builds():
                     # https://javadoc.jenkins.io/hudson/model/Run.html#getQueueId--
