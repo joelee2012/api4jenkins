@@ -12,13 +12,13 @@ from .__version__ import (__author__, __author_email__, __copyright__,
 from .credential import AsyncCredentials, Credentials
 from .exceptions import AuthenticationError, ItemNotFoundError
 from .item import AsyncItem, Item
-from .job import AsyncFolder, Folder, WorkflowJob
+from .job import AsyncFolder, Folder, WorkflowJob, AsyncWorkflowJob
 from .node import AsyncNodes, Nodes
 from .plugin import AsyncPluginsManager, PluginsManager
 from .queue import AsyncQueue, Queue
 from .http import new_async_http_client, new_http_client
 from .system import AsyncSystem, System
-from .user import AsyncUsers, User, Users
+from .user import AsyncUser, AsyncUsers, User, Users
 from .view import Views
 
 EMPTY_FOLDER_XML = '''<?xml version='1.0' encoding='UTF-8'?>
@@ -93,8 +93,7 @@ class Jenkins(Item):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
             ...
         '''
-        folder = Folder(self, self.url)
-        yield from folder.iter(depth)
+        yield from Folder(self, self.url)(depth)
 
     def create_job(self, full_name, xml, recursive=False):
         '''Create new jenkins job with given xml configuration
@@ -209,9 +208,9 @@ class Jenkins(Item):
         job = self._get_job_and_check(full_name)
         return job.duplicate(new_name, recursive)
 
-    def check_job_name(self, name):
+    def is_name_safe(self, name):
         resp = self.handle_req('GET', 'checkJobName', params={'value': name})
-        return 'is an unsafe character' in resp.text
+        return 'is an unsafe character' not in resp.text
 
     def validate_jenkinsfile(self, content):
         """validate Jenkinsfile, see
@@ -365,7 +364,7 @@ class AsyncJenkins(AsyncItem):
         self.http_client.event_hooks['request'].append(_add_crumb)
         self._auth = kwargs.get('auth')
         super().__init__(self, url)
-        self.user = User(
+        self.user = AsyncUser(
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
 
     async def get_job(self, full_name):
@@ -401,8 +400,7 @@ class AsyncJenkins(AsyncItem):
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
             ...
         '''
-        folder = Folder(self, self.url)
-        for job in await folder.iter(depth):
+        async for job in AsyncFolder(self, self.url)(depth):
             yield job
 
     async def create_job(self, full_name, xml, recursive=False):
@@ -497,14 +495,30 @@ class AsyncJenkins(AsyncItem):
             ...     print(line)
             ...
         '''
+        job = await self._get_job_and_check(full_name)
+        return await job.build(**params)
+
+    async def rename_job(self, full_name, new_name):
+        job = await self._get_job_and_check(full_name)
+        return await job.rename(new_name)
+
+    async def move_job(self, full_name, new_full_name):
+        job = await self._get_job_and_check(full_name)
+        return await job.move(new_full_name)
+
+    async def duplicate_job(self, full_name, new_name, recursive=False):
+        job = await self._get_job_and_check(full_name)
+        return await job.duplicate(new_name, recursive)
+
+    async def _get_job_and_check(self, full_name):
         job = await self.get_job(full_name)
         if job is None:
             raise ItemNotFoundError(f'No such job: {full_name}')
-        return await job.build(**params)
+        return job
 
-    async def check_job_name(self, name):
+    async def is_name_safe(self, name):
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
-        return 'is an unsafe character' in resp.text
+        return 'is an unsafe character' not in resp.text
 
     async def validate_jenkinsfile(self, content):
         """validate Jenkinsfile, see
@@ -517,9 +531,9 @@ class AsyncJenkins(AsyncItem):
             str: 'Jenkinsfile successfully validated.' if validate successful
             or error message
         """
-        data = {'jenkinsfile': content}
-        return await self.handle_req(
-            'POST', 'pipeline-model-converter/validate', data=data).text
+        data = await self.handle_req(
+            'POST', 'pipeline-model-converter/validate', data={'jenkinsfile': content})
+        return data.text
 
     def _url2name(self, url):
         '''Covert job url to full name
