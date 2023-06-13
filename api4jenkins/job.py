@@ -16,10 +16,6 @@ from .view import Views
 class NameMixIn:
     # pylint: disable=no-member
     @property
-    def name(self):
-        return self.full_name.split('/')[-1]
-
-    @property
     def full_name(self):
         return unquote_plus(self.jenkins._url2name(self.url))
 

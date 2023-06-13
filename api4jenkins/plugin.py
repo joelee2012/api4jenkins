@@ -98,7 +98,8 @@ class UpdateCenter(Item):
 class AsyncPluginsManager(AsyncItem):
 
     async def get(self, name):
-        async for plugin in self.api_json(tree='plugins[shortName]')['plugins']:
+        data = await self.api_json(tree='plugins[shortName]')
+        for plugin in data['plugins']:
             if plugin['shortName'] == name:
                 return AsyncPlugin(self.jenkins,
                                    f'{self.url}plugin/{name}/')
@@ -114,7 +115,7 @@ class AsyncPluginsManager(AsyncItem):
                               headers=self.headers,
                               content=ET.tostring(plugin_xml))
 
-        while block and not self.installation_done:
+        while block and not await self.installation_done:
             time.sleep(2)
 
     async def uninstall(self, *names):
@@ -153,7 +154,8 @@ class AsyncPluginsManager(AsyncItem):
             'json': json.dumps(data)})
 
     async def __aiter__(self):
-        async for plugin in self.api_json(tree='plugins[shortName]')['plugins']:
+        data = await self.api_json(tree='plugins[shortName]')
+        for plugin in data['plugins']:
             yield AsyncPlugin(self.jenkins,
                               f'{self.url}plugin/{plugin["shortName"]}/')
 
@@ -173,9 +175,10 @@ class AsyncUpdateCenter(AsyncItem):
 
     @property
     async def restart_required(self):
-        return await self.api_json(tree='restartRequiredForCompletion').get(
-            'restartRequiredForCompletion')
+        data = await self.api_json(tree='restartRequiredForCompletion')
+        return data.get('restartRequiredForCompletion')
 
     @property
     async def site(self):
-        return await self.api_json(tree='sites[url]')['sites'][0].get('url')
+        data = await self.api_json(tree='sites[url]')
+        return data['sites'][0].get('url')
