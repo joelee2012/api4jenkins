@@ -1,5 +1,6 @@
 # encoding: utf-8
 import pytest
+import tempfile
 from api4jenkins.exceptions import BadRequestError
 from api4jenkins.job import Folder
 
@@ -104,8 +105,9 @@ class TestProject:
         assert workflow.jenkins.version in ''.join(output)
 
     @pytest.mark.parametrize('params', [{'arg1': 'arg1_value'},
-                                        {'arg1': 'arg1_value', 'delay': 2}],
-                             ids=['without delay', 'with delay'])
+                                        {'arg1': 'arg1_value', 'delay': 2},
+                                        {'arg1': 'arg1_value', 'delay': 2, 'test_file': tempfile.TemporaryFile()}],
+                             ids=['without delay', 'with delay', 'with file parameter'])
     def test_build_with_params(self, freejob, params, retrive_build_and_output):
         item = freejob.build(**params)
         build, output = retrive_build_and_output(item)

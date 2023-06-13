@@ -154,7 +154,7 @@ class Project(Job, EnableMixIn):
         files = {}
         for k in list(params):
             v = params[k]
-            if hasattr(v, "seek") or hasattr(v, "read"):
+            if hasattr(v, "read"):
                 files[k] = params.pop(k)
         resp = self.handle_req('POST', entry, params=params, files=files)
         return QueueItem(self.jenkins, resp.headers['Location'])
