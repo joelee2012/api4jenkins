@@ -31,6 +31,9 @@ class TestNode:
         assert node.offline
         node.enable()
 
+    def test_iter_build_on_node(self, node):
+        assert not list(node)
+
 
 class TestAsyncNode:
     async def test_get(self, anode):
@@ -50,3 +53,6 @@ class TestAsyncNode:
         await anode.disable()
         assert await anode.offline
         await anode.enable()
+
+    async def test_iter_build_on_node(self, anode):
+        assert not [b async for b in anode]
