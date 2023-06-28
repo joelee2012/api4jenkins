@@ -332,7 +332,7 @@ class AsyncWorkflowMultiBranchProject(AsyncFolder, AsyncEnableMixIn):
 
     async def get_scan_log(self):
         async with self.handle_stream('GET', 'indexing/consoleText') as resp:
-            async for line in resp.iter_lines():
+            async for line in resp.aiter_lines():
                 yield line
 
     @property

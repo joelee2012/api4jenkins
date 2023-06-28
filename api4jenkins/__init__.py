@@ -603,7 +603,8 @@ class AsyncJenkins(AsyncItem):
     @property
     async def version(self):
         '''Version of Jenkins'''
-        return await self.handle_req('GET', '').headers['X-Jenkins']
+        data = await self.handle_req('GET', '')
+        return data.headers['X-Jenkins']
 
     @property
     def credentials(self):
