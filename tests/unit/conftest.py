@@ -99,7 +99,7 @@ def async_folder(async_jenkins):
 
 @pytest.fixture()
 def async_folder(async_jenkins):
-    return AsyncFolder(async_jenkins, f'{async_jenkins.url}job/Level1_Folder1/')
+    return AsyncFolder(async_jenkins, f'{async_jenkins.url}job/folder/')
 
 
 @pytest.fixture(scope='module')
@@ -113,7 +113,8 @@ def async_pipeline(async_jenkins):
 
 @pytest.fixture(scope='module')
 def async_pipeline(async_jenkins):
-    return AsyncWorkflowJob(async_jenkins, f'{async_jenkins.url}job/Level1_WorkflowJob1/')
+    return AsyncWorkflowJob(async_jenkins, f'{async_jenkins.url}job/folder/job/pipeline/')
+
 
 @pytest.fixture(scope='module')
 def workflowrun(jenkins):
@@ -132,7 +133,7 @@ def async_multibranchproject(async_jenkins):
 
 @pytest.fixture(scope='module')
 def async_multibranchproject(async_jenkins):
-    return AsyncWorkflowMultiBranchProject(async_jenkins, f'{async_jenkins.url}job/Level1_WorkflowMultiBranchProject/')
+    return AsyncWorkflowMultiBranchProject(async_jenkins, f'{async_jenkins.url}job/folder/multi-pipe/')
 
 
 @pytest.fixture(scope='module')
