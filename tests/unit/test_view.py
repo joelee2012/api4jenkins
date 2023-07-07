@@ -18,8 +18,8 @@ class TestViews:
 class TestView:
 
     def test_get_job(self, view):
-        job_in_view = view.get_job('Level1_Folder1')
-        job = view.jenkins.get_job('Level1_Folder1')
+        job_in_view = view.get_job('folder')
+        job = view.jenkins.get_job('folder')
         assert job_in_view == job
         assert view.get_job('not exist') is None
 

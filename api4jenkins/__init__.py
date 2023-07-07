@@ -496,6 +496,8 @@ class AsyncJenkins(AsyncItem):
             ...
         '''
         job = await self._get_job_and_check(full_name)
+        if not isinstance(job, AsyncProject):
+            raise AttributeError(f'{job} has no attribute build')
         return await job.build(**params)
 
     async def rename_job(self, full_name, new_name):

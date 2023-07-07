@@ -19,8 +19,8 @@
 	"stuck": false,
 	"task": {
 		"_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
-		"name": "Level1_WorkflowJob1",
-		"url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/",
+		"name": "folder/job/pipeline",
+		"url": "http://0.0.0.0:8080/job/folder/job/pipeline/",
 		"color": "aborted_anime"
 	},
 	"url": "queue/item/599/",
@@ -29,6 +29,6 @@
 	"executable": {
 		"_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
 		"number": 54,
-		"url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/"
+		"url": "http://0.0.0.0:8080/job/folder/job/pipeline/54/"
 	}
 }
