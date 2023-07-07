@@ -16,10 +16,6 @@ from .view import Views
 class NameMixIn:
     # pylint: disable=no-member
     @property
-    def name(self):
-        return self.full_name.split('/')[-1]
-
-    @property
     def full_name(self):
         return unquote_plus(self.jenkins._url2name(self.url))
 
@@ -336,7 +332,7 @@ class AsyncWorkflowMultiBranchProject(AsyncFolder, AsyncEnableMixIn):
 
     async def get_scan_log(self):
         async with self.handle_stream('GET', 'indexing/consoleText') as resp:
-            async for line in resp.iter_lines():
+            async for line in resp.aiter_lines():
                 yield line
 
     @property

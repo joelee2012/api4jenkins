@@ -140,7 +140,7 @@ class TestAsyncJenkins:
         await async_jenkins.delete_job('async_folder/duplicated_job')
 
     @pytest.mark.parametrize('name, exception', [('not exist', ItemNotFoundError),
-                                                 ('async_folder', TypeError)])
+                                                 ('async_folder', AttributeError)])
     async def test_build_job_fail(self, async_jenkins, name, exception):
         with pytest.raises(exception):
             await async_jenkins.build_job(name)

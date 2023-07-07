@@ -137,7 +137,12 @@
     "displayName": "#49",
     "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/49/"
   },
-  "lastUnstableBuild": null,
+  "lastUnstableBuild": {
+    "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+    "number": 52,
+    "displayName": "#52",
+    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob/52/"
+  },
   "lastUnsuccessfulBuild": {
     "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
     "number": 52,

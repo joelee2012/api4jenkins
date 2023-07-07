@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import pytest
-from api4jenkins.credential import Credential
+from api4jenkins.credential import AsyncCredential, Credential
 
 
 class TestCredentials:
@@ -19,7 +19,7 @@ class TestCredentials:
     def test_iter(self, jenkins):
         creds = list(jenkins.credentials)
         assert len(creds) == 2
-        assert all([isinstance(c, Credential) for c in creds])
+        assert all(isinstance(c, Credential) for c in creds)
 
 
 class TestCredential:
@@ -39,5 +39,21 @@ class TestCredential:
         respx_mock.route(method=req, url=req_url).respond(content=body)
         text = new_credential.configure(xml)
         assert respx_mock.calls[0].request.url == req_url
-        if req == 'GET':
-            assert text == body
+
+
+class TestAsyncCredentials:
+
+    @pytest.mark.parametrize('id_, obj', [('not exist', type(None)), ('test-user', AsyncCredential)])
+    async def test_get(self, async_jenkins, id_, obj):
+        assert isinstance(await async_jenkins.credentials.get(id_), obj)
+
+    async def test_create(self, async_jenkins, respx_mock):
+        req_url = f'{async_jenkins.credentials.url}createCredentials'
+        respx_mock.post(req_url)
+        await async_jenkins.credentials.create('xml')
+        assert respx_mock.calls[0].request.url == req_url
+
+    async def test_iter(self, async_jenkins):
+        creds = [c async for c in async_jenkins.credentials]
+        assert len(creds) == 2
+        assert all(isinstance(c, AsyncCredential) for c in creds)

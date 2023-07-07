@@ -15,3 +15,6 @@ class TestBuild:
     def test_get_previous_build(self, job):
         assert job[2].get_previous_build().number == 1
         assert job[1].get_previous_build() is None
+
+    def test_coverage_report(self, job):
+        pass

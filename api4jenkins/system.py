@@ -25,9 +25,8 @@ class System(Item, RunScriptMixIn):
     def reload_jcasc(self):
         return self.handle_req('POST', 'configuration-as-code/reload')
 
-    def export_jcasc(self, filename='jenkins.yaml'):
-        with self.handle_req('POST', 'configuration-as-code/export') as resp:
-            save_response_to(resp, filename)
+    def export_jcasc(self):
+        return self.handle_req('POST', 'configuration-as-code/export').text
 
     def apply_jcasc(self, new):
         params = {"newSource": new}
@@ -65,8 +64,8 @@ class AsyncSystem(AsyncItem, AsyncRunScriptMixIn):
         return await self.handle_req('POST', 'configuration-as-code/reload')
 
     async def export_jcasc(self, filename='jenkins.yaml'):
-        async with self.handle_req('POST', 'configuration-as-code/export') as resp:
-            save_response_to(resp, filename)
+        data = await self.handle_req('POST', 'configuration-as-code/export')
+        return data.text
 
     async def apply_jcasc(self, new):
         params = {"newSource": new}

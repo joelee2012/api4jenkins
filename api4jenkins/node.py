@@ -212,7 +212,7 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
     async def filter_node_by_label(self, *labels):
         async for node in self:
             data = await node.api_json()
-            async for label in data['assignedLabels']:
+            for label in data['assignedLabels']:
                 if label['name'] in labels:
                     yield node
 

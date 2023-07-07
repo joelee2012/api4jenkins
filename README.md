@@ -12,10 +12,11 @@
 
 # Jenkins Python Client
 
-[Python3](https://www.python.org/) client library for [Jenkins API](https://www.jenkins.io/doc/book/using/remote-access-api/).
+[Python3](https://www.python.org/) client library for [Jenkins API](https://www.jenkins.io/doc/book/using/remote-access-api/) which provides sync and async APIs.
 
 # Features
 
+- Provides sync and async APIs
 - Object oriented, each Jenkins item has corresponding class, easy to use and extend
 - Base on `api/json`, easy to query/filter attribute of item
 - Setup relationship between class just like Jenkins item
@@ -30,6 +31,8 @@ python3 -m pip install api4jenkins
 ```
 
 # Quick start
+
+Sync example:
 
 ```python
 >>> from api4jenkins import Jenkins
@@ -65,6 +68,38 @@ False
 >>> build.result
 'SUCCESS'
   ```
+
+Async example
+
+```python
+import asyncio
+import time
+from api4jenkins import AsyncJenkins
+
+async main():
+    client = AsyncJenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
+    print(await client.version)
+    xml = """<?xml version='1.1' encoding='UTF-8'?>
+    <project>
+      <builders>
+        <hudson.tasks.Shell>
+          <command>echo $JENKINS_VERSION</command>
+        </hudson.tasks.Shell>
+      </builders>
+    </project>"""
+    await client.create_job('job', xml)
+    item = await client.build_job('job')
+    while not await item.get_build():
+        time.sleep(1)
+    build = await item.get_build()
+    async for line in build.progressive_output():
+        print(line)
+
+    print(await build.building)
+    print(await build.result)
+
+asyncio.run(main())
+```
 
 # Documentation
 User Guide and API Reference is available on [Read the Docs](https://api4jenkins.readthedocs.io/)

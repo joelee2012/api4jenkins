@@ -39,19 +39,19 @@
   "duration": 324447,
   "estimatedDuration": 197743,
   "executor": null,
-  "fullDisplayName": "Level1_WorkflowJob1 #52",
+  "fullDisplayName": "folder/job/pipeline #52",
   "id": "52",
   "keepLog": false,
   "number": 52,
   "queueId": 668,
   "result": "FAILURE",
   "timestamp": 1559281453240,
-  "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/52/",
+  "url": "http://0.0.0.0:8080/job/folder/job/pipeline/52/",
   "changeSets": [],
   "culprits": [],
   "nextBuild": null,
   "previousBuild": {
     "number": 51,
-    "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/51/"
+    "url": "http://0.0.0.0:8080/job/folder/job/pipeline/51/"
   }
 }

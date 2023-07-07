@@ -16,8 +16,8 @@ class TestNodes:
     def test_iter_builds(self, jenkins):
         builds = list(jenkins.nodes.iter_builds())
         assert len(builds) == 2
-        assert builds[0].url == 'http://0.0.0.0:8080/job/Level1_freestylejob/14/'
-        assert builds[1].url == 'http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/'
+        assert builds[0].url == 'http://0.0.0.0:8080/job/freestylejob/14/'
+        assert builds[1].url == 'http://0.0.0.0:8080/job/folder/job/pipeline/53/'
 
 
 class TestNode:
@@ -26,5 +26,5 @@ class TestNode:
         node = jenkins.nodes.get('master')
         builds = list(node)
         assert len(builds) == 2
-        assert builds[0].url == 'http://0.0.0.0:8080/job/Level1_freestylejob/14/'
-        assert builds[1].url == 'http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/'
+        assert builds[0].url == 'http://0.0.0.0:8080/job/freestylejob/14/'
+        assert builds[1].url == 'http://0.0.0.0:8080/job/folder/job/pipeline/53/'

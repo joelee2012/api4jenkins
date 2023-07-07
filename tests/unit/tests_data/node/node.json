@@ -106,14 +106,14 @@
         "duration": 0,
         "estimatedDuration": 599342,
         "executor": {},
-        "fullDisplayName": "Level1_freestylejob #14",
+        "fullDisplayName": "freestylejob #14",
         "id": "14",
         "keepLog": false,
         "number": 14,
         "queueId": 151,
         "result": null,
         "timestamp": 1619167515987,
-        "url": "http://0.0.0.0:8080/job/Level1_freestylejob/14/",
+        "url": "http://0.0.0.0:8080/job/freestylejob/14/",
         "builtOn": "",
         "changeSet": {
           "_class": "hudson.scm.EmptyChangeLogSet",
@@ -130,12 +130,12 @@
     {
       "currentExecutable": {
         "_class": "org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution$PlaceholderTask$PlaceholderExecutable",
-        "displayName": "Level1_WorkflowJob1 #53 (echo)",
+        "displayName": "folder/job/pipeline #53 (echo)",
         "estimatedDuration": 441604,
-        "fullDisplayName": "Level1_WorkflowJob1 #53 (echo)",
+        "fullDisplayName": "folder/job/pipeline #53 (echo)",
         "number": 53,
         "timestamp": 1619167520820,
-        "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/"
+        "url": "http://0.0.0.0:8080/job/folder/job/pipeline/53/"
       },
       "idle": false,
       "likelyStuck": false,
@@ -271,20 +271,20 @@
         "executor": {
           "_class": "hudson.model.OneOffExecutor"
         },
-        "fullDisplayName": "Level1_WorkflowJob1 #53",
+        "fullDisplayName": "folder/job/pipeline #53",
         "id": "53",
         "keepLog": false,
         "number": 53,
         "queueId": 152,
         "result": null,
         "timestamp": 1619167520803,
-        "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/54/",
+        "url": "http://0.0.0.0:8080/job/folder/job/pipeline/53/",
         "changeSets": [],
         "culprits": [],
         "nextBuild": null,
         "previousBuild": {
           "number": 52,
-          "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/52/"
+          "url": "http://0.0.0.0:8080/job/folder/job/pipeline/52/"
         }
       },
       "idle": false,

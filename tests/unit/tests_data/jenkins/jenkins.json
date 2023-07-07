@@ -12,15 +12,34 @@
   "description": "Jenkins configured automatically by Jenkins Configuration as Code Plugin\n\n",
   "jobs": [
     {
-      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
-      "name": "Level1_WorkflowJob1",
-      "url": "http://0.0.0.0:8080/job/Level1_WorkflowJob1/",
-      "color": "red"
-    },
-    {
       "_class": "com.cloudbees.hudson.plugins.folder.Folder",
-      "name": "Level1_Folder1",
-      "url": "http://0.0.0.0:8080/job/Level1_Folder1/"
+      "name": "folder",
+      "url": "http://0.0.0.0:8080/job/folder/",
+      "jobs": [
+        {
+          "_class": "hudson.model.FreeStyleProject",
+          "name": "freestylejob",
+          "url": "http://0.0.0.0:8080/job/folder/job/freestylejob/",
+          "color": "blue"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "name": "pipeline",
+          "url": "http://0.0.0.0:8080/job/folder/job/pipeline/",
+          "color": "red"
+        },
+        {
+          "_class": "hudson.matrix.MatrixProject",
+          "name": "maxtrixjob",
+          "url": "http://0.0.0.0:8080/job/folder/job/maxtrixjob/",
+          "color": "blue"
+        },
+        {
+          "_class": "com.cloudbees.hudson.plugins.folder.Folder",
+          "name": "folder2",
+          "url": "http://0.0.0.0:8080/job/folder/job/folder2/"
+        }
+      ]
     }
   ],
   "overallLoad": {},

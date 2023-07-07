@@ -12,7 +12,7 @@ from .__version__ import (__author__, __author_email__, __copyright__,
 from .credential import AsyncCredentials, Credentials
 from .exceptions import AuthenticationError, ItemNotFoundError
 from .item import AsyncItem, Item
-from .job import AsyncFolder, Folder, WorkflowJob, AsyncWorkflowJob
+from .job import AsyncFolder, Folder, WorkflowJob, AsyncWorkflowJob, AsyncProject
 from .node import AsyncNodes, Nodes
 from .plugin import AsyncPluginsManager, PluginsManager
 from .queue import AsyncQueue, Queue
@@ -496,6 +496,8 @@ class AsyncJenkins(AsyncItem):
             ...
         '''
         job = await self._get_job_and_check(full_name)
+        if not isinstance(job, AsyncProject):
+            raise AttributeError(f'{job} has no attribute build')
         return await job.build(**params)
 
     async def rename_job(self, full_name, new_name):
@@ -603,7 +605,8 @@ class AsyncJenkins(AsyncItem):
     @property
     async def version(self):
         '''Version of Jenkins'''
-        return await self.handle_req('GET', '').headers['X-Jenkins']
+        data = await self.handle_req('GET', '')
+        return data.headers['X-Jenkins']
 
     @property
     def credentials(self):
