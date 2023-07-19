@@ -15,6 +15,8 @@ def Requester(**kwargs):
     # see: https://github.com/psf/requests/issues/4784
     # and https://github.com/psf/requests/issues/4664
     session = Session()
+    # headers need to be added to the session to avoid multiple 'headers' arguments while sending the request
+    session.headers.update(kwargs.pop('headers', {}))
     max_retries = kwargs.pop('max_retries', DEFAULT_MAX_RETRIES)
     adapter = adapters.HTTPAdapter(max_retries=max_retries)
     session.mount('http://', adapter)
