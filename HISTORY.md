@@ -1,5 +1,9 @@
 Release History
 ===============
+1.14.1 (2023-07-24)
+-------------------
+- Support additional session headers 
+
 1.14 (2022-11-28)
 -----------------
 - Add AnkaCloudComputer (#70)
