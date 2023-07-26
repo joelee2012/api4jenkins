@@ -2,8 +2,8 @@ import pytest
 
 
 @pytest.fixture
-def suite(workflowrun):
-    return workflowrun.get_test_report().get('pytest')
+def suite(build):
+    return build.get_test_report().get('pytest')
 
 
 @pytest.fixture
@@ -12,8 +12,8 @@ def case(suite):
 
 
 @pytest.fixture
-def coverage_report(workflowrun):
-    return workflowrun.get_coverage_report()
+def coverage_report(build):
+    return build.get_coverage_report()
 
 
 class TestTestReport:
@@ -68,7 +68,7 @@ class TestCoverageReport:
 
 class TestCoverageResult:
 
-    def test_get(self, workflowrun):
-        cr = workflowrun.get_coverage_result()
+    def test_get(self, build):
+        cr = build.get_coverage_result()
         assert cr.get('Report').ratio == 100
         assert cr.get('Line').ratio == 83.83372

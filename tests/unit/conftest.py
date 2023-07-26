@@ -117,8 +117,13 @@ def async_pipeline(async_jenkins):
 
 
 @pytest.fixture(scope='module')
-def workflowrun(jenkins):
+def build(jenkins):
     return WorkflowRun(jenkins, f'{jenkins.url}job/folder/job/pipeline/2/')
+
+
+@pytest.fixture(scope='module')
+def async_build(async_jenkins):
+    return AsyncWorkflowRun(async_jenkins, f'{async_jenkins.url}job/folder/job/pipeline/2/')
 
 
 @pytest.fixture(scope='module')
@@ -153,8 +158,8 @@ def view(jenkins):
 
 
 @pytest.fixture
-def test_report(jenkins, workflowrun):
-    return TestReport(jenkins, f'{workflowrun.url}testReport')
+def test_report(jenkins, build):
+    return TestReport(jenkins, f'{build.url}testReport')
 
 # @pytest.fixture
 # def coverage_report(jenkins, workflow):

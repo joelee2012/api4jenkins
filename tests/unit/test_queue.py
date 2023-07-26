@@ -43,7 +43,7 @@ class TestQueueItem:
                               (599, 'leftitem', WorkflowRun),
                                  (668, 'waitingitem', WorkflowRun),
                                  (668, 'buildableitem', WorkflowRun)])
-    def test_get_build(self, jenkins, workflowrun, id_, type_, obj, monkeypatch):
+    def test_get_build(self, jenkins, build, id_, type_, obj, monkeypatch):
         item = QueueItem(jenkins, f'{jenkins.url}queue/item/{id_}/')
 
         def _api_json(tree='', depth=0):

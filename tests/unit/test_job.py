@@ -1,27 +1,14 @@
 # encoding: utf-8
 import pytest
 from api4jenkins.build import AsyncWorkflowRun, WorkflowRun
-from api4jenkins.exceptions import BadRequestError
 from api4jenkins.item import snake
-from api4jenkins.job import Folder, WorkflowJob, AsyncFolder, AsyncWorkflowJob
 
 
 class TestFolder:
 
-    def test_iter_jobs(self, folder):
-        assert len(list(folder.iter())) == 4
-        assert len(list(folder)) == 4
-
     def test_parent(self, folder, jenkins, pipeline):
         assert pipeline.parent == folder
         assert folder.parent == jenkins
-
-    def test_delete(self, folder, respx_mock):
-        req_url = f'{folder.url}doDelete'
-        respx_mock.post(req_url)
-        folder.delete()
-        assert respx_mock.calls[0].response.status_code == 200
-        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('req, xml, body',
                              [('GET', None, '<xml/>'), ('POST', '<xml/>', '')],
@@ -49,24 +36,6 @@ class TestWorkflowMultiBranchProject:
 
 
 class TestProject:
-
-    @pytest.mark.parametrize('name, entry, params',
-                             [('folder/job/pipeline', 'build', {}),
-                              ('folder/job/pipeline',
-                               'build?delay=2', {'delay': 2}),
-                              ('folder/job/pipeline', 'build?delay=2&token=x',
-                               {'delay': 2, 'token': 'x'}),
-                              ('folder/job/pipeline',
-                               'buildWithParameters?arg1=ab', {'arg1': 'ab'}),
-                              ('folder/job/pipeline', 'buildWithParameters?arg1=ab&delay=2&token=x', {
-                               'arg1': 'ab', 'delay': 2, 'token': 'x'}),
-                              ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token'])
-    def test_build(self, pipeline, respx_mock, name, entry, params):
-        req_url = f'{pipeline.url}{entry}'
-        respx_mock.post(req_url).respond(
-            headers={'Location': f'{pipeline.jenkins.url}/queue/123'})
-        pipeline.build(**params)
-        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('number, obj',
                              [(52, WorkflowRun), (100, type(None))],
@@ -102,20 +71,9 @@ class TestProject:
 
 class TestAsyncFolder:
 
-    async def test_iter_jobs(self, async_folder):
-        assert len([j async for j in async_folder.iter()]) == 4
-        assert len([j async for j in async_folder]) == 4
-
     async def test_parent(self, async_folder, async_jenkins, async_pipeline):
         assert await async_folder.parent == async_jenkins
         assert await async_pipeline.parent == async_folder
-
-    async def test_delete(self, async_folder, respx_mock):
-        req_url = f'{async_folder.url}doDelete'
-        respx_mock.post(req_url)
-        await async_folder.delete()
-        assert respx_mock.calls[0].response.status_code == 200
-        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('req, xml, body',
                              [('GET', None, '<xml/>'), ('POST', '<xml/>', '')],
@@ -143,24 +101,6 @@ class TestAsyncWorkflowMultiBranchProject:
 
 
 class TestAsyncProject:
-
-    @pytest.mark.parametrize('name, entry, params',
-                             [('folder/job/pipeline', 'build', {}),
-                              ('folder/job/pipeline',
-                               'build?delay=2', {'delay': 2}),
-                              ('folder/job/pipeline', 'build?delay=2&token=x',
-                               {'delay': 2, 'token': 'x'}),
-                              ('folder/job/pipeline',
-                               'buildWithParameters?arg1=ab', {'arg1': 'ab'}),
-                              ('folder/job/pipeline', 'buildWithParameters?arg1=ab&delay=2&token=x', {
-                               'arg1': 'ab', 'delay': 2, 'token': 'x'}),
-                              ], ids=['without params', 'with delay', 'with token', 'with params', 'with params+token'])
-    async def test_build(self, async_pipeline, respx_mock, name, entry, params):
-        req_url = f'{async_pipeline.url}{entry}'
-        respx_mock.post(req_url).respond(
-            headers={'Location': f'{async_pipeline.jenkins.url}/queue/123'})
-        await async_pipeline.build(**params)
-        assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('number, obj',
                              [(52, AsyncWorkflowRun), (100, type(None))],

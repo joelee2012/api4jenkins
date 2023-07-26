@@ -1,6 +1,7 @@
 # encoding: utf-8
 from .item import Item
 from .mix import RawJsonMixIn
+import anyio
 
 
 class Artifact(RawJsonMixIn, Item):
@@ -24,3 +25,9 @@ def save_response_to(response, filename):
     with open(filename, 'wb') as fd:
         for chunk in response.iter_bytes(chunk_size=128):
             fd.write(chunk)
+
+
+async def async_save_response_to(response, filename):
+    async with anyio.wrap_file(open(filename, 'wb')) as fd:
+        async for chunk in response.aiter_bytes(chunk_size=128):
+            await fd.write(chunk)

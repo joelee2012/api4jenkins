@@ -124,7 +124,8 @@ class AsyncActionsMixIn:
 
     async def get_parameters(self):
         parameters = []
-        for action in self.api_json()['actions']:
+        data = await self.api_json()
+        for action in data['actions']:
             if 'parameters' in action:
                 parameters.extend(Parameter(raw['_class'], raw['name'], raw.get(
                     'value', '')) for raw in action['parameters'])
@@ -132,4 +133,5 @@ class AsyncActionsMixIn:
         return parameters
 
     async def get_causes(self):
-        return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])
+        data = await self.api_json()
+        return next((action['causes'] for action in data['actions'] if 'causes' in action), [])

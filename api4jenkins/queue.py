@@ -14,8 +14,7 @@ class Queue(Item):
         return None
 
     def cancel(self, id):
-        self.handle_req('POST', 'cancelItem', params={
-                        'id': id}, allow_redirects=False)
+        self.handle_req('POST', 'cancelItem', params={'id': id})
 
     def __iter__(self):
         for item in self.api_json(tree='items[url]')['items']:
@@ -99,8 +98,7 @@ class AsyncQueue(AsyncItem):
         return None
 
     async def cancel(self, id):
-        await self.handle_req('POST', 'cancelItem', params={
-            'id': id}, allow_redirects=False)
+        await self.handle_req('POST', 'cancelItem', params={'id': id})
 
     async def __aiter__(self):
         for item in (await self.api_json(tree='items[url]'))['items']:
