@@ -24,20 +24,20 @@ class TestCredentials:
 
 class TestCredential:
 
-    def test_delete(self, new_credential, respx_mock):
-        req_url = f'{new_credential.url}doDelete'
+    def test_delete(self, credential, respx_mock):
+        req_url = f'{credential.url}doDelete'
         respx_mock.post(req_url)
-        new_credential.delete()
+        credential.delete()
         assert respx_mock.calls[0].response.status_code == 200
         assert respx_mock.calls[0].request.url == req_url
 
     @pytest.mark.parametrize('req, xml, body',
                              [('GET', None, '<xml/>'), ('POST', '<xml/>', '')],
                              ids=['get', 'set'])
-    def test_configure(self, new_credential, respx_mock, req, xml, body):
-        req_url = f'{new_credential.url}config.xml'
+    def test_configure(self, credential, respx_mock, req, xml, body):
+        req_url = f'{credential.url}config.xml'
         respx_mock.route(method=req, url=req_url).respond(content=body)
-        text = new_credential.configure(xml)
+        text = credential.configure(xml)
         assert respx_mock.calls[0].request.url == req_url
 
 

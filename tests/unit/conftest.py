@@ -12,7 +12,7 @@ from api4jenkins.node import Node, Nodes, AsyncNode, AsyncNodes
 from api4jenkins.plugin import PluginsManager, AsyncPluginsManager
 from api4jenkins.queue import Queue, QueueItem, AsyncQueue, AsyncQueueItem
 from api4jenkins.report import CoverageReport, CoverageResult, TestReport
-from api4jenkins.view import AllView
+from api4jenkins.view import AllView, AsyncAllView
 
 DATA = Path(__file__).with_name('tests_data')
 
@@ -103,16 +103,12 @@ def async_folder(async_jenkins):
 
 
 @pytest.fixture(scope='module')
-def pipeline(jenkins):
+def job(jenkins):
     return WorkflowJob(jenkins, f'{jenkins.url}job/folder/job/pipeline/')
 
 
 @pytest.fixture(scope='module')
-def async_pipeline(async_jenkins):
-    return AsyncWorkflowJob(async_jenkins, f'{async_jenkins.url}job/folder/job/pipeline/')
-
-@pytest.fixture(scope='module')
-def async_pipeline(async_jenkins):
+def async_job(async_jenkins):
     return AsyncWorkflowJob(async_jenkins, f'{async_jenkins.url}job/folder/job/pipeline/')
 
 
@@ -127,29 +123,33 @@ def async_build(async_jenkins):
 
 
 @pytest.fixture(scope='module')
-def multibranchproject(jenkins):
+def multi_job(jenkins):
     return WorkflowMultiBranchProject(jenkins, f'{jenkins.url}job/folder/multi-pipe/')
 
 
 @pytest.fixture(scope='module')
-def async_multibranchproject(async_jenkins):
+def async_multi_job(async_jenkins):
     return AsyncWorkflowMultiBranchProject(async_jenkins, f'{async_jenkins.url}job/folder/multi-pipe/')
 
 
 @pytest.fixture(scope='module')
-def async_multibranchproject(async_jenkins):
-    return AsyncWorkflowMultiBranchProject(async_jenkins, f'{async_jenkins.url}job/folder/multi-pipe/')
-
-
-@pytest.fixture(scope='module')
-def new_credential(jenkins):
+def credential(jenkins):
     return Credential(jenkins, f'{jenkins.url}credentials/store/system/domain/_/test-user/')
+
+
+@pytest.fixture(scope='module')
+def async_credential(async_jenkins):
+    return AsyncCredential(async_jenkins, f'{async_jenkins.url}credentials/store/system/domain/_/test-user/')
 
 
 @pytest.fixture(scope='module')
 def view(jenkins):
     return AllView(jenkins, jenkins.url)
 
+
+@pytest.fixture(scope='module')
+def async_view(async_jenkins):
+    return AsyncAllView(async_jenkins, async_jenkins.url)
 
 # @pytest.fixture
 # def mock_resp():

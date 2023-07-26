@@ -25,8 +25,8 @@ class TestBuild:
     def test_get_previous_build(self, build):
         assert isinstance(build.get_previous_build(), WorkflowRun)
 
-    def test_get_job(self, build, pipeline):
-        assert pipeline == build.get_job()
+    def test_get_job(self, build, job):
+        assert job == build.get_job()
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     def test_stop_term_kill(self, build, respx_mock, action):
@@ -104,8 +104,8 @@ class TestAsyncBuild:
     async def test_get_previous_build(self, async_build):
         assert isinstance(await async_build.get_previous_build(), AsyncWorkflowRun)
 
-    async def test_get_job(self, async_build, async_pipeline):
-        assert async_pipeline == await async_build.get_job()
+    async def test_get_job(self, async_build, async_job):
+        assert async_job == await async_build.get_job()
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     async def test_stop_term_kill(self, async_build, respx_mock, action):
@@ -125,6 +125,7 @@ class TestAsyncBuild:
         causes = await async_build.get_causes()
         assert causes[0]['shortDescription'] == 'Started by user admin'
         assert causes[1]['shortDescription'] == 'Replayed #1'
+
 
 class TestAsyncWorkflowRun:
 
