@@ -69,7 +69,7 @@ class BaseItem:
         self._request = jenkins.http_client.request
         self._stream = jenkins.http_client.stream
 
-    def _new_instance_by_item(self, module, item):
+    def _new_item(self, module, item):
         return new_item(self.jenkins, module, item)
 
     def __eq__(self, other):

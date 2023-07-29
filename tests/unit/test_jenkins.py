@@ -13,7 +13,7 @@ class TestJenkins:
         assert str(jenkins), f'<Jenkins: {jenkins.url}>'
 
     def test_version(self, jenkins, respx_mock):
-        respx_mock.get(jenkins.url).respond(headers={'X-Jenkins': '1.2.3'})
+        respx_mock.head(jenkins.url).respond(headers={'X-Jenkins': '1.2.3'})
         assert jenkins.version == '1.2.3'
 
     def test_attrs(self, jenkins):
@@ -169,7 +169,7 @@ class TestAsyncJenkins:
         assert str(async_jenkins), f'<AsyncJenkins: {async_jenkins.url}>'
 
     async def test_version(self, async_jenkins, respx_mock):
-        respx_mock.get(async_jenkins.url).respond(
+        respx_mock.head(async_jenkins.url).respond(
             headers={'X-Jenkins': '1.2.3'})
         assert await async_jenkins.version == '1.2.3'
 

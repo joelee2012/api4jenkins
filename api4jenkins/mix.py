@@ -114,12 +114,6 @@ class AsyncEnableMixIn:
         return await self.handle_req('POST', 'disable')
 
 
-class AsyncRawJsonMixIn:
-
-    def api_json(self, tree='', depth=0):
-        return self.raw
-
-
 class AsyncActionsMixIn:
 
     async def get_parameters(self):

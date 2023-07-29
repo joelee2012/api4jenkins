@@ -44,7 +44,7 @@ class QueueItem(Item, ActionsMixIn):
         if self._class.endswith('$BuildableItem'):
             return self.get_build().get_job()
         task = self.api_json(tree='task[url]')['task']
-        return self._new_instance_by_item('api4jenkins.job', task)
+        return self._new_item('api4jenkins.job', task)
 
     def get_build(self):
         if not self._build:
@@ -52,7 +52,7 @@ class QueueItem(Item, ActionsMixIn):
             # BlockedItem does not have build
             if _class.endswith('$LeftItem'):
                 executable = self.api_json('executable[url]')['executable']
-                self._build = self._new_instance_by_item(
+                self._build = self._new_item(
                     'api4jenkins.build', executable)
             elif _class.endswith(('$BuildableItem', '$WaitingItem')):
                 for build in self.jenkins.nodes.iter_builds():
@@ -128,7 +128,7 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
         if self._class.endswith('$BuildableItem'):
             return (await self.get_build()).get_job()
         data = await self.api_json(tree='task[url]')
-        return self._new_instance_by_item('api4jenkins.job', data['task'])
+        return self._new_item('api4jenkins.job', data['task'])
 
     async def get_build(self):
         if not self._build:
@@ -136,7 +136,7 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
             # BlockedItem does not have build
             if _class.endswith('$LeftItem'):
                 data = await self.api_json('executable[url]')
-                self._build = self._new_instance_by_item(
+                self._build = self._new_item(
                     'api4jenkins.build', data['executable'])
             elif _class.endswith(('$BuildableItem', '$WaitingItem')):
                 async for build in self.jenkins.nodes.iter_builds():

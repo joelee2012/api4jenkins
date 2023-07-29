@@ -5,10 +5,7 @@ from .item import Item, camel, snake
 class GetMixIn:
 
     def get(self, name):
-        for item in self:
-            if item.name == name:
-                return item
-        return None
+        return next((item for item in self if item.name == name), None)
 
 
 class ResultBase:
@@ -70,7 +67,7 @@ class CoverageReport(Item, GetMixIn):
 
     def __iter__(self):
         for k, v in self.api_json().items():
-            if k != '_class' and k != 'previousResult':
+            if k not in ['_class', 'previousResult']:
                 v['name'] = k
                 yield Coverage(v)
 
@@ -79,7 +76,7 @@ class CoverageReport(Item, GetMixIn):
             if data['previousResult']:
                 yield from _resolve(data['previousResult'])
             for k, v in data.items():
-                if k != '_class' and k != 'previousResult':
+                if k not in ['_class', 'previousResult']:
                     v['name'] = k
                     yield Coverage(v)
 

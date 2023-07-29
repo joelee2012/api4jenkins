@@ -60,7 +60,7 @@ class Folder(Job):
     def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
-                return self._new_instance_by_item(__name__, item)
+                return self._new_item(__name__, item)
         return None
 
     def iter(self, depth=0):
@@ -70,7 +70,7 @@ class Folder(Job):
             query = query_format % query
 
         def _resolve(item):
-            yield self._new_instance_by_item(__name__, item)
+            yield self._new_item(__name__, item)
             jobs = item.get('jobs')
             if jobs:
                 for job in jobs:
@@ -132,7 +132,7 @@ class Project(Job, EnableMixIn):
             item = self.api_json(tree=f'{key}[url]')[key]
             if item is None:
                 return None
-            return self._new_instance_by_item('api4jenkins.build', item)
+            return self._new_item('api4jenkins.build', item)
 
         for key in ['firstBuild', 'lastBuild', 'lastCompletedBuild',
                     'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
@@ -152,7 +152,7 @@ class Project(Job, EnableMixIn):
     def get_build(self, number):
         for item in self.api_json(tree='builds[number,displayName,url]')['builds']:
             if number == item['number'] or number == item['displayName']:
-                return self._new_instance_by_item('api4jenkins.build', item)
+                return self._new_item('api4jenkins.build', item)
         return None
 
     def iter_builds(self):
@@ -160,7 +160,7 @@ class Project(Job, EnableMixIn):
 
     def iter_all_builds(self):
         for item in self.api_json(tree='allBuilds[number,url]')['allBuilds']:
-            yield self._new_instance_by_item('api4jenkins.build', item)
+            yield self._new_item('api4jenkins.build', item)
 
     def set_next_build_number(self, number):
         self.handle_req('POST', 'nextbuildnumber/submit',
@@ -180,7 +180,7 @@ class Project(Job, EnableMixIn):
 
     def __iter__(self):
         for item in self.api_json(tree='builds[number,url]')['builds']:
-            yield self._new_instance_by_item('api4jenkins.build', item)
+            yield self._new_item('api4jenkins.build', item)
 
     def __getitem__(self, number):
         return self.get_build(number)
@@ -275,7 +275,7 @@ class AsyncFolder(AsyncJob):
         resp = await self.api_json(tree='jobs[name,url]')
         for item in resp['jobs']:
             if name == item['name']:
-                return self._new_instance_by_item(__name__, item)
+                return self._new_item(__name__, item)
         return None
 
     async def iter(self, depth=0):
@@ -285,7 +285,7 @@ class AsyncFolder(AsyncJob):
             query = query_format % query
 
         async def _resolve(item):
-            yield self._new_instance_by_item(__name__, item)
+            yield self._new_item(__name__, item)
             jobs = item.get('jobs')
             if not jobs:
                 return
@@ -353,7 +353,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
             item = (await self.api_json(tree=f'{key}[url]'))[key]
             if item is None:
                 return None
-            return self._new_instance_by_item('api4jenkins.build', item)
+            return self._new_item('api4jenkins.build', item)
 
         for key in ['firstBuild', 'lastBuild', 'lastCompletedBuild',
                     'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
@@ -374,7 +374,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         data = await self.api_json(tree='builds[number,displayName,url]')
         for item in data['builds']:
             if number in [item['number'], item['displayName']]:
-                return self._new_instance_by_item('api4jenkins.build', item)
+                return self._new_item('api4jenkins.build', item)
         return None
 
     async def iter_builds(self):
@@ -384,7 +384,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
     async def iter_all_builds(self):
         data = await self.api_json(tree='allBuilds[number,url]')
         for item in data['allBuilds']:
-            yield self._new_instance_by_item('api4jenkins.build', item)
+            yield self._new_item('api4jenkins.build', item)
 
     async def set_next_build_number(self, number):
         await self.handle_req('POST', 'nextbuildnumber/submit',
@@ -405,7 +405,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
     async def __aiter__(self):
         data = await self.api_json(tree='builds[number,url]')
         for item in data['builds']:
-            yield self._new_instance_by_item('api4jenkins.build', item)
+            yield self._new_item('api4jenkins.build', item)
 
     async def __getitem__(self, number):
         return await self.get_build(number)

@@ -55,7 +55,7 @@ class Jenkins(Item):
 
         # self.http_client.event_hooks['request'].append(_add_crumb)
         self._auth = kwargs.get('auth')
-        self.sync_lock = threading.Lock()
+        self._sync_lock = threading.Lock()
         super().__init__(self, url)
         self.user = User(
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
@@ -270,7 +270,7 @@ class Jenkins(Item):
     @property
     def crumb(self):
         '''Crumb of Jenkins'''
-        with self.sync_lock:
+        with self._sync_lock:
             if self._crumb is None:
                 try:
                     _crumb = self._request(
@@ -296,7 +296,7 @@ class Jenkins(Item):
     @property
     def version(self):
         '''Version of Jenkins'''
-        return self.handle_req('GET', '').headers['X-Jenkins']
+        return self.handle_req('HEAD', '').headers['X-Jenkins']
 
     @property
     def credentials(self):
@@ -355,7 +355,7 @@ class AsyncJenkins(AsyncItem):
     def __init__(self, url, **kwargs):
         self.http_client = new_async_http_client(**kwargs)
         self._crumb = None
-        self.async_lock = asyncio.Lock()
+        self._async_lock = asyncio.Lock()
 
         async def _add_crumb(request):
             if not request.url.path.endswith('crumbIssuer/api/json'):
@@ -580,7 +580,7 @@ class AsyncJenkins(AsyncItem):
     @property
     async def crumb(self):
         '''Crumb of Jenkins'''
-        async with self.async_lock:
+        async with self._async_lock:
             if self._crumb is None:
                 try:
                     _crumb = (await self._request('GET', f'{self.url}crumbIssuer/api/json')).json()
@@ -605,7 +605,7 @@ class AsyncJenkins(AsyncItem):
     @property
     async def version(self):
         '''Version of Jenkins'''
-        data = await self.handle_req('GET', '')
+        data = await self.handle_req('HEAD', '')
         return data.headers['X-Jenkins']
 
     @property

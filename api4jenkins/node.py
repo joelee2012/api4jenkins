@@ -43,7 +43,7 @@ class Nodes(Item, IterBuildingBuildsMixIn):
         for item in self.api_json(tree='computer[displayName]')['computer']:
             if name == item['displayName']:
                 item['url'] = f"{self.url}{item['displayName']}/"
-                return self._new_instance_by_item(__name__, item)
+                return self._new_item(__name__, item)
         return None
 
     def iter_builds(self):
@@ -61,7 +61,7 @@ class Nodes(Item, IterBuildingBuildsMixIn):
     def __iter__(self):
         for item in self.api_json(tree='computer[displayName]')['computer']:
             item['url'] = f"{self.url}{item['displayName']}/"
-            yield self._new_instance_by_item(__name__, item)
+            yield self._new_item(__name__, item)
 
     def filter_node_by_label(self, *labels):
         for node in self:
@@ -187,7 +187,7 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         for item in data['computer']:
             if name == item['displayName']:
                 item['url'] = f"{self.url}{item['displayName']}/"
-                return self._new_instance_by_item(__name__, item)
+                return self._new_item(__name__, item)
         return None
 
     async def iter_builds(self):
@@ -207,7 +207,7 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         data = await self.api_json(tree='computer[displayName]')
         for item in data['computer']:
             item['url'] = f"{self.url}{item['displayName']}/"
-            yield self._new_instance_by_item(__name__, item)
+            yield self._new_item(__name__, item)
 
     async def filter_node_by_label(self, *labels):
         async for node in self:
