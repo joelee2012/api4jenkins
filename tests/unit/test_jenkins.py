@@ -10,7 +10,7 @@ from api4jenkins.job import AsyncFolder, AsyncWorkflowJob, WorkflowJob, Folder
 class TestJenkins:
 
     def test_init(self, jenkins):
-        assert str(jenkins), f'<Jenkins: {jenkins.url}>'
+        assert str(jenkins) == f'<Jenkins: {jenkins.url}>'
 
     def test_version(self, jenkins, respx_mock):
         respx_mock.head(jenkins.url).respond(headers={'X-Jenkins': '1.2.3'})
@@ -166,7 +166,7 @@ class TestJenkins:
 class TestAsyncJenkins:
 
     async def test_init(self, async_jenkins):
-        assert str(async_jenkins), f'<AsyncJenkins: {async_jenkins.url}>'
+        assert str(async_jenkins) == f'<AsyncJenkins: {async_jenkins.url}>'
 
     async def test_version(self, async_jenkins, respx_mock):
         respx_mock.head(async_jenkins.url).respond(

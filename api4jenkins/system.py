@@ -2,7 +2,6 @@
 import json
 from functools import partial
 
-from .artifact import save_response_to
 from .item import AsyncItem, Item, snake
 from .mix import AsyncRunScriptMixIn, RunScriptMixIn
 
@@ -28,15 +27,15 @@ class System(Item, RunScriptMixIn):
     def export_jcasc(self):
         return self.handle_req('POST', 'configuration-as-code/export').text
 
-    def apply_jcasc(self, new):
-        params = {"newSource": new}
+    def apply_jcasc(self, content):
+        params = {"newSource": content}
         resp = self.handle_req(
             'POST', 'configuration-as-code/checkNewSource', params=params)
         if resp.text.startswith('<div class=error>'):
             raise ValueError(resp.text)
-        d = {'json': json.dumps(params),
-             'replace': 'Apply new configuration'}
-        return self.handle_req('POST', 'configuration-as-code/replace', data=d)
+        data = {'json': json.dumps(params),
+                'replace': 'Apply new configuration'}
+        return self.handle_req('POST', 'configuration-as-code/replace', data=data)
 
     def decrypt_secret(self, text):
         cmd = f'println(hudson.util.Secret.decrypt("{text}"))'
@@ -63,19 +62,19 @@ class AsyncSystem(AsyncItem, AsyncRunScriptMixIn):
     async def reload_jcasc(self):
         return await self.handle_req('POST', 'configuration-as-code/reload')
 
-    async def export_jcasc(self, filename='jenkins.yaml'):
+    async def export_jcasc(self):
         data = await self.handle_req('POST', 'configuration-as-code/export')
         return data.text
 
-    async def apply_jcasc(self, new):
-        params = {"newSource": new}
+    async def apply_jcasc(self, content):
+        params = {"newSource": content}
         resp = await self.handle_req(
             'POST', 'configuration-as-code/checkNewSource', params=params)
         if resp.text.startswith('<div class=error>'):
             raise ValueError(resp.text)
-        d = {'json': json.dumps(params),
-             'replace': 'Apply new configuration'}
-        return await self.handle_req('POST', 'configuration-as-code/replace', data=d)
+        data = {'json': json.dumps(params),
+                'replace': 'Apply new configuration'}
+        return await self.handle_req('POST', 'configuration-as-code/replace', data=data)
 
     async def decrypt_secret(self, text):
         cmd = f'println(hudson.util.Secret.decrypt("{text}"))'

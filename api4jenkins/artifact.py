@@ -1,7 +1,8 @@
 # encoding: utf-8
+import anyio
+
 from .item import AsyncItem, Item
 from .mix import RawJsonMixIn
-import anyio
 
 
 class Artifact(RawJsonMixIn, Item):

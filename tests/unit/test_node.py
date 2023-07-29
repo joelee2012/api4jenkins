@@ -5,7 +5,7 @@ class TestNodes:
 
     def test_get(self, jenkins):
         node = jenkins.nodes.get('master')
-        assert node.display_name == 'master'
+        assert node.url == 'http://0.0.0.0:8080/computer/(master)/'
         assert jenkins.nodes.get('notexist') is None
 
     def test_iter(self, jenkins):

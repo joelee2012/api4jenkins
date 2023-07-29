@@ -3,10 +3,11 @@
 import re
 import time
 
-from .artifact import Artifact, save_response_to, async_save_response_to
+from .artifact import Artifact, async_save_response_to, save_response_to
 from .input import PendingInputAction
 from .item import AsyncItem, Item
-from .mix import ActionsMixIn, AsyncActionsMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, DeletionMixIn, DescriptionMixIn
+from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncDeletionMixIn,
+                  AsyncDescriptionMixIn, DeletionMixIn, DescriptionMixIn)
 from .report import CoverageReport, CoverageResult, CoverageTrends, TestReport
 
 

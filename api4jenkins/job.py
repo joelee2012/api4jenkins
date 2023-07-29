@@ -5,10 +5,11 @@ from functools import partial
 from pathlib import PurePosixPath
 from urllib.parse import unquote_plus
 
-from .credential import Credentials, AsyncCredentials
-from .item import AsyncItem, Item, append_slash, snake
-from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn, DeletionMixIn, DescriptionMixIn,
-                  EnableMixIn)
+from .credential import AsyncCredentials, Credentials
+from .item import AsyncItem, Item, new_item, append_slash, snake
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
+                  AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn,
+                  DeletionMixIn, DescriptionMixIn, EnableMixIn)
 from .queue import AsyncQueueItem, QueueItem
 from .view import Views
 
@@ -51,6 +52,20 @@ class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn, NameMixIn):
         return self.jenkins.get_job(str(path.parent))
 
 
+def _make_query(depth):
+    query = 'jobs[url]'
+    for _ in range(int(depth)):
+        query = f'jobs[url,{query}]'
+    return query
+
+
+def _iter_jobs(jenkins, item):
+    yield new_item(jenkins, __name__, item)
+    if jobs := item.get('jobs'):
+        for job in jobs:
+            yield from _iter_jobs(jenkins, job)
+
+
 class Folder(Job):
 
     def create(self, name, xml):
@@ -64,20 +79,8 @@ class Folder(Job):
         return None
 
     def iter(self, depth=0):
-        query = 'jobs[url]'
-        query_format = 'jobs[url,%s]'
-        for _ in range(int(depth)):
-            query = query_format % query
-
-        def _resolve(item):
-            yield self._new_item(__name__, item)
-            jobs = item.get('jobs')
-            if jobs:
-                for job in jobs:
-                    yield from _resolve(job)
-
-        for item in self.api_json(tree=query)['jobs']:
-            yield from _resolve(item)
+        for item in self.api_json(tree=_make_query(depth))['jobs']:
+            yield from _iter_jobs(self.jenkins, item)
 
     def copy(self, src, dest):
         params = {'name': dest, 'mode': 'copy', 'from': src}
@@ -123,6 +126,19 @@ class OrganizationFolder(WorkflowMultiBranchProject):
     pass
 
 
+def _set_get_methods(job, func):
+    for key in ['firstBuild', 'lastBuild', 'lastCompletedBuild',
+                'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
+                'lastSuccessfulBuild', 'lastUnsuccessfulBuild']:
+        setattr(job, snake(f'get_{key}'), partial(func, key))
+
+
+def _get_build(job, api_json, number):
+    for item in api_json['builds']:
+        if number in [item['number'], item['displayName']]:
+            return job._new_item('api4jenkins.build', item)
+
+
 class Project(Job, EnableMixIn):
 
     def __init__(self, jenkins, url):
@@ -130,15 +146,9 @@ class Project(Job, EnableMixIn):
 
         def _get_build_by_key(key):
             item = self.api_json(tree=f'{key}[url]')[key]
-            if item is None:
-                return None
-            return self._new_item('api4jenkins.build', item)
-
-        for key in ['firstBuild', 'lastBuild', 'lastCompletedBuild',
-                    'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
-                    'lastSuccessfulBuild', 'lastUnsuccessfulBuild']:
-            setattr(self, snake(f'get_{key}'),
-                    partial(_get_build_by_key, key))
+            if item:
+                return self._new_item('api4jenkins.build', item)
+        _set_get_methods(self, _get_build_by_key)
 
     def build(self, **params):
         reserved = ['token', 'delay']
@@ -150,10 +160,7 @@ class Project(Job, EnableMixIn):
         return QueueItem(self.jenkins, resp.headers['Location'])
 
     def get_build(self, number):
-        for item in self.api_json(tree='builds[number,displayName,url]')['builds']:
-            if number == item['number'] or number == item['displayName']:
-                return self._new_item('api4jenkins.build', item)
-        return None
+        return _get_build(self, self.api_json(tree='builds[number,displayName,url]'), number)
 
     def iter_builds(self):
         yield from self
@@ -279,22 +286,8 @@ class AsyncFolder(AsyncJob):
         return None
 
     async def iter(self, depth=0):
-        query = 'jobs[url]'
-        query_format = 'jobs[url,%s]'
-        for _ in range(int(depth)):
-            query = query_format % query
-
-        async def _resolve(item):
-            yield self._new_item(__name__, item)
-            jobs = item.get('jobs')
-            if not jobs:
-                return
-            for job in jobs:
-                async for child in _resolve(job):
-                    yield child
-
-        for item in (await self.api_json(tree=query))['jobs']:
-            async for job in _resolve(item):
+        for item in (await self.api_json(tree=_make_query(depth)))['jobs']:
+            for job in _iter_jobs(self.jenkins, item):
                 yield job
 
     async def copy(self, src, dest):
@@ -351,15 +344,10 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
 
         async def _get_build_by_key(key):
             item = (await self.api_json(tree=f'{key}[url]'))[key]
-            if item is None:
-                return None
-            return self._new_item('api4jenkins.build', item)
+            if item:
+                return self._new_item('api4jenkins.build', item)
 
-        for key in ['firstBuild', 'lastBuild', 'lastCompletedBuild',
-                    'lastFailedBuild', 'lastStableBuild', 'lastUnstableBuild',
-                    'lastSuccessfulBuild', 'lastUnsuccessfulBuild']:
-            setattr(self, snake(f'get_{key}'),
-                    partial(_get_build_by_key, key))
+        _set_get_methods(self, _get_build_by_key)
 
     async def build(self, **params):
         reserved = ['token', 'delay']
@@ -371,11 +359,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         return AsyncQueueItem(self.jenkins, resp.headers['Location'])
 
     async def get_build(self, number):
-        data = await self.api_json(tree='builds[number,displayName,url]')
-        for item in data['builds']:
-            if number in [item['number'], item['displayName']]:
-                return self._new_item('api4jenkins.build', item)
-        return None
+        return _get_build(self, await self.api_json(tree='builds[number,displayName,url]'), number)
 
     async def iter_builds(self):
         async for build in self:

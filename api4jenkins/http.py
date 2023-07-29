@@ -1,9 +1,10 @@
 # encoding: utf-8
 import logging
-from httpx import Client, HTTPTransport, AsyncClient, AsyncHTTPTransport
-from .exceptions import ItemNotFoundError, ServerError, AuthenticationError, BadRequestError
-from .__version__ import __title__, __version__
 
+from httpx import AsyncClient, AsyncHTTPTransport, Client, HTTPTransport
+
+from .__version__ import __title__, __version__
+from .exceptions import AuthenticationError, BadRequestError, ItemNotFoundError
 
 logger = logging.getLogger(__name__)
 

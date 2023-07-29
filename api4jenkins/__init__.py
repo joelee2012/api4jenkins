@@ -2,30 +2,31 @@
 import asyncio
 import threading
 from importlib import import_module
-from pathlib import PurePosixPath
 
 from httpx import HTTPStatusError
+
+from api4jenkins.mix import UrlMixIn
 
 from .__version__ import (__author__, __author_email__, __copyright__,
                           __description__, __license__, __title__, __url__,
                           __version__)
 from .credential import AsyncCredentials, Credentials
 from .exceptions import AuthenticationError, ItemNotFoundError
+from .http import new_async_http_client, new_http_client
 from .item import AsyncItem, Item
-from .job import AsyncFolder, Folder, WorkflowJob, AsyncWorkflowJob, AsyncProject
+from .job import AsyncFolder, AsyncProject, Folder, Job
 from .node import AsyncNodes, Nodes
 from .plugin import AsyncPluginsManager, PluginsManager
 from .queue import AsyncQueue, Queue
-from .http import new_async_http_client, new_http_client
 from .system import AsyncSystem, System
 from .user import AsyncUser, AsyncUsers, User, Users
-from .view import Views
+from .view import AsyncViews, Views
 
 EMPTY_FOLDER_XML = '''<?xml version='1.0' encoding='UTF-8'?>
 <com.cloudbees.hudson.plugins.folder.Folder/>'''
 
 
-class Jenkins(Item):
+class Jenkins(Item, UrlMixIn):
     r'''Constructs  :class:`Jenkins <Jenkins>`.
 
     :param url: URL of Jenkins server, ``str``
@@ -161,8 +162,7 @@ class Jenkins(Item):
             >>> print(job)
             None
         '''
-        job = self.get_job(full_name)
-        if job:
+        if job := self.get_job(full_name):
             job.delete()
 
     def build_job(self, full_name, **params):
@@ -227,34 +227,9 @@ class Jenkins(Item):
         return self.handle_req(
             'POST', 'pipeline-model-converter/validate', data=data).text
 
-    def _url2name(self, url):
-        '''Covert job url to full name
-
-        :param url: ``str``, url of job
-        :returns: ``str``, full name of job
-        '''
-        if not url.startswith(self.url):
-            raise ValueError(f'{url} is not in {self.url}')
-        return url.replace(self.url, '/').replace('/job/', '/').strip('/')
-
-    def _name2url(self, full_name):
-        '''Covert job full name to url
-
-        :param full_name: ``str``, full name of job
-        :returns: ``str``, url of job
-        '''
-        if not full_name:
-            return self.url
-        full_name = full_name.strip('/').replace('/', '/job/')
-        return f'{self.url}job/{full_name}/'
-
     def _resolve_name(self, full_name):
-        '''Resolve folder and job name from full name'''
-        if full_name.startswith(('http://', 'https://')):
-            full_name = self._url2name(full_name)
-        path = PurePosixPath(full_name)
-        parent = str(path.parent) if path.parent.name else ''
-        return Folder(self, self._name2url(parent)), path.name
+        parent, name = self._parse_name(full_name)
+        return Folder(self, self._name2url(parent)), name
 
     def exists(self):
         '''Check if Jenkins server is up
@@ -350,7 +325,7 @@ def _patch_to(module, cls, func=None):
         setattr(_module, cls.__name__, cls)
 
 
-class AsyncJenkins(AsyncItem):
+class AsyncJenkins(AsyncItem, UrlMixIn):
 
     def __init__(self, url, **kwargs):
         self.http_client = new_async_http_client(**kwargs)
@@ -368,65 +343,15 @@ class AsyncJenkins(AsyncItem):
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
 
     async def get_job(self, full_name):
-        '''Get job by full name
-
-        :param full_name: ``str``, full name of job
-        :returns: Corresponding Job object or None
-
-        Usage::
-
-            >>> from api4jenkins import Jenkins
-            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> job = j.get_job('freestylejob')
-            >>> print(job)
-            <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
-        '''
         folder, name = self._resolve_name(full_name)
         if await folder.exists():
             return await folder.get(name)
 
     async def iter_jobs(self, depth=0):
-        '''Iterate jobs with depth
-
-        :param depth: ``int``, depth to iterate, default is 0
-        :returns: iterator of jobs
-
-        Usage::
-
-            >>> from api4jenkins import Jenkins
-            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> for job in j.iter_jobs():
-            ...     print(job)
-            <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
-            ...
-        '''
         async for job in AsyncFolder(self, self.url)(depth):
             yield job
 
     async def create_job(self, full_name, xml, recursive=False):
-        '''Create new jenkins job with given xml configuration
-
-        :param full_name: ``str``, full name of job
-        :param xml: xml configuration string
-        :param recursive: (optional) Boolean, recursively create folder if not existed
-
-        Usage::
-
-            >>> from api4jenkins import Jenkins
-            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
-            ... <project>
-            ...   <builders>
-            ...     <hudson.tasks.Shell>
-            ...       <command>echo $JENKINS_VERSION</command>
-            ...     </hudson.tasks.Shell>
-            ...   </builders>
-            ... </project>"""
-            >>> j.create_job('freestylejob', xml)
-            >>> job = j.get_job('freestylejob')
-            >>> print(job)
-            <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
-        '''
         folder, name = self._resolve_name(full_name)
         if recursive and not await folder.exists():
             await self.create_job(folder.full_name, EMPTY_FOLDER_XML,
@@ -434,67 +359,15 @@ class AsyncJenkins(AsyncItem):
         return await folder.create(name, xml)
 
     async def copy_job(self, full_name, dest):
-        '''Create job by copying other job, the source job and dest job are in
-        same folder.
-
-        :param full_name: full name of source job
-        :param dest: name of new job
-
-        Usage::
-
-            >>> from api4jenkins import Jenkins
-            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> j.copy_job('folder/freestylejob', 'newjob')
-            >>> j.get_job('folder/newjob')
-            >>> print(job)
-            <FreeStyleProject: http://127.0.0.1:8080/job/folder/job/newjob/>
-        '''
         folder, name = self._resolve_name(full_name)
         return await folder.copy(name, dest)
 
     async def delete_job(self, full_name):
-        '''Delete job
-
-        :param full_name: ``str``, full name of job
-
-        Usage::
-
-            >>> from api4jenkins import Jenkins
-            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> job = j.get_job('freestylejob')
-            >>> print(job)
-            <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
-            >>> j.delete_job('freestylejob')
-            >>> job = j.get_job('freestylejob')
-            >>> print(job)
-            None
-        '''
         job = await self.get_job(full_name)
         if job:
             await job.delete()
 
     async def build_job(self, full_name, **params):
-        '''Build job with/without params
-
-        :param full_name: ``str``, full name of job
-        :param params: parameters for building, support delay and remote token
-        :returns: ``QueueItem``
-
-        Usage::
-
-            >>> from api4jenkins import Jenkins
-            >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> item = j.build_job('freestylejob')
-            >>> import time
-            >>> while not item.get_build():
-            ...      time.sleep(1)
-            >>> build = item.get_build()
-            >>> print(build)
-            <FreeStyleBuild: http://127.0.0.1:8080/job/freestylejob/1/>
-            >>> for line in build.progressive_output():
-            ...     print(line)
-            ...
-        '''
         job = await self._get_job_and_check(full_name)
         if not isinstance(job, AsyncProject):
             raise AttributeError(f'{job} has no attribute build')
@@ -512,65 +385,26 @@ class AsyncJenkins(AsyncItem):
         job = await self._get_job_and_check(full_name)
         return await job.duplicate(new_name, recursive)
 
-    async def _get_job_and_check(self, full_name):
+    async def _get_job_and_check(self, full_name: str):
         job = await self.get_job(full_name)
         if job is None:
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job
 
-    async def is_name_safe(self, name):
+    async def is_name_safe(self, name: str) -> bool:
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
-    async def validate_jenkinsfile(self, content):
-        """validate Jenkinsfile, see
-        https://www.jenkins.io/doc/book/pipeline/development/#linter
-
-        Args:
-            content (str): content of Jenkinsfile
-
-        Returns:
-            str: 'Jenkinsfile successfully validated.' if validate successful
-            or error message
-        """
+    async def validate_jenkinsfile(self, content: str) -> str:
         data = await self.handle_req(
             'POST', 'pipeline-model-converter/validate', data={'jenkinsfile': content})
         return data.text
 
-    def _url2name(self, url):
-        '''Covert job url to full name
-
-        :param url: ``str``, url of job
-        :returns: ``str``, full name of job
-        '''
-        if not url.startswith(self.url):
-            raise ValueError(f'{url} is not in {self.url}')
-        return url.replace(self.url, '/').replace('/job/', '/').strip('/')
-
-    def _name2url(self, full_name):
-        '''Covert job full name to url
-
-        :param full_name: ``str``, full name of job
-        :returns: ``str``, url of job
-        '''
-        if not full_name:
-            return self.url
-        full_name = full_name.strip('/').replace('/', '/job/')
-        return f'{self.url}job/{full_name}/'
-
     def _resolve_name(self, full_name):
-        '''Resolve folder and job name from full name'''
-        if full_name.startswith(('http://', 'https://')):
-            full_name = self._url2name(full_name)
-        path = PurePosixPath(full_name)
-        parent = str(path.parent) if path.parent.name else ''
-        return AsyncFolder(self, self._name2url(parent)), path.name
+        parent, name = self._parse_name(full_name)
+        return AsyncFolder(self, self._name2url(parent)), name
 
     async def exists(self):
-        '''Check if Jenkins server is up
-
-        :returns: True or False
-        '''
         try:
             await self.handle_req('GET', '')
             return True
@@ -579,7 +413,6 @@ class AsyncJenkins(AsyncItem):
 
     @property
     async def crumb(self):
-        '''Crumb of Jenkins'''
         async with self._async_lock:
             if self._crumb is None:
                 try:
@@ -592,45 +425,31 @@ class AsyncJenkins(AsyncItem):
 
     @property
     def system(self):
-        '''An object for managing system operation.
-        see :class:`System <api4jenkins.system.System>`'''
         return AsyncSystem(self, self.url)
 
     @property
     def plugins(self):
-        '''An object for managing plugins.
-        see :class:`PluginsManager <api4jenkins.plugin.PluginsManager>`'''
         return AsyncPluginsManager(self, f'{self.url}pluginManager/')
 
     @property
     async def version(self):
-        '''Version of Jenkins'''
-        data = await self.handle_req('HEAD', '')
-        return data.headers['X-Jenkins']
+        return (await self.handle_req('HEAD', '')).headers['X-Jenkins']
 
     @property
     def credentials(self):
-        '''An object for managing credentials.
-        see :class:`Credentials <api4jenkins.credential.Credentials>`'''
         return AsyncCredentials(self,
                                 f'{self.url}credentials/store/system/domain/_/')
 
     @property
     def views(self):
-        '''An object for managing views of main window.
-        see :class:`Views <api4jenkins.view.Views>`'''
-        return Views(self)
+        return AsyncViews(self)
 
     @property
     def nodes(self):
-        '''An object for managing nodes.
-        see :class:`Nodes <api4jenkins.node.Nodes>`'''
         return AsyncNodes(self, f'{self.url}computer/')
 
     @property
     def queue(self):
-        '''An object for managing build queue.
-        see :class:`Queue <api4jenkins.queue.Queue>`'''
         return AsyncQueue(self, f'{self.url}queue/')
 
     @property

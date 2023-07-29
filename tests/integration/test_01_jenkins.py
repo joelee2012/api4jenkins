@@ -1,5 +1,6 @@
 import pytest
-from api4jenkins import Folder, WorkflowJob, AsyncFolder, AsyncWorkflowJob
+from api4jenkins import Folder, AsyncFolder
+from api4jenkins.job import WorkflowJob, AsyncWorkflowJob
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
 
 jenkinsfile = '''pipeline {
