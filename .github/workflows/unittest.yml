@@ -3,7 +3,7 @@ name: Unit Test
 on: [push, pull_request]
 
 jobs:
-  build:
+  unit-tests:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install --upgrade keyring==21.4.0 setuptools wheel twine coveralls tox
+        run: pip install --upgrade keyring==21.4.0 setuptools wheel twine tox
 
       - name: Run pylint & codestyle & unit tests
         run: tox
@@ -33,7 +33,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: tests/unit/
-          files: cov.xml
+          files: coverage.xml
           flags: unittest
           verbose: true
 

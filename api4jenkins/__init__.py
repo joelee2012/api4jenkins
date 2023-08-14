@@ -2,6 +2,7 @@
 import asyncio
 import threading
 from importlib import import_module
+import typing
 
 from httpx import HTTPStatusError
 
@@ -412,7 +413,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    async def crumb(self):
+    async def crumb(self) -> typing.Dict[str, str]:
         async with self._async_lock:
             if self._crumb is None:
                 try:
