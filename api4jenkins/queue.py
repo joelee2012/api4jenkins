@@ -91,7 +91,7 @@ class WaitingItem(QueueItem):
 class AsyncQueue(AsyncItem):
 
     async def get(self, id):
-        async for item in self.api_json(tree='items[id,url]')['items']:
+        for item in (await self.api_json(tree='items[id,url]'))['items']:
             if item['id'] == int(id):
                 return AsyncQueueItem(self.jenkins,
                                       f"{self.jenkins.url}{item['url']}")
@@ -125,8 +125,10 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
         self._build = None
 
     async def get_job(self):
-        if self._class.endswith('$BuildableItem'):
-            return (await self.get_build()).get_job()
+        _class = await self._class
+        if _class.endswith('$BuildableItem'):
+            build = await self.get_build()
+            return await build.get_job()
         data = await self.api_json(tree='task[url]')
         return self._new_item('api4jenkins.job', data['task'])
 

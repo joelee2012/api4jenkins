@@ -48,7 +48,7 @@ def _api_json(self, tree='', depth=0):
         return load_json('report/coverage_report.json')
     elif isinstance(self, CoverageResult):
         return load_json('report/coverage_result.json')
-    elif isinstance(self, QueueItem):
+    elif isinstance(self, (QueueItem, AsyncQueueItem)):
         return load_json('queue/waitingitem.json')
     raise TypeError(f'unknow item: {type(self)}')
 
@@ -90,11 +90,6 @@ def async_jenkins(url):
 @pytest.fixture()
 def folder(jenkins):
     return Folder(jenkins, f'{jenkins.url}job/folder/')
-
-
-@pytest.fixture()
-def async_folder(async_jenkins):
-    return AsyncFolder(async_jenkins, f'{async_jenkins.url}job/folder/')
 
 
 @pytest.fixture()
