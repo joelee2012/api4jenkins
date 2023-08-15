@@ -50,12 +50,6 @@ class Jenkins(Item, UrlMixIn):
     def __init__(self, url, **kwargs):
         self.http_client = new_http_client(**kwargs)
         self._crumb = None
-
-        # def _add_crumb(request):
-        #     if not request.url.path.endswith('crumbIssuer/api/json'):
-        #         request.headers.update(self.crumb)
-
-        # self.http_client.event_hooks['request'].append(_add_crumb)
         self._auth = kwargs.get('auth')
         self._sync_lock = threading.Lock()
         super().__init__(self, url)
@@ -332,12 +326,6 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         self.http_client = new_async_http_client(**kwargs)
         self._crumb = None
         self._async_lock = asyncio.Lock()
-
-        async def _add_crumb(request):
-            if not request.url.path.endswith('crumbIssuer/api/json'):
-                request.headers.update(await self.crumb)
-
-        self.http_client.event_hooks['request'].append(_add_crumb)
         self._auth = kwargs.get('auth')
         super().__init__(self, url)
         self.user = AsyncUser(

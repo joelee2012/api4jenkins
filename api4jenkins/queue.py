@@ -104,16 +104,6 @@ class AsyncQueue(AsyncItem):
         for item in (await self.api_json(tree='items[url]'))['items']:
             yield AsyncQueueItem(self.jenkins, f"{self.jenkins.url}{item['url']}")
 
-# https://javadoc.jenkins.io/hudson/model/Queue.html#buildables
-#  (enter) --> waitingList --+--> blockedProjects
-#                            |        ^
-#                            |        |
-#                            |        v
-#                            +--> buildables ---> pending ---> left
-#                                     ^              |
-#                                     |              |
-#                                     +---(rarely)---+
-
 
 class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
 
@@ -152,8 +142,6 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
 
     async def cancel(self):
         await self.jenkins.queue.cancel(self.id)
-
-# due to item type is dynamic
 
 
 class AsyncBuildableItem(AsyncQueueItem):
