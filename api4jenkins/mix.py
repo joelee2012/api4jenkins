@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 # pylint: disable=no-member
-
+# type: ignore
 from collections import namedtuple
 from pathlib import PurePosixPath
 
@@ -134,7 +134,11 @@ class AsyncEnableMixIn:
     async def disable(self):
         return await self.handle_req('POST', 'disable')
 
+class AsyncRawJsonMixIn:
 
+    async def api_json(self, tree='', depth=0):
+        return self.raw
+    
 class AsyncActionsMixIn:
 
     async def get_parameters(self):
