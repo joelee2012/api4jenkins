@@ -72,3 +72,49 @@ class TestCoverageResult:
         cr = build.get_coverage_result()
         assert cr.get('Report').ratio == 100
         assert cr.get('Line').ratio == 83.83372
+
+
+@pytest.fixture
+async def async_suite(async_test_report):
+    return await async_test_report.get('pytest')
+
+
+@pytest.fixture
+async def async_case(async_suite):
+    return await async_suite.get('test_exists')
+
+
+@pytest.fixture
+async def async_coverage_report(async_build):
+    return await async_build.get_coverage_report()
+
+
+@pytest.fixture
+async def async_test_report(async_build):
+    return await async_build.get_test_report()
+
+
+class TestAsyncTestReport:
+
+    async def test_attributes(self, async_test_report):
+        assert await async_test_report.fail_count == 2
+        assert await async_test_report.pass_count == 37
+
+    async def test_iterate(self, async_test_report):
+        assert len([s async for s in async_test_report]) == 1
+        assert len([s async for s in async_test_report.suites]) == 1
+
+
+class TestAsyncCoverageReport:
+
+    async def test_attributes(self, async_coverage_report):
+        assert (await async_coverage_report.branch_coverage).covered == 244
+        assert (await async_coverage_report.method_coverage).covered == 320
+
+    async def test_get(self, async_coverage_report):
+        assert (await async_coverage_report.get('branchCoverage')).covered == 244
+        assert (await async_coverage_report.get('methodCoverage')).covered == 320
+
+    async def test_wrong_attribute(self, async_coverage_report):
+        with pytest.raises(AttributeError):
+            await async_coverage_report.xxxxx

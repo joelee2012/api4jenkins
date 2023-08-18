@@ -11,7 +11,7 @@ from api4jenkins.job import Folder, WorkflowJob, WorkflowMultiBranchProject, Asy
 from api4jenkins.node import Node, Nodes, AsyncNode, AsyncNodes
 from api4jenkins.plugin import PluginsManager, AsyncPluginsManager
 from api4jenkins.queue import Queue, QueueItem, AsyncQueue, AsyncQueueItem
-from api4jenkins.report import CoverageReport, CoverageResult, TestReport
+from api4jenkins.report import AsyncCoverageReport, AsyncCoverageResult, AsyncTestReport, CoverageReport, CoverageResult, TestReport
 from api4jenkins.view import AllView, AsyncAllView
 
 DATA = Path(__file__).with_name('tests_data')
@@ -42,11 +42,11 @@ def _api_json(self, tree='', depth=0):
         return load_json('node/node.json')
     elif isinstance(self, AllView):
         return load_json('view/allview.json')
-    elif isinstance(self, TestReport):
+    elif isinstance(self, (TestReport, AsyncTestReport)):
         return load_json('report/test_report.json')
-    elif isinstance(self, CoverageReport):
+    elif isinstance(self, (CoverageReport, AsyncCoverageReport)):
         return load_json('report/coverage_report.json')
-    elif isinstance(self, CoverageResult):
+    elif isinstance(self, (CoverageResult, AsyncCoverageResult)):
         return load_json('report/coverage_result.json')
     elif isinstance(self, (QueueItem, AsyncQueueItem)):
         return load_json('queue/waitingitem.json')
