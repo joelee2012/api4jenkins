@@ -5,7 +5,7 @@ import pytest
 
 from api4jenkins import AsyncJenkins, Jenkins
 from api4jenkins.build import FreeStyleBuild, WorkflowRun, AsyncWorkflowRun, AsyncFreeStyleBuild
-from api4jenkins.credential import Credential, Credentials, AsyncCredentials, AsyncCredential
+from api4jenkins.credential import AsyncDomain, Credential, Credentials, AsyncCredentials, AsyncCredential, Domain
 from api4jenkins.item import Item, AsyncItem
 from api4jenkins.job import Folder, WorkflowJob, WorkflowMultiBranchProject, AsyncFolder, AsyncWorkflowJob, AsyncWorkflowMultiBranchProject
 from api4jenkins.node import Node, Nodes, AsyncNode, AsyncNodes
@@ -29,6 +29,8 @@ def _api_json(self, tree='', depth=0):
     elif isinstance(self, (FreeStyleBuild, AsyncFreeStyleBuild)):
         return load_json('run/freestylebuild.json')
     elif isinstance(self, (Credentials, AsyncCredentials)):
+        return load_json('credential/domains.json')
+    elif isinstance(self, (Domain, AsyncDomain)):
         return load_json('credential/credentials.json')
     elif isinstance(self, (Credential, AsyncCredential)):
         return load_json('credential/user_psw.json')

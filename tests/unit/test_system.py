@@ -11,3 +11,14 @@ class TestSystem:
         respx_mock.post(req_url)
         getattr(jenkins.system, snake(action))()
         assert respx_mock.calls[0].request.url == req_url
+
+
+class TestAsyncSystem:
+
+    @pytest.mark.parametrize('action', ['restart', 'safeRestart', 'quietDown',
+                                        'cancelQuietDown', 'exit', 'safeExit'])
+    async def test_enable_disable(self, async_jenkins, respx_mock, action):
+        req_url = f'{async_jenkins.system.url}{action}'
+        respx_mock.post(req_url)
+        await getattr(async_jenkins.system, snake(action))()
+        assert respx_mock.calls[0].request.url == req_url

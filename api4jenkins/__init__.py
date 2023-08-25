@@ -272,8 +272,7 @@ class Jenkins(Item, UrlMixIn):
     def credentials(self):
         '''An object for managing credentials.
         see :class:`Credentials <api4jenkins.credential.Credentials>`'''
-        return Credentials(self,
-                           f'{self.url}credentials/store/system/domain/_/')
+        return Credentials(self, f'{self.url}credentials/store/system/')
 
     @property
     def views(self):
