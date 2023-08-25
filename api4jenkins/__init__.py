@@ -284,14 +284,13 @@ class Jenkins(Item):
     @property
     def version(self):
         '''Version of Jenkins'''
-        return self.handle_req('GET', '').headers['X-Jenkins']
+        return self.handle_req('HEAD', '').headers['X-Jenkins']
 
     @property
     def credentials(self):
         '''An object for managing credentials.
         see :class:`Credentials <api4jenkins.credential.Credentials>`'''
-        return Credentials(self,
-                           f'{self.url}credentials/store/system/domain/_/')
+        return Credentials(self, f'{self.url}credentials/store/system/')
 
     @property
     def views(self):

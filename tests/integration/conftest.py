@@ -65,9 +65,12 @@ def folder(jenkins):
 
 
 @pytest.fixture(autouse=True)
-def setup_folder(jenkins, folder_xml):
+def setup_folder(jenkins, folder_xml, credential_xml):
     jenkins.create_job('Level1_Folder1', folder_xml)
     jenkins.create_job('Level1_Folder1/Level2_Folder1', folder_xml)
+    folder = jenkins.get_job('Level1_Folder1')
+    folder.credentials.global_domain.create(credential_xml)
+    folder.credentials.create(load_xml('domain.xml'))
     yield
     jenkins.delete_job('Level1_Folder1')
 

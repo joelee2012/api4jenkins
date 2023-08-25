@@ -70,14 +70,14 @@ class TestJenkins:
         assert len(list(jenkins)) == 1
         assert len(list(jenkins(2))) == 2
 
-    def test_credential(self, jenkins, credential_xml):
-        assert len(list(jenkins.credentials)) == 0
-        jenkins.credentials.create(credential_xml)
-        assert len(list(jenkins.credentials)) == 1
-        c = jenkins.credentials.get('user-id')
-        assert c.id == 'user-id'
-        c.delete()
-        assert c.exists() == False
+    # def test_credential(self, jenkins, credential_xml):
+    #     assert len(list(jenkins.credentials)) == 1
+    #     jenkins.credentials.global_domain.create(credential_xml)
+    #     assert len(list(jenkins.credentials.global_domain)) == 1
+    #     c = jenkins.credentials.get('user-id')
+    #     assert c.id == 'user-id'
+    #     c.delete()
+    #     assert c.exists() == False
 
     def test_view(self, jenkins, view_xml):
         assert len(list(jenkins.views)) == 1

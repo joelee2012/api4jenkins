@@ -1,0 +1,10 @@
+<com.cloudbees.plugins.credentials.domains.Domain>
+    <name>testing</name>
+    <description>Credentials for use against the *.test.example.com hosts</description>
+    <specifications>
+      <com.cloudbees.plugins.credentials.domains.HostnameSpecification>
+        <includes>*.test.example.com</includes>
+        <excludes></excludes>
+      </com.cloudbees.plugins.credentials.domains.HostnameSpecification>
+    </specifications>
+   </com.cloudbees.plugins.credentials.domains.Domain>

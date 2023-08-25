@@ -8,7 +8,7 @@ from api4jenkins import Item, Folder
 from api4jenkins.job import WorkflowJob, WorkflowMultiBranchProject
 from api4jenkins.build import WorkflowRun, FreeStyleBuild
 from api4jenkins import Credentials
-from api4jenkins.credential import Credential
+from api4jenkins.credential import Credential, Domain
 from api4jenkins import PluginsManager
 from api4jenkins import Queue
 from api4jenkins.queue import QueueItem
@@ -31,6 +31,8 @@ def _api_json(self, tree='', depth=0):
     elif isinstance(self, FreeStyleBuild):
         return load_json('run/freestylebuild.json')
     elif isinstance(self, Credentials):
+        return load_json('credential/domains.json')
+    elif isinstance(self, Domain):
         return load_json('credential/credentials.json')
     elif isinstance(self, Credential):
         return load_json('credential/user_psw.json')
