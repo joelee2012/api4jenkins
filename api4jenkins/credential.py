@@ -10,7 +10,7 @@ class Credentials(Item):
     def get(self, name):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
             if key == name:
-                return Domain(self.jenkins, f'{self.url}store/system/domain/{key}/')
+                return Domain(self.jenkins, f'{self.url}domain/{key}/')
         return None
 
     def create(self, xml):
@@ -19,7 +19,7 @@ class Credentials(Item):
 
     def __iter__(self):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
-            yield Domain(self.jenkins, f'{self.url}store/system/domain/{key}/')
+            yield Domain(self.jenkins, f'{self.url}domain/{key}/')
 
     def __getitem__(self, name):
         return self.get(name)
@@ -51,16 +51,16 @@ class Domain(Item, ConfigurationMixIn, DeletionMixIn):
 
 class Credential(Item, ConfigurationMixIn, DeletionMixIn):
     pass
+
+
 # async class
-
-
 class AsyncCredentials(AsyncItem):
 
     async def get(self, name):
         data = await self.api_json(tree='domains[urlName]')
         for key in data['domains'].keys():
             if key == name:
-                return AsyncDomain(self.jenkins, f'{self.url}store/system/domain/{key}/')
+                return AsyncDomain(self.jenkins, f'{self.url}domain/{key}/')
         return None
 
     async def create(self, xml):
@@ -70,7 +70,7 @@ class AsyncCredentials(AsyncItem):
     async def __aiter__(self):
         data = await self.api_json(tree='domains[urlName]')
         for key in data['domains'].keys():
-            yield Domain(self.jenkins, f'{self.url}store/system/domain/{key}/')
+            yield Domain(self.jenkins, f'{self.url}domain/{key}/')
 
     async def __getitem__(self, name):
         return await self.get(name)

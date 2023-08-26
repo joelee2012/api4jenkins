@@ -425,8 +425,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
 
     @property
     def credentials(self):
-        return AsyncCredentials(self,
-                                f'{self.url}credentials/store/system/domain/_/')
+        return AsyncCredentials(self, f'{self.url}credentials/store/system/')
 
     @property
     def views(self):

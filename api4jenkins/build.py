@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import asyncio
 import re
 import time
 
@@ -116,7 +117,7 @@ class AsyncBuild(AsyncItem, AsyncDescriptionMixIn, AsyncDeletionMixIn, AsyncActi
         start = 0
         while True:
             resp = await self.handle_req('GET', url, params={'start': start})
-            time.sleep(1)
+            await asyncio.sleep(1)
             if start == resp.headers.get('X-Text-Size'):
                 continue
             async for line in resp.aiter_lines():

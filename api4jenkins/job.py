@@ -303,7 +303,7 @@ class AsyncFolder(AsyncJob):
     @property
     def credentials(self):
         return AsyncCredentials(self.jenkins,
-                                f'{self.url}credentials/store/folder/domain/_/')
+                                f'{self.url}credentials/store/folder/')
 
     async def __aiter__(self):
         async for item in self.iter():
