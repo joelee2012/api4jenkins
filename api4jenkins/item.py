@@ -1,16 +1,14 @@
 # encoding: utf-8
 
-import asyncio
-from pprint import pformat
+import contextlib
+import logging
 import re
 from importlib import import_module
-import contextlib
-import threading
-from httpx import HTTPStatusError
-import logging
+from pprint import pformat
+
 import api4jenkins
-from .exceptions import (AuthenticationError, BadRequestError,
-                         ItemNotFoundError, ServerError)
+
+from .exceptions import ItemNotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +67,7 @@ class BaseItem:
         self._request = jenkins.http_client.request
         self._stream = jenkins.http_client.stream
 
-    def _new_instance_by_item(self, module, item):
+    def _new_item(self, module, item):
         return new_item(self.jenkins, module, item)
 
     def __eq__(self, other):

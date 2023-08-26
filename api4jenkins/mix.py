@@ -1,8 +1,29 @@
 # encoding: utf-8
 
 # pylint: disable=no-member
-
+# type: ignore
 from collections import namedtuple
+from pathlib import PurePosixPath
+
+
+class UrlMixIn:
+    def _url2name(self, url):
+        if not url.startswith(self.url):
+            raise ValueError(f'{url} is not in {self.url}')
+        return url.replace(self.url, '/').replace('/job/', '/').strip('/')
+
+    def _name2url(self, full_name):
+        if not full_name:
+            return self.url
+        full_name = full_name.strip('/').replace('/', '/job/')
+        return f'{self.url}job/{full_name}/'
+
+    def _parse_name(self, full_name):
+        if full_name.startswith(('http://', 'https://')):
+            full_name = self._url2name(full_name)
+        path = PurePosixPath(full_name)
+        parent = str(path.parent) if path.parent.name else ''
+        return parent, path.name
 
 
 class DeletionMixIn:
@@ -116,7 +137,7 @@ class AsyncEnableMixIn:
 
 class AsyncRawJsonMixIn:
 
-    def api_json(self, tree='', depth=0):
+    async def api_json(self, tree='', depth=0):
         return self.raw
 
 
@@ -124,7 +145,8 @@ class AsyncActionsMixIn:
 
     async def get_parameters(self):
         parameters = []
-        for action in self.api_json()['actions']:
+        data = await self.api_json()
+        for action in data['actions']:
             if 'parameters' in action:
                 parameters.extend(Parameter(raw['_class'], raw['name'], raw.get(
                     'value', '')) for raw in action['parameters'])
@@ -132,4 +154,5 @@ class AsyncActionsMixIn:
         return parameters
 
     async def get_causes(self):
-        return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])
+        data = await self.api_json()
+        return next((action['causes'] for action in data['actions'] if 'causes' in action), [])

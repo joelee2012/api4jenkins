@@ -9,11 +9,6 @@ class TestFolder:
         assert folder == job.parent
         assert jenkins == folder.parent
 
-    # @pytest.mark.xfail
-    def test_credential(self, folder):
-        c = folder.credentials.get('user-id')
-        assert c.id == 'user-id'
-
     def test_iter_jobs(self, folder):
         assert len(list(folder.iter(2))) == 5
         assert len(list(folder(2))) == 5
@@ -64,10 +59,6 @@ class TestAsyncFolder:
     async def test_parent(self, async_jenkins, async_folder, async_job):
         assert async_folder == await async_job.parent
         assert async_jenkins == await async_folder.parent
-
-    async def test_credential(self, async_folder):
-        c = await async_folder.credentials.get('user-id')
-        assert await c.id == 'user-id'
 
     async def test_iter_jobs(self, async_folder):
         assert len([j async for j in async_folder(2)]) == 5

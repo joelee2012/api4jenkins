@@ -6,7 +6,8 @@ import time
 from pathlib import Path
 
 import pytest
-from api4jenkins import Jenkins, WorkflowJob, Folder, EMPTY_FOLDER_XML, AsyncJenkins, AsyncFolder, AsyncWorkflowJob
+from api4jenkins import Jenkins,  Folder, EMPTY_FOLDER_XML, AsyncJenkins, AsyncFolder
+from api4jenkins.job import WorkflowJob, AsyncWorkflowJob
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
 
@@ -85,27 +86,32 @@ def async_args_job(async_jenkins: AsyncJenkins):
 
 @pytest.fixture(scope='session', autouse=True)
 def setup(jenkins, credential_xml, view_xml):
-    for name in ['folder/folder', 'folder/for_rename', 'folder/for_move', 'async_folder/folder', 'async_folder/for_rename', 'async_folder/for_move']:
-        jenkins.create_job(name, EMPTY_FOLDER_XML, True)
+    try:
+        for name in ['folder/folder', 'folder/for_rename', 'folder/for_move', 'async_folder/folder', 'async_folder/for_rename', 'async_folder/for_move']:
+            jenkins.create_job(name, EMPTY_FOLDER_XML, True)
 
-    for name in ['folder/job', 'async_folder/job']:
-        jenkins.create_job(name, load_xml('job.xml'))
+        for name in ['folder/job', 'async_folder/job']:
+            jenkins.create_job(name, load_xml('job.xml'))
 
-    for name in ['folder/args_job', 'async_folder/args_job']:
-        jenkins.create_job(name, load_xml('args_job.xml'))
+        for name in ['folder/args_job', 'async_folder/args_job']:
+            jenkins.create_job(name, load_xml('args_job.xml'))
 
-    jenkins.credentials.create(credential_xml)
-    jenkins.views.create('global-view', view_xml)
-    jenkins['folder'].credentials.create(credential_xml)
-    jenkins['async_folder'].credentials.create(credential_xml)
-    jenkins['folder'].views.create('folder-view', view_xml)
-    jenkins['async_folder'].views.create('folder-view', view_xml)
+        jenkins.credentials.global_domain.create(credential_xml)
+        jenkins.credentials.create(load_xml('domain.xml'))
+        jenkins.views.create('global-view', view_xml)
+        jenkins['folder'].credentials.global_domain.create(credential_xml)
+        jenkins['async_folder'].credentials.global_domain.create(
+            credential_xml)
+        jenkins['folder'].views.create('folder-view', view_xml)
+        jenkins['async_folder'].views.create('folder-view', view_xml)
 
-    yield
-    jenkins.delete_job('folder')
-    jenkins.delete_job('async_folder')
-    jenkins.credentials.get('user-id').delete()
-    jenkins.views.get('global-view').delete()
+        yield
+    finally:
+        jenkins.delete_job('folder')
+        jenkins.delete_job('async_folder')
+        jenkins.credentials.global_domain.get('user-id').delete()
+        jenkins.credentials.get('testing').delete()
+        jenkins.views.get('global-view').delete()
 
 
 @pytest.fixture(scope='session')
@@ -150,5 +156,5 @@ def event_loop():
     loop = policy.new_event_loop()
     yield loop
     if loop.is_running():
-        asyncio.sleep(2)
+        time.sleep(2)
     loop.close()

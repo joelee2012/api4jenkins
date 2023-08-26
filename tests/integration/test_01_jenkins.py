@@ -1,5 +1,6 @@
 import pytest
-from api4jenkins import Folder, WorkflowJob, AsyncFolder, AsyncWorkflowJob
+from api4jenkins import Folder, AsyncFolder
+from api4jenkins.job import WorkflowJob, AsyncWorkflowJob
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
 
 jenkinsfile = '''pipeline {
@@ -90,10 +91,6 @@ class TestJenkins:
         assert jenkins[src] is None
         assert jenkins['folder/folder/for_move']
 
-    def test_credential(self, jenkins):
-        c = jenkins.credentials.get('user-id')
-        assert c.id == 'user-id'
-
     def test_is_name_safe(self, jenkins):
         assert jenkins.is_name_safe('illegal@x') == False
         assert jenkins.is_name_safe('legal')
@@ -179,10 +176,6 @@ class TestAsyncJenkins:
         await async_jenkins.move_job(src, 'async_folder/folder')
         assert await async_jenkins[src] is None
         assert await async_jenkins['async_folder/folder/for_move']
-
-    async def test_credential(self, async_jenkins):
-        c = await async_jenkins.credentials.get('user-id')
-        assert await c.id == 'user-id'
 
     async def test_is_name_safe(self, async_jenkins):
         assert await async_jenkins.is_name_safe('illegal@x') == False
