@@ -19,7 +19,8 @@ Jenkins Python Client
 
 
 
-`Python3 <https://www.python.org/>`_ client library for `Jenkins API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_.
+`Python3 <https://www.python.org/>`_ client library for 
+`Jenkins API <https://wiki.jenkins.io/display/JENKINS/Remote+access+API>`_.
 
 
 Features
@@ -36,7 +37,8 @@ Features
 Quick start
 ----------------------------------------
 
-Here is an example to create and build job, then monitor progressive output until it's done.
+Here is an example to create and build job, then monitor progressive output 
+until it's done.
 
 
     >>> from api4jenkins import Jenkins
@@ -86,9 +88,9 @@ Here is an example to create and build job, then monitor progressive output unti
    :maxdepth: 2
    :caption: Contents:
 
-  user/install.rst
-  user/example.rst
-  user/api.rst
+   user/install
+   user/example
+   user/api
 
 
 Indices and tables
