@@ -539,8 +539,6 @@ Credential
 Credential is for saving secret data, `api4jenkins` support to manage :class:`Jenkins <api4jenkins.Jenkins.credentials>`
 and :class:`Folder <api4jenkins.job.Folder.credentials>` based domains and credentials.
 
-
-
 create/get domain::
 
     >>> xml = '''<com.cloudbees.plugins.credentials.domains.Domain>
@@ -555,6 +553,10 @@ create/get domain::
     ... </com.cloudbees.plugins.credentials.domains.Domain>'''
     >>> folder.credentials.create(xml)
     >>> domain = folder.credentials.get('testing')
+
+.. note::
+
+    :class:`global_domain <api4jenkins.credential.Credentials.global_domain>` is shortcut of domain (_)
 
 create/get credential in domain::
 
@@ -578,17 +580,17 @@ delete credential::
     >>> credential.exists()
     False
 
-iterate domain in folder/system::
+iterate domain in `Folder` or `Jenkins`::
 
     >>> for domain in folder:
     ...     print(domain)
 
-iterate credentials in domain::
+iterate credentials in `Domain`::
 
     >>> for c in domain:
     ...     print(c)
 
-.. note::
+.. seealso::
     
     more detail can be found: `using credentials <https://www.jenkins.io/doc/book/using/using-credentials/>`_
     and `credentials plugin user.doc <https://github.com/jenkinsci/credentials-plugin/blob/master/docs/user.adoc>`_
