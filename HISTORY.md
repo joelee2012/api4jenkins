@@ -1,5 +1,9 @@
 Release History
 ===============
+1.15.0 (2023-07-24)
+-------------------
+- Support to manage domains for credential 
+
 1.14.1 (2023-07-24)
 -------------------
 - Support additional session headers 
