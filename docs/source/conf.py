@@ -15,12 +15,12 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
+import api4jenkins
 
 project = 'api4jenkins'
-copyright = '2021, Joe Lee'
+copyright = '2023, Joe Lee'
 author = 'Joe Lee'
 
-import api4jenkins
 # The full version, including alpha/beta/rc tags
 release = api4jenkins.__version__
 
