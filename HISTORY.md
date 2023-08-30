@@ -1,6 +1,6 @@
 Release History
 ===============
-1.15.0 (2023-08-29)
+1.15.0 (2023-08-30)
 -------------------
 - Support to manage domains for credential
 

@@ -811,7 +811,7 @@ run groovy script
 
 it also supports to manage `jcasc <https://www.jenkins.io/projects/jcasc/>`_ 
 
-to reload jcase::
+to reload jcasc::
 
     >>> j.system.reload_jcasc()
 
