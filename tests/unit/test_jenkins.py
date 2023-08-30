@@ -24,7 +24,7 @@ class TestJenkins:
         assert j._token.value == data['tokenValue']
 
     def test_version(self, jenkins, mock_resp):
-        mock_resp.add('GET', jenkins.url, headers={'X-Jenkins': '1.2.3'})
+        mock_resp.add('HEAD', jenkins.url, headers={'X-Jenkins': '1.2.3'})
         assert jenkins.version == '1.2.3'
 
     def test_attrs(self, jenkins):

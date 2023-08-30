@@ -96,8 +96,7 @@ class Folder(Job):
 
     @property
     def credentials(self):
-        return Credentials(self.jenkins,
-                           f'{self.url}credentials/store/folder/domain/_/')
+        return Credentials(self.jenkins, f'{self.url}credentials/store/folder/')
 
     def __iter__(self):
         yield from self.iter()
