@@ -1,10 +1,10 @@
 # encoding: utf-8
 import re
 from .item import Item, AsyncItem
-from .mix import ActionsMixIn, AsyncActionsMixIn
+from .mix import ActionsMixIn, AsyncActionsMixIn, AsyncGetItemMixIn, GetItemMixIn
 
 
-class Queue(Item):
+class Queue(Item, GetItemMixIn):
 
     def get(self, id):
         for item in self.api_json(tree='items[id,url]')['items']:
@@ -88,7 +88,7 @@ class WaitingItem(QueueItem):
 # async class
 
 
-class AsyncQueue(AsyncItem):
+class AsyncQueue(AsyncItem, AsyncGetItemMixIn):
 
     async def get(self, id):
         for item in (await self.api_json(tree='items[id,url]'))['items']:
