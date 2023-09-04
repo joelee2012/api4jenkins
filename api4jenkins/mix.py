@@ -91,6 +91,11 @@ class ActionsMixIn:
     def get_causes(self):
         return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])
 
+
+class GetItemMixIn:
+    def __getitem__(self, name):
+        return self.get(name)
+
 # async classes
 
 
@@ -156,3 +161,8 @@ class AsyncActionsMixIn:
     async def get_causes(self):
         data = await self.api_json()
         return next((action['causes'] for action in data['actions'] if 'causes' in action), [])
+
+
+class AsyncGetItemMixIn:
+    async def __getitem__(self, name):
+        return await self.get(name)

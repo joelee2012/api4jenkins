@@ -18,10 +18,10 @@ class TestViews:
 class TestView:
 
     def test_get_job(self, view):
-        job_in_view = view.get_job('folder')
+        job_in_view = view['folder']
         job = view.jenkins.get_job('folder')
         assert job_in_view == job
-        assert view.get_job('not exist') is None
+        assert view['not exist'] is None
 
     def test_iter(self, view):
         assert len(list(view)) == 2

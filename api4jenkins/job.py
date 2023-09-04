@@ -8,8 +8,8 @@ from urllib.parse import unquote_plus
 from .credential import AsyncCredentials, Credentials
 from .item import AsyncItem, Item, new_item, append_slash, snake
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
-                  AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn,
-                  DeletionMixIn, DescriptionMixIn, EnableMixIn)
+                  AsyncDescriptionMixIn, AsyncEnableMixIn, AsyncGetItemMixIn, ConfigurationMixIn,
+                  DeletionMixIn, DescriptionMixIn, EnableMixIn, GetItemMixIn)
 from .queue import AsyncQueueItem, QueueItem
 from .view import Views
 
@@ -66,7 +66,7 @@ def _iter_jobs(jenkins, item):
             yield from _iter_jobs(jenkins, job)
 
 
-class Folder(Job):
+class Folder(Job, GetItemMixIn):
 
     def create(self, name, xml):
         return self.handle_req('POST', 'createItem', params={'name': name},
@@ -103,9 +103,6 @@ class Folder(Job):
     def __call__(self, depth):
         yield from self.iter(depth)
 
-    def __getitem__(self, name):
-        return self.get(name)
-
 
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
 
@@ -138,7 +135,7 @@ def _get_build(job, api_json, number):
             return job._new_item('api4jenkins.build', item)
 
 
-class Project(Job, EnableMixIn):
+class Project(Job, EnableMixIn, GetItemMixIn):
 
     def __init__(self, jenkins, url):
         super().__init__(jenkins, url)
@@ -158,7 +155,7 @@ class Project(Job, EnableMixIn):
         resp = self.handle_req('POST', entry, params=params)
         return QueueItem(self.jenkins, resp.headers['Location'])
 
-    def get_build(self, number):
+    def get(self, number):
         return _get_build(self, self.api_json(tree='builds[number,displayName,url]'), number)
 
     def iter_builds(self):
@@ -187,9 +184,6 @@ class Project(Job, EnableMixIn):
     def __iter__(self):
         for item in self.api_json(tree='builds[number,url]')['builds']:
             yield self._new_item('api4jenkins.build', item)
-
-    def __getitem__(self, number):
-        return self.get_build(number)
 
     def filter_builds_by_result(self, *, result):
         """filter build by build results, avaliable results are:
@@ -271,7 +265,7 @@ class AsyncJob(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncD
         return await self.jenkins.get_job(str(path.parent))
 
 
-class AsyncFolder(AsyncJob):
+class AsyncFolder(AsyncJob, AsyncGetItemMixIn):
 
     async def create(self, name, xml):
         return await self.handle_req('POST', 'createItem', params={'name': name},
@@ -313,9 +307,6 @@ class AsyncFolder(AsyncJob):
         async for job in self.iter(depth):
             yield job
 
-    async def __getitem__(self, name):
-        return await self.get(name)
-
 
 class AsyncWorkflowMultiBranchProject(AsyncFolder, AsyncEnableMixIn):
 
@@ -336,7 +327,7 @@ class AsyncOrganizationFolder(AsyncWorkflowMultiBranchProject):
     pass
 
 
-class AsyncProject(AsyncJob, AsyncEnableMixIn):
+class AsyncProject(AsyncJob, AsyncEnableMixIn, AsyncGetItemMixIn):
 
     def __init__(self, jenkins, url):
         super().__init__(jenkins, url)
@@ -357,7 +348,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         resp = await self.handle_req('POST', entry, params=params)
         return AsyncQueueItem(self.jenkins, resp.headers['Location'])
 
-    async def get_build(self, number):
+    async def get(self, number):
         return _get_build(self, await self.api_json(tree='builds[number,displayName,url]'), number)
 
     async def iter_builds(self):
@@ -389,9 +380,6 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         data = await self.api_json(tree='builds[number,url]')
         for item in data['builds']:
             yield self._new_item('api4jenkins.build', item)
-
-    async def __getitem__(self, number):
-        return await self.get_build(number)
 
     async def filter_builds_by_result(self, *, result):
         """filter build by build results, avaliable results are:

@@ -2,10 +2,10 @@
 
 
 from .item import Item, AsyncItem
-from .mix import ConfigurationMixIn, DeletionMixIn, AsyncConfigurationMixIn, AsyncDeletionMixIn
+from .mix import AsyncGetItemMixIn, ConfigurationMixIn, DeletionMixIn, AsyncConfigurationMixIn, AsyncDeletionMixIn, GetItemMixIn
 
 
-class Credentials(Item):
+class Credentials(Item, GetItemMixIn):
 
     def get(self, name):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
@@ -21,15 +21,12 @@ class Credentials(Item):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
             yield Domain(self.jenkins, f'{self.url}domain/{key}/')
 
-    def __getitem__(self, name):
-        return self.get(name)
-
     @property
     def global_domain(self):
         return self['_']
 
 
-class Domain(Item, ConfigurationMixIn, DeletionMixIn):
+class Domain(Item, ConfigurationMixIn, DeletionMixIn, GetItemMixIn):
 
     def get(self, id):
         for item in self.api_json(tree='credentials[id]')['credentials']:
@@ -45,16 +42,13 @@ class Domain(Item, ConfigurationMixIn, DeletionMixIn):
         for item in self.api_json(tree='credentials[id]')['credentials']:
             yield Credential(self.jenkins, f'{self.url}credential/{item["id"]}/')
 
-    def __getitem__(self, id):
-        return self.get(id)
-
 
 class Credential(Item, ConfigurationMixIn, DeletionMixIn):
     pass
 
 
 # async class
-class AsyncCredentials(AsyncItem):
+class AsyncCredentials(AsyncItem, AsyncGetItemMixIn):
 
     async def get(self, name):
         data = await self.api_json(tree='domains[urlName]')
@@ -72,15 +66,12 @@ class AsyncCredentials(AsyncItem):
         for key in data['domains'].keys():
             yield Domain(self.jenkins, f'{self.url}domain/{key}/')
 
-    async def __getitem__(self, name):
-        return await self.get(name)
-
     @property
     async def global_domain(self):
         return await self['_']
 
 
-class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn):
+class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncGetItemMixIn):
 
     async def get(self, id):
         data = await self.api_json(tree='credentials[id]')
@@ -97,9 +88,6 @@ class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn):
         data = await self.api_json(tree='credentials[id]')
         for item in data['credentials']:
             yield AsyncCredential(self.jenkins, f'{self.url}credential/{item["id"]}/')
-
-    async def __getitem__(self, id):
-        return await self.get(id)
 
 
 class AsyncCredential(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn):

@@ -1,10 +1,10 @@
 # encoding: utf-8
 
 from .item import AsyncItem, Item
-from .mix import AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, ConfigurationMixIn, DeletionMixIn, DescriptionMixIn
+from .mix import AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, AsyncGetItemMixIn, ConfigurationMixIn, DeletionMixIn, DescriptionMixIn, GetItemMixIn
 
 
-class Views(Item):
+class Views(Item, GetItemMixIn):
     '''
     classdocs
     '''
@@ -31,16 +31,13 @@ class Views(Item):
             yield self._new_item(__name__, item)
 
 
-class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
+class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn, GetItemMixIn):
 
-    def get_job(self, name):
+    def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
-
-    def __getitem__(self, name):
-        return self.get_job(name)
 
     def __iter__(self):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
@@ -83,7 +80,7 @@ class SectionedView(View):
     pass
 
 
-class AsyncViews(AsyncItem):
+class AsyncViews(AsyncItem, AsyncGetItemMixIn):
     '''
     classdocs
     '''
@@ -112,17 +109,14 @@ class AsyncViews(AsyncItem):
             yield self._new_item(__name__, item)
 
 
-class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn):
+class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn, AsyncGetItemMixIn):
 
-    async def get_job(self, name):
+    async def get(self, name):
         data = await self.api_json(tree='jobs[name,url]')
         for item in data['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
-
-    def __getitem__(self, name):
-        return self.get_job(name)
 
     async def __aiter__(self):
         data = await self.api_json(tree='jobs[name,url]')

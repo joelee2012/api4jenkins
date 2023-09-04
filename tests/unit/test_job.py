@@ -41,9 +41,9 @@ class TestProject:
                              [(52, WorkflowRun), (100, type(None))],
                              ids=['exist', 'not exist'])
     def test_get_build(self, job, number, obj):
-        build = job.get_build(number)
+        build = job[number]
         assert isinstance(build, obj)
-        build = job.get_build(f'#{number}')
+        build = job[f'#{number}']
         assert isinstance(build, obj)
 
     @pytest.mark.parametrize('key', ['firstBuild', 'lastBuild', 'lastCompletedBuild',
@@ -106,9 +106,9 @@ class TestAsyncProject:
                              [(52, AsyncWorkflowRun), (100, type(None))],
                              ids=['exist', 'not exist'])
     async def test_get_build(self, async_job, number, obj):
-        build = await async_job.get_build(number)
+        build = await async_job[number]
         assert isinstance(build, obj)
-        build = await async_job.get_build(f'#{number}')
+        build = await async_job[f'#{number}']
         assert isinstance(build, obj)
 
     @pytest.mark.parametrize('key', ['firstBuild', 'lastBuild', 'lastCompletedBuild',

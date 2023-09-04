@@ -4,8 +4,8 @@ import json
 
 from .exceptions import ItemNotFoundError
 from .item import AsyncItem, Item, new_item
-from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
-                  AsyncRunScriptMixIn, ConfigurationMixIn, DeletionMixIn,
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncGetItemMixIn,
+                  AsyncRunScriptMixIn, ConfigurationMixIn, DeletionMixIn, GetItemMixIn,
                   RunScriptMixIn)
 
 # query builds from 'executors', 'oneOffExecutors' in computer(s),
@@ -75,7 +75,7 @@ class IterBuildingBuildsMixIn:
         yield from filter(lambda build: build.building, self.iter_builds())
 
 
-class Nodes(Item, IterBuildingBuildsMixIn):
+class Nodes(Item, IterBuildingBuildsMixIn, GetItemMixIn):
     '''
     classdocs
     '''
@@ -166,7 +166,7 @@ class AsyncIterBuildingBuildsMixIn:
                 yield build
 
 
-class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
+class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn, AsyncGetItemMixIn):
     async def create(self, name, **kwargs):
         await self.handle_req('POST', 'doCreateItem', data=_make_node_setting(name, **kwargs))
 
