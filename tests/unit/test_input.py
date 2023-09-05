@@ -11,14 +11,19 @@ raw = {
     "abortUrl": "/job/input-pipeline/47/input/3eaa25d43fac6e39a12c3936942b72c8/abort",
     "redirectApprovalUrl": "/job/input-pipeline/47/input/"
 }
+
+
 @pytest.fixture
 def pending_input(jenkins):
     return PendingInputAction(jenkins, raw)
+
 
 @pytest.fixture
 def async_pending_input(async_jenkins):
     return AsyncPendingInputAction(async_jenkins, raw)
 # @pytest.mark.skip
+
+
 class TestPendingInput:
 
     def test_access_attrs(self, pending_input):
@@ -72,7 +77,7 @@ class TestAsyncPendingInput:
         assert respx_mock.calls[0].request.url == url
 
     async def test_submit_empty(self, async_pending_input, respx_mock):
-        url=f'{async_pending_input.url}proceedEmpty'
+        url = f'{async_pending_input.url}proceedEmpty'
         respx_mock.post(url)
         await async_pending_input.submit()
         assert respx_mock.calls[0].request.url == url

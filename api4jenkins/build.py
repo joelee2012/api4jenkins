@@ -9,7 +9,9 @@ from .input import PendingInputAction
 from .item import AsyncItem, Item
 from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncDeletionMixIn,
                   AsyncDescriptionMixIn, DeletionMixIn, DescriptionMixIn)
-from .report import AsyncCoverageReport, AsyncCoverageResult, AsyncCoverageTrends, AsyncTestReport, CoverageReport, CoverageResult, CoverageTrends, TestReport
+from .report import (AsyncCoverageReport, AsyncCoverageResult,
+                     AsyncCoverageTrends, AsyncTestReport, CoverageReport,
+                     CoverageResult, CoverageTrends, TestReport)
 
 
 class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
@@ -50,8 +52,8 @@ class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
             return self.__class__(self.jenkins, item['url'])
         return None
 
-    def get_job(self):
-        '''get job of this build'''
+    @property
+    def job(self):
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return self.jenkins.get_job(job_name)
 
@@ -86,7 +88,8 @@ class WorkflowRun(Build):
             "/job/"):]
         return PendingInputAction(self.jenkins, action)
 
-    def get_artifacts(self):
+    @property
+    def artifacts(self):
         artifacts = self.handle_req('GET', 'wfapi/artifacts').json()
         return [Artifact(self.jenkins, art) for art in artifacts]
 
@@ -143,8 +146,8 @@ class AsyncBuild(AsyncItem, AsyncDescriptionMixIn, AsyncDeletionMixIn, AsyncActi
         data = await self.api_json(tree='previousBuild[url]')
         return self.__class__(self.jenkins, data['previousBuild']['url']) if data['previousBuild'] else None
 
-    async def get_job(self):
-        '''get job of this build'''
+    @property
+    async def job(self):
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return await self.jenkins.get_job(job_name)
 
@@ -179,7 +182,8 @@ class AsyncWorkflowRun(AsyncBuild):
             "/job/"):]
         return PendingInputAction(self.jenkins, action)
 
-    async def get_artifacts(self):
+    @property
+    async def artifacts(self):
         artifacts = (await self.handle_req('GET', 'wfapi/artifacts')).json()
         return [Artifact(self.jenkins, art) for art in artifacts]
 

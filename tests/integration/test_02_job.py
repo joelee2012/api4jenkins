@@ -26,7 +26,7 @@ class TestProject:
         assert args_job.get_parameters()[0]['name'] == 'ARG1'
 
     def test_get_build(self, job):
-        assert job.get_build(0) is None
+        assert job[0] is None
         assert job[1]
 
     def test_get_special_build(self, job):
@@ -76,7 +76,7 @@ class TestAsyncProject:
         assert (await async_args_job.get_parameters())[0]['name'] == 'ARG1'
 
     async def test_get_build(self, async_job):
-        assert await async_job.get_build(0) is None
+        assert await async_job.get(0) is None
         assert await async_job[1]
 
     async def test_get_special_build(self, async_job):

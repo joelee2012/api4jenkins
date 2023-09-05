@@ -1,10 +1,13 @@
 # encoding: utf-8
 from collections import namedtuple
 
-from .item import Item, AsyncItem
-from .mix import AsyncGetItemMixIn, DeletionMixIn, DescriptionMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, GetItemMixIn
+from .item import AsyncItem, Item
+from .mix import (AsyncDeletionMixIn, AsyncDescriptionMixIn, AsyncGetItemMixIn,
+                  DeletionMixIn, DescriptionMixIn, GetItemMixIn)
 
 user_tree = 'users[user[id,absoluteUrl,fullName]]'
+new_token_url = 'descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken'
+revoke_token_url = 'descriptorByName/jenkins.security.ApiTokenProperty/revoke'
 
 
 class Users(Item, GetItemMixIn):
@@ -26,18 +29,12 @@ ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])
 class User(Item, DeletionMixIn, DescriptionMixIn):
 
     def generate_token(self, name=''):
-        entry = 'descriptorByName/jenkins.security.' \
-                'ApiTokenProperty/generateNewToken'
-        data = self.handle_req('POST', entry,
+        data = self.handle_req('POST', new_token_url,
                                params={'newTokenName': name}).json()['data']
-        return ApiToken(data['tokenName'],
-                        data['tokenUuid'], data['tokenValue'])
+        return ApiToken(data['tokenName'], data['tokenUuid'], data['tokenValue'])
 
     def revoke_token(self, uuid):
-        entry = 'descriptorByName/jenkins.security.' \
-                'ApiTokenProperty/revoke'
-        return self.handle_req('POST', entry,
-                               params={'tokenUuid': uuid})
+        return self.handle_req('POST', revoke_token_url, params={'tokenUuid': uuid})
 
 # async class
 
@@ -58,15 +55,9 @@ class AsyncUsers(AsyncItem, AsyncGetItemMixIn):
 class AsyncUser(AsyncItem, AsyncDeletionMixIn, AsyncDescriptionMixIn):
 
     async def generate_token(self, name=''):
-        entry = 'descriptorByName/jenkins.security.' \
-                'ApiTokenProperty/generateNewToken'
-        data = (await self.handle_req('POST', entry,
+        data = (await self.handle_req('POST', new_token_url,
                                       params={'newTokenName': name})).json()['data']
-        return ApiToken(data['tokenName'],
-                        data['tokenUuid'], data['tokenValue'])
+        return ApiToken(data['tokenName'], data['tokenUuid'], data['tokenValue'])
 
     async def revoke_token(self, uuid):
-        entry = 'descriptorByName/jenkins.security.' \
-                'ApiTokenProperty/revoke'
-        return await self.handle_req('POST', entry,
-                                     params={'tokenUuid': uuid})
+        return await self.handle_req('POST', revoke_token_url, params={'tokenUuid': uuid})

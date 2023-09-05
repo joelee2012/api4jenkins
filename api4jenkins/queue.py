@@ -1,7 +1,9 @@
 # encoding: utf-8
 import re
-from .item import Item, AsyncItem
-from .mix import ActionsMixIn, AsyncActionsMixIn, AsyncGetItemMixIn, GetItemMixIn
+
+from .item import AsyncItem, Item
+from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncGetItemMixIn,
+                  GetItemMixIn)
 
 
 class Queue(Item, GetItemMixIn):
@@ -42,7 +44,7 @@ class QueueItem(Item, ActionsMixIn):
 
     def get_job(self):
         if self._class.endswith('$BuildableItem'):
-            return self.get_build().get_job()
+            return self.get_build().job
         task = self.api_json(tree='task[url]')['task']
         return self._new_item('api4jenkins.job', task)
 
@@ -118,7 +120,7 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
         _class = await self._class
         if _class.endswith('$BuildableItem'):
             build = await self.get_build()
-            return await build.get_job()
+            return await build.job
         data = await self.api_json(tree='task[url]')
         return self._new_item('api4jenkins.job', data['task'])
 

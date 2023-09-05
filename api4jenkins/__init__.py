@@ -15,7 +15,7 @@ from .credential import AsyncCredentials, Credentials
 from .exceptions import AuthenticationError, ItemNotFoundError
 from .http import new_async_http_client, new_http_client
 from .item import AsyncItem, Item
-from .job import AsyncFolder, AsyncProject, Folder, Job
+from .job import AsyncFolder, AsyncProject, Folder
 from .node import AsyncNodes, Nodes
 from .plugin import AsyncPluginsManager, PluginsManager
 from .queue import AsyncQueue, Queue

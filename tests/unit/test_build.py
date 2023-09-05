@@ -1,8 +1,9 @@
 # encoding: utf-8
 import pytest
+from respx import MockResponse
+
 from api4jenkins.build import AsyncWorkflowRun, WorkflowRun
 from api4jenkins.input import PendingInputAction
-from respx import MockResponse
 
 
 class TestBuild:
@@ -26,7 +27,7 @@ class TestBuild:
         assert isinstance(build.get_previous_build(), WorkflowRun)
 
     def test_get_job(self, build, job):
-        assert job == build.get_job()
+        assert job == build.job
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     def test_stop_term_kill(self, build, respx_mock, action):
@@ -71,8 +72,7 @@ class TestWorkflowRun:
                              ids=["empty", "no empty"])
     def test_get_artifacts(self, build, respx_mock, data, count):
         respx_mock.get(f'{build.url}wfapi/artifacts').respond(json=data)
-        artifacts = build.get_artifacts()
-        assert len(artifacts) == count
+        assert len(build.artifacts) == count
 
     def test_save_artifacts(self, build, respx_mock, tmp_path):
         respx_mock.get(
@@ -105,7 +105,7 @@ class TestAsyncBuild:
         assert isinstance(await async_build.get_previous_build(), AsyncWorkflowRun)
 
     async def test_get_job(self, async_build, async_job):
-        assert async_job == await async_build.get_job()
+        assert async_job == await async_build.job
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     async def test_stop_term_kill(self, async_build, respx_mock, action):
@@ -150,7 +150,7 @@ class TestAsyncWorkflowRun:
                              ids=["empty", "no empty"])
     async def test_get_artifacts(self, async_build, respx_mock, data, count):
         respx_mock.get(f'{async_build.url}wfapi/artifacts').respond(json=data)
-        artifacts = await async_build.get_artifacts()
+        artifacts = await async_build.artifacts
         assert len(artifacts) == count
 
     async def test_save_artifacts(self, async_build, respx_mock, tmp_path):

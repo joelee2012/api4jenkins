@@ -4,7 +4,6 @@ import contextlib
 import logging
 import re
 from importlib import import_module
-from pprint import pformat
 
 import api4jenkins
 
@@ -42,13 +41,13 @@ def _new_item():
         class_name = delimiter.split(item['_class'])[-1]
         if isinstance(jenkins, api4jenkins.AsyncJenkins):
             class_name = f'Async{class_name}'
-        module = import_module(module)
-        if not hasattr(module, class_name):
-            msg = f'''{module} has no class {class_name} to describe
+        mod = import_module(module)
+        if not hasattr(mod, class_name):
+            msg = f'''{mod} has no class {class_name} to describe
                   {item["url"]}, patch new class with api4jenkins._patch_to,
                   see: https://api4jenkins.readthedocs.io/en/latest/user/example.html#patch'''
             raise AttributeError(msg)
-        _class = getattr(module, class_name)
+        _class = getattr(mod, class_name)
         return _class(jenkins, item['url'])
 
     return func

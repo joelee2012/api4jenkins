@@ -4,14 +4,21 @@ from pathlib import Path
 import pytest
 
 from api4jenkins import AsyncJenkins, Jenkins
-from api4jenkins.build import FreeStyleBuild, WorkflowRun, AsyncWorkflowRun, AsyncFreeStyleBuild
-from api4jenkins.credential import AsyncDomain, Credential, Credentials, AsyncCredentials, AsyncCredential, Domain
-from api4jenkins.item import Item, AsyncItem
-from api4jenkins.job import Folder, WorkflowJob, WorkflowMultiBranchProject, AsyncFolder, AsyncWorkflowJob, AsyncWorkflowMultiBranchProject
-from api4jenkins.node import Node, Nodes, AsyncNode, AsyncNodes
-from api4jenkins.plugin import PluginsManager, AsyncPluginsManager
-from api4jenkins.queue import Queue, QueueItem, AsyncQueue, AsyncQueueItem
-from api4jenkins.report import AsyncCoverageReport, AsyncCoverageResult, AsyncTestReport, CoverageReport, CoverageResult, TestReport
+from api4jenkins.build import (AsyncFreeStyleBuild, AsyncWorkflowRun,
+                               FreeStyleBuild, WorkflowRun)
+from api4jenkins.credential import (AsyncCredential, AsyncCredentials,
+                                    AsyncDomain, Credential, Credentials,
+                                    Domain)
+from api4jenkins.item import AsyncItem, Item
+from api4jenkins.job import (AsyncFolder, AsyncWorkflowJob,
+                             AsyncWorkflowMultiBranchProject, Folder,
+                             WorkflowJob, WorkflowMultiBranchProject)
+from api4jenkins.node import AsyncNode, AsyncNodes, Node, Nodes
+from api4jenkins.plugin import AsyncPluginsManager, PluginsManager
+from api4jenkins.queue import AsyncQueue, AsyncQueueItem, Queue, QueueItem
+from api4jenkins.report import (AsyncCoverageReport, AsyncCoverageResult,
+                                AsyncTestReport, CoverageReport,
+                                CoverageResult, TestReport)
 from api4jenkins.view import AllView, AsyncAllView
 
 DATA = Path(__file__).with_name('tests_data')
