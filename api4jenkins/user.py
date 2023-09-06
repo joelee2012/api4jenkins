@@ -2,15 +2,15 @@
 from collections import namedtuple
 
 from .item import AsyncItem, Item
-from .mix import (AsyncDeletionMixIn, AsyncDescriptionMixIn, AsyncGetItemMixIn,
-                  DeletionMixIn, DescriptionMixIn, GetItemMixIn)
+from .mix import (AsyncDeletionMixIn, AsyncDescriptionMixIn,
+                  DeletionMixIn, DescriptionMixIn)
 
 user_tree = 'users[user[id,absoluteUrl,fullName]]'
 new_token_url = 'descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken'
 revoke_token_url = 'descriptorByName/jenkins.security.ApiTokenProperty/revoke'
 
 
-class Users(Item, GetItemMixIn):
+class Users(Item):
 
     def __iter__(self):
         for user in self.api_json(tree=user_tree)['users']:
@@ -39,7 +39,7 @@ class User(Item, DeletionMixIn, DescriptionMixIn):
 # async class
 
 
-class AsyncUsers(AsyncItem, AsyncGetItemMixIn):
+class AsyncUsers(AsyncItem):
 
     async def __aiter__(self):
         for user in (await self.api_json(tree=user_tree))['users']:

@@ -4,10 +4,9 @@ import time
 import xml.etree.ElementTree as ET
 
 from .item import AsyncItem, Item
-from .mix import AsyncGetItemMixIn, GetItemMixIn
 
 
-class PluginsManager(Item, GetItemMixIn):
+class PluginsManager(Item):
 
     def get(self, name):
         for plugin in self.api_json(tree='plugins[shortName]')['plugins']:
@@ -94,7 +93,7 @@ class UpdateCenter(Item):
 
 # async class
 
-class AsyncPluginsManager(AsyncItem, AsyncGetItemMixIn):
+class AsyncPluginsManager(AsyncItem):
 
     async def get(self, name):
         data = await self.api_json(tree='plugins[shortName]')

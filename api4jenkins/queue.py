@@ -2,12 +2,10 @@
 import re
 
 from .item import AsyncItem, Item
-from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncGetItemMixIn,
-                  GetItemMixIn)
+from .mix import (ActionsMixIn, AsyncActionsMixIn)
 
 
-class Queue(Item, GetItemMixIn):
-
+class Queue(Item):
     def get(self, id):
         for item in self.api_json(tree='items[id,url]')['items']:
             if item['id'] == int(id):
@@ -44,7 +42,7 @@ class QueueItem(Item, ActionsMixIn):
 
     def get_job(self):
         if self._class.endswith('$BuildableItem'):
-            return self.get_build().job
+            return self.get_build().project
         task = self.api_json(tree='task[url]')['task']
         return self._new_item('api4jenkins.job', task)
 
@@ -90,7 +88,7 @@ class WaitingItem(QueueItem):
 # async class
 
 
-class AsyncQueue(AsyncItem, AsyncGetItemMixIn):
+class AsyncQueue(AsyncItem):
 
     async def get(self, id):
         for item in (await self.api_json(tree='items[id,url]'))['items']:
@@ -120,7 +118,7 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
         _class = await self._class
         if _class.endswith('$BuildableItem'):
             build = await self.get_build()
-            return await build.job
+            return await build.project
         data = await self.api_json(tree='task[url]')
         return self._new_item('api4jenkins.job', data['task'])
 

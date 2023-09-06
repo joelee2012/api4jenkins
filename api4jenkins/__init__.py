@@ -74,7 +74,7 @@ class Jenkins(Item, UrlMixIn):
         if folder.exists():
             return folder.get(name)
 
-    def iter_jobs(self, depth=0):
+    def iter(self, depth=0):
         '''Iterate jobs with depth
 
         :param depth: ``int``, depth to iterate, default is 0
@@ -84,7 +84,7 @@ class Jenkins(Item, UrlMixIn):
 
             >>> from api4jenkins import Jenkins
             >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-            >>> for job in j.iter_jobs():
+            >>> for job in j.iter():
             ...     print(job)
             <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
             ...
@@ -300,11 +300,8 @@ class Jenkins(Item, UrlMixIn):
     def me(self):
         return self.user
 
-    def __iter__(self):
-        yield from self.iter_jobs()
-
     def __call__(self, depth):
-        yield from self.iter_jobs(depth)
+        yield from self.iter(depth)
 
     def __getitem__(self, full_name):
         return self.get_job(full_name)
@@ -335,7 +332,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         if await folder.exists():
             return await folder.get(name)
 
-    async def iter_jobs(self, depth=0):
+    async def aiter(self, depth=0):
         async for job in AsyncFolder(self, self.url)(depth):
             yield job
 
@@ -447,12 +444,8 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
     def me(self):
         return self.user
 
-    async def __aiter__(self):
-        async for job in self.iter_jobs():
-            yield job
-
     async def __call__(self, depth):
-        async for job in self.iter_jobs(depth):
+        async for job in self.aiter(depth):
             yield job
 
     async def __getitem__(self, full_name):

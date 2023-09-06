@@ -1,10 +1,12 @@
 # encoding: utf-8
 
 from .item import AsyncItem, Item
-from .mix import AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, AsyncGetItemMixIn, ConfigurationMixIn, DeletionMixIn, DescriptionMixIn, GetItemMixIn
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
+                  AsyncDescriptionMixIn, ConfigurationMixIn,
+                  DeletionMixIn, DescriptionMixIn)
 
 
-class Views(Item, GetItemMixIn):
+class Views(Item):
     '''
     classdocs
     '''
@@ -31,7 +33,7 @@ class Views(Item, GetItemMixIn):
             yield self._new_item(__name__, item)
 
 
-class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn, GetItemMixIn):
+class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
     def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
@@ -80,7 +82,7 @@ class SectionedView(View):
     pass
 
 
-class AsyncViews(AsyncItem, AsyncGetItemMixIn):
+class AsyncViews(AsyncItem):
     '''
     classdocs
     '''
@@ -109,7 +111,7 @@ class AsyncViews(AsyncItem, AsyncGetItemMixIn):
             yield self._new_item(__name__, item)
 
 
-class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn, AsyncGetItemMixIn):
+class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn):
 
     async def get(self, name):
         data = await self.api_json(tree='jobs[name,url]')

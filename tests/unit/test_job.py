@@ -55,7 +55,7 @@ class TestProject:
         assert build.url == job.api_json()[key]['url']
 
     def test_iter_builds(self, job):
-        builds = list(job.iter_builds())
+        builds = list(job)
         assert len(builds) == 8
 
     @pytest.mark.parametrize('action', ['enable', 'disable'])
@@ -121,7 +121,7 @@ class TestAsyncProject:
         assert build.url == job_json[key]['url']
 
     async def test_iter_builds(self, async_job):
-        builds = [b async for b in async_job.iter_builds()]
+        builds = [b async for b in async_job]
         assert len(builds) == 8
 
     @pytest.mark.parametrize('action', ['enable', 'disable'])

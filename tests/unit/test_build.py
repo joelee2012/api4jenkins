@@ -27,7 +27,7 @@ class TestBuild:
         assert isinstance(build.get_previous_build(), WorkflowRun)
 
     def test_get_job(self, build, job):
-        assert job == build.job
+        assert job == build.project
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     def test_stop_term_kill(self, build, respx_mock, action):
@@ -105,7 +105,7 @@ class TestAsyncBuild:
         assert isinstance(await async_build.get_previous_build(), AsyncWorkflowRun)
 
     async def test_get_job(self, async_build, async_job):
-        assert async_job == await async_build.job
+        assert async_job == await async_build.project
 
     @pytest.mark.parametrize('action', ['stop', 'term', 'kill'])
     async def test_stop_term_kill(self, async_build, respx_mock, action):

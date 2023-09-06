@@ -53,7 +53,7 @@ class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
         return None
 
     @property
-    def job(self):
+    def project(self):
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return self.jenkins.get_job(job_name)
 
@@ -147,7 +147,7 @@ class AsyncBuild(AsyncItem, AsyncDescriptionMixIn, AsyncDeletionMixIn, AsyncActi
         return self.__class__(self.jenkins, data['previousBuild']['url']) if data['previousBuild'] else None
 
     @property
-    async def job(self):
+    async def project(self):
         job_name = self.jenkins._url2name(re.sub(r'\w+[/]?$', '', self.url))
         return await self.jenkins.get_job(job_name)
 

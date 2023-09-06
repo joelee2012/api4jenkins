@@ -1,11 +1,12 @@
 # encoding: utf-8
 
 
-from .item import Item, AsyncItem
-from .mix import AsyncGetItemMixIn, ConfigurationMixIn, DeletionMixIn, AsyncConfigurationMixIn, AsyncDeletionMixIn, GetItemMixIn
+from .item import AsyncItem, Item
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
+                  ConfigurationMixIn, DeletionMixIn)
 
 
-class Credentials(Item, GetItemMixIn):
+class Credentials(Item):
 
     def get(self, name):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
@@ -17,7 +18,7 @@ class Credentials(Item, GetItemMixIn):
         self.handle_req('POST', 'createDomain',
                         headers=self.headers, content=xml)
 
-    def __iter__(self):
+    def iter(self):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
             yield Domain(self.jenkins, f'{self.url}domain/{key}/')
 
@@ -26,7 +27,7 @@ class Credentials(Item, GetItemMixIn):
         return self['_']
 
 
-class Domain(Item, ConfigurationMixIn, DeletionMixIn, GetItemMixIn):
+class Domain(Item, ConfigurationMixIn, DeletionMixIn):
 
     def get(self, id):
         for item in self.api_json(tree='credentials[id]')['credentials']:
@@ -38,7 +39,7 @@ class Domain(Item, ConfigurationMixIn, DeletionMixIn, GetItemMixIn):
         self.handle_req('POST', 'createCredentials',
                         headers=self.headers, content=xml)
 
-    def __iter__(self):
+    def iter(self):
         for item in self.api_json(tree='credentials[id]')['credentials']:
             yield Credential(self.jenkins, f'{self.url}credential/{item["id"]}/')
 
@@ -48,7 +49,7 @@ class Credential(Item, ConfigurationMixIn, DeletionMixIn):
 
 
 # async class
-class AsyncCredentials(AsyncItem, AsyncGetItemMixIn):
+class AsyncCredentials(AsyncItem):
 
     async def get(self, name):
         data = await self.api_json(tree='domains[urlName]')
@@ -61,7 +62,7 @@ class AsyncCredentials(AsyncItem, AsyncGetItemMixIn):
         await self.handle_req('POST', 'createDomain',
                               headers=self.headers, content=xml)
 
-    async def __aiter__(self):
+    async def aiter(self):
         data = await self.api_json(tree='domains[urlName]')
         for key in data['domains'].keys():
             yield Domain(self.jenkins, f'{self.url}domain/{key}/')
@@ -71,7 +72,7 @@ class AsyncCredentials(AsyncItem, AsyncGetItemMixIn):
         return await self['_']
 
 
-class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncGetItemMixIn):
+class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn):
 
     async def get(self, id):
         data = await self.api_json(tree='credentials[id]')
@@ -84,7 +85,7 @@ class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncG
         await self.handle_req('POST', 'createCredentials',
                               headers=self.headers, content=xml)
 
-    async def __aiter__(self):
+    async def aiter(self):
         data = await self.api_json(tree='credentials[id]')
         for item in data['credentials']:
             yield AsyncCredential(self.jenkins, f'{self.url}credential/{item["id"]}/')

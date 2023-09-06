@@ -124,6 +124,17 @@ class Item(BaseItem):
             return self.api_json(tree=attr)[attr]
         return super().__getattribute__(name)
 
+    def __getitem__(self, name):
+        if hasattr(self, 'get'):
+            return self.get(name)
+        raise TypeError(f'{type(self).__name__} object is not subscriptable')
+
+    def iter(self):
+        raise TypeError(f"'{type(self).__name__}' object is not iterable")
+
+    def __iter__(self):
+        yield from self.iter()
+
 
 class AsyncItem(BaseItem):
 
@@ -161,3 +172,15 @@ class AsyncItem(BaseItem):
             attr = camel(name)
             return (await self.api_json(tree=attr))[attr]
         return super().__getattribute__(name)
+
+    async def __getitem__(self, name):
+        if hasattr(self, 'get'):
+            return await self.get(name)
+        raise TypeError(f'{type(self).__name__} object is not subscriptable')
+
+    async def aiter(self):
+        raise TypeError(f"'{type(self).__name__}' object is not iterable")
+
+    async def __aiter__(self):
+        async for item in self.aiter():
+            yield item
