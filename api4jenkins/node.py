@@ -90,7 +90,7 @@ class Nodes(Item, IterBuildingBuildsMixIn):
     def iter_builds(self):
         yield from _new_builds(self.jenkins, self.api_json(_nodes_tree, 2))
 
-    def __iter__(self):
+    def iter(self):
         yield from _iter_node(self.jenkins, self.api_json(tree='computer[displayName]'))
 
     def filter_node_by_label(self, *labels):
@@ -177,7 +177,7 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         for build in _new_builds(self.jenkins, await self.api_json(_nodes_tree, 2)):
             yield build
 
-    async def __aiter__(self):
+    async def aiter(self):
         data = await self.api_json(tree='computer[displayName]')
         for node in _iter_node(self.jenkins, data):
             yield node

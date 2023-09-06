@@ -58,7 +58,7 @@ new_item = _new_item()
 
 class BaseItem:
     headers = {'Content-Type': 'text/xml; charset=utf-8'}
-    _dynamic_attrs = []
+    _attr_names = []
 
     def __init__(self, jenkins, url):
         self.jenkins = jenkins
@@ -81,8 +81,9 @@ class BaseItem:
             headers.update(crumb)
             kwargs['headers'] = headers
 
-    def _extract_attrs(self, data):
-        self.__class__._dynamic_attrs = \
+    @classmethod
+    def _extract_attrs(cls, data):
+        cls._attr_names = \
             [snake(key) for key, val in data.items() if isinstance(
                 val, (int, str, bool, type(None)))]
 
@@ -114,9 +115,9 @@ class Item(BaseItem):
 
     @property
     def dynamic_attrs(self):
-        if not self._dynamic_attrs:
+        if not self._attr_names:
             self._extract_attrs(self.api_json())
-        return self._dynamic_attrs
+        return self._attr_names
 
     def __getattr__(self, name):
         if name in self.dynamic_attrs:
@@ -127,7 +128,7 @@ class Item(BaseItem):
     def __getitem__(self, name):
         if hasattr(self, 'get'):
             return self.get(name)
-        raise TypeError(f'{type(self).__name__} object is not subscriptable')
+        raise TypeError(f"'{type(self).__name__}' object is not subscriptable")
 
     def iter(self):
         raise TypeError(f"'{type(self).__name__}' object is not iterable")
@@ -163,9 +164,9 @@ class AsyncItem(BaseItem):
 
     @property
     async def dynamic_attrs(self):
-        if not self._dynamic_attrs:
+        if not self._attr_names:
             self._extract_attrs(await self.api_json())
-        return self._dynamic_attrs
+        return self._attr_names
 
     async def __getattr__(self, name):
         if name in (await self.dynamic_attrs):
@@ -176,7 +177,7 @@ class AsyncItem(BaseItem):
     async def __getitem__(self, name):
         if hasattr(self, 'get'):
             return await self.get(name)
-        raise TypeError(f'{type(self).__name__} object is not subscriptable')
+        raise TypeError(f"'{type(self).__name__}' object is not subscriptable")
 
     async def aiter(self):
         raise TypeError(f"'{type(self).__name__}' object is not iterable")
