@@ -49,7 +49,7 @@ def _api_json(self, tree='', depth=0):
         return load_json('node/nodes.json')
     elif isinstance(self, (Node, AsyncNode)):
         return load_json('node/node.json')
-    elif isinstance(self, AllView):
+    elif isinstance(self, (AllView, AsyncAllView)):
         return load_json('view/allview.json')
     elif isinstance(self, (TestReport, AsyncTestReport)):
         return load_json('report/test_report.json')

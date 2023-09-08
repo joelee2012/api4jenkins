@@ -82,10 +82,10 @@ class BaseItem:
             kwargs['headers'] = headers
 
     @classmethod
-    def _extract_attrs(cls, data):
-        cls._attr_names = \
-            [snake(key) for key, val in data.items() if isinstance(
-                val, (int, str, bool, type(None)))]
+    def _get_attr_names(cls, api_json):
+        types = (int, str, bool, type(None))
+        cls._attr_names = [snake(k)
+                           for k in api_json if isinstance(api_json[k], types)]
 
 
 class Item(BaseItem):
@@ -116,7 +116,7 @@ class Item(BaseItem):
     @property
     def dynamic_attrs(self):
         if not self._attr_names:
-            self._extract_attrs(self.api_json())
+            self._get_attr_names(self.api_json())
         return self._attr_names
 
     def __getattr__(self, name):
@@ -165,7 +165,7 @@ class AsyncItem(BaseItem):
     @property
     async def dynamic_attrs(self):
         if not self._attr_names:
-            self._extract_attrs(await self.api_json())
+            self._get_attr_names(await self.api_json())
         return self._attr_names
 
     async def __getattr__(self, name):
