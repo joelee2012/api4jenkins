@@ -59,7 +59,7 @@ def _api_json(self, tree='', depth=0):
         return load_json('report/coverage_result.json')
     elif isinstance(self, (QueueItem, AsyncQueueItem)):
         return load_json('queue/waitingitem.json')
-    raise TypeError(f'unknow item: {type(self)}')
+    raise TypeError(f'unknown item: {type(self)}')
 
 
 async def _async_api_json(self, tree='', depth=0):
