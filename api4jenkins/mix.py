@@ -7,6 +7,8 @@ from pathlib import PurePosixPath
 
 
 class UrlMixIn:
+    __slots__ = ()
+
     def _url2name(self, url):
         if not url.startswith(self.url):
             raise ValueError(f'{url} is not in {self.url}')
@@ -27,12 +29,14 @@ class UrlMixIn:
 
 
 class DeletionMixIn:
+    __slots__ = ()
 
     def delete(self):
         self.handle_req('POST', 'doDelete')
 
 
 class ConfigurationMixIn:
+    __slots__ = ()
 
     def configure(self, xml=None):
         if not xml:
@@ -46,6 +50,7 @@ class ConfigurationMixIn:
 
 
 class DescriptionMixIn:
+    __slots__ = ()
 
     def set_description(self, text):
         self.handle_req('POST', 'submitDescription',
@@ -53,6 +58,7 @@ class DescriptionMixIn:
 
 
 class RunScriptMixIn:
+    __slots__ = ()
 
     def run_script(self, script):
         return self.handle_req('POST', 'scriptText',
@@ -60,6 +66,7 @@ class RunScriptMixIn:
 
 
 class EnableMixIn:
+    __slots__ = ()
 
     def enable(self):
         return self.handle_req('POST', 'enable')
@@ -69,6 +76,7 @@ class EnableMixIn:
 
 
 class RawJsonMixIn:
+    __slots__ = ()
 
     def api_json(self, tree='', depth=0):
         return self.raw
@@ -78,6 +86,7 @@ Parameter = namedtuple('Parameter', ['class_name', 'name', 'value'])
 
 
 class ActionsMixIn:
+    __slots__ = ()
 
     def get_parameters(self):
         parameters = []
@@ -91,16 +100,19 @@ class ActionsMixIn:
     def get_causes(self):
         return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])
 
+
 # async classes
 
 
 class AsyncDeletionMixIn:
+    __slots__ = ()
 
     async def delete(self):
         await self.handle_req('POST', 'doDelete')
 
 
 class AsyncConfigurationMixIn:
+    __slots__ = ()
 
     async def configure(self, xml=None):
         if xml:
@@ -114,6 +126,7 @@ class AsyncConfigurationMixIn:
 
 
 class AsyncDescriptionMixIn:
+    __slots__ = ()
 
     async def set_description(self, text):
         await self.handle_req('POST', 'submitDescription',
@@ -121,12 +134,14 @@ class AsyncDescriptionMixIn:
 
 
 class AsyncRunScriptMixIn:
+    __slots__ = ()
 
     async def run_script(self, script):
         return (await self.handle_req('POST', 'scriptText', data={'script': script})).text
 
 
 class AsyncEnableMixIn:
+    __slots__ = ()
 
     async def enable(self):
         return await self.handle_req('POST', 'enable')
@@ -136,12 +151,14 @@ class AsyncEnableMixIn:
 
 
 class AsyncRawJsonMixIn:
+    __slots__ = ()
 
     async def api_json(self, tree='', depth=0):
         return self.raw
 
 
 class AsyncActionsMixIn:
+    __slots__ = ()
 
     async def get_parameters(self):
         parameters = []

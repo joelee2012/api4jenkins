@@ -1,7 +1,6 @@
 # encoding: utf-8
 import json
 import time
-
 import xml.etree.ElementTree as ET
 
 from .item import AsyncItem, Item
@@ -12,8 +11,7 @@ class PluginsManager(Item):
     def get(self, name):
         for plugin in self.api_json(tree='plugins[shortName]')['plugins']:
             if plugin['shortName'] == name:
-                return Plugin(self.jenkins,
-                              f'{self.url}plugin/{name}/')
+                return Plugin(self.jenkins, f'{self.url}plugin/{name}/')
         return None
 
     def install(self, *names, block=False):
@@ -101,8 +99,7 @@ class AsyncPluginsManager(AsyncItem):
         data = await self.api_json(tree='plugins[shortName]')
         for plugin in data['plugins']:
             if plugin['shortName'] == name:
-                return AsyncPlugin(self.jenkins,
-                                   f'{self.url}plugin/{name}/')
+                return AsyncPlugin(self.jenkins, f'{self.url}plugin/{name}/')
         return None
 
     async def install(self, *names, block=False):

@@ -132,7 +132,7 @@ class TestJenkins:
         assert jenkins.exists() == exist
 
     def test_iter_jobs(self, jenkins):
-        assert len(list(jenkins.iter_jobs(1))) == 5
+        assert len(list(jenkins.iter(1))) == 5
         assert len(list(jenkins)) == 5
         assert len(list(jenkins(1))) == 5
 
@@ -292,7 +292,7 @@ class TestAsyncJenkins:
         assert await async_jenkins.exists() == exist
 
     async def test_iter_jobs(self, async_jenkins):
-        assert len([j async for j in async_jenkins.iter_jobs()]) == 5
+        assert len([j async for j in async_jenkins]) == 5
         assert len([j async for j in async_jenkins]) == 5
 
     async def test_no_class_for_item(self, async_jenkins):

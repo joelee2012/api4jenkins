@@ -1,7 +1,9 @@
 # encoding: utf-8
 
 from .item import AsyncItem, Item
-from .mix import AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncDescriptionMixIn, ConfigurationMixIn, DeletionMixIn, DescriptionMixIn
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
+                  AsyncDescriptionMixIn, ConfigurationMixIn,
+                  DeletionMixIn, DescriptionMixIn)
 
 
 class Views(Item):
@@ -33,14 +35,11 @@ class Views(Item):
 
 class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
-    def get_job(self, name):
+    def get(self, name):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
-
-    def __getitem__(self, name):
-        return self.get_job(name)
 
     def __iter__(self):
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
@@ -114,15 +113,12 @@ class AsyncViews(AsyncItem):
 
 class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn):
 
-    async def get_job(self, name):
+    async def get(self, name):
         data = await self.api_json(tree='jobs[name,url]')
         for item in data['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
-
-    def __getitem__(self, name):
-        return self.get_job(name)
 
     async def __aiter__(self):
         data = await self.api_json(tree='jobs[name,url]')

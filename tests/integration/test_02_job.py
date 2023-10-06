@@ -26,7 +26,7 @@ class TestProject:
         assert args_job.get_parameters()[0]['name'] == 'ARG1'
 
     def test_get_build(self, job):
-        assert job.get_build(0) is None
+        assert job[0] is None
         assert job[1]
 
     def test_get_special_build(self, job):
@@ -35,7 +35,7 @@ class TestProject:
 
     def test_iter_build(self, job):
         assert len(list(job)) == 2
-        assert len(list(job.iter_builds())) == 2
+        assert len(list(job.iter())) == 2
 
     def test_iter_all_builds(self, job):
         assert len(list(job.iter_all_builds())) == 2
@@ -76,7 +76,7 @@ class TestAsyncProject:
         assert (await async_args_job.get_parameters())[0]['name'] == 'ARG1'
 
     async def test_get_build(self, async_job):
-        assert await async_job.get_build(0) is None
+        assert await async_job.get(0) is None
         assert await async_job[1]
 
     async def test_get_special_build(self, async_job):
@@ -85,7 +85,7 @@ class TestAsyncProject:
 
     async def test_iter_build(self, async_job):
         assert len([b async for b in async_job]) == 2
-        assert len([b async for b in async_job.iter_builds()]) == 2
+        assert len([b async for b in async_job.aiter()]) == 2
 
     async def test_iter_all_builds(self, async_job):
         assert len([b async for b in async_job.iter_all_builds()]) == 2

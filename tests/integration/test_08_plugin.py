@@ -9,7 +9,7 @@ def plugin(jenkins):
 
 
 @pytest.fixture
-async def aplugin(async_jenkins):
+async def async_plugin(async_jenkins):
     await async_jenkins.plugins.install('nodejs', block=True)
     yield await async_jenkins.plugins.get('nodejs')
     await async_jenkins.plugins.uninstall('nodejs')
@@ -29,5 +29,5 @@ class TestAsyncPlugin:
         assert await async_jenkins.plugins.get('git')
         assert await async_jenkins.plugins.get('notxist') is None
 
-    async def test_install(self, aplugin):
-        assert await aplugin.short_name == 'nodejs'
+    async def test_install(self, async_plugin):
+        assert await async_plugin.short_name == 'nodejs'

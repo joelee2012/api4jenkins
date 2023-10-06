@@ -41,9 +41,9 @@ class TestProject:
                              [(52, WorkflowRun), (100, type(None))],
                              ids=['exist', 'not exist'])
     def test_get_build(self, job, number, obj):
-        build = job.get_build(number)
+        build = job[number]
         assert isinstance(build, obj)
-        build = job.get_build(f'#{number}')
+        build = job[f'#{number}']
         assert isinstance(build, obj)
 
     @pytest.mark.parametrize('key', ['firstBuild', 'lastBuild', 'lastCompletedBuild',
@@ -55,7 +55,7 @@ class TestProject:
         assert build.url == job.api_json()[key]['url']
 
     def test_iter_builds(self, job):
-        builds = list(job.iter_builds())
+        builds = list(job)
         assert len(builds) == 8
 
     @pytest.mark.parametrize('action', ['enable', 'disable'])
@@ -106,9 +106,9 @@ class TestAsyncProject:
                              [(52, AsyncWorkflowRun), (100, type(None))],
                              ids=['exist', 'not exist'])
     async def test_get_build(self, async_job, number, obj):
-        build = await async_job.get_build(number)
+        build = await async_job[number]
         assert isinstance(build, obj)
-        build = await async_job.get_build(f'#{number}')
+        build = await async_job[f'#{number}']
         assert isinstance(build, obj)
 
     @pytest.mark.parametrize('key', ['firstBuild', 'lastBuild', 'lastCompletedBuild',
@@ -121,7 +121,7 @@ class TestAsyncProject:
         assert build.url == job_json[key]['url']
 
     async def test_iter_builds(self, async_job):
-        builds = [b async for b in async_job.iter_builds()]
+        builds = [b async for b in async_job]
         assert len(builds) == 8
 
     @pytest.mark.parametrize('action', ['enable', 'disable'])

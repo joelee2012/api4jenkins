@@ -1,21 +1,20 @@
 # encoding: utf-8
 import logging
-import typing
 
-from httpx import AsyncClient, AsyncHTTPTransport, Client, HTTPTransport
-import httpx
+from httpx import (AsyncClient, AsyncHTTPTransport, Client, HTTPTransport,
+                   Request, Response)
 
 from .exceptions import AuthenticationError, BadRequestError, ItemNotFoundError
 
 logger = logging.getLogger(__name__)
 
 
-def log_request(request: httpx.Request) -> None:
+def log_request(request: Request) -> None:
     logger.debug(
         f"Send Request: {request.method} {request.url} - Waiting for response")
 
 
-def check_response(response: httpx.Response) -> None:
+def check_response(response: Response) -> None:
     if response.is_success or response.is_redirect:
         return
     if response.status_code == 404:
@@ -30,7 +29,7 @@ def check_response(response: httpx.Response) -> None:
     response.raise_for_status()
 
 
-def new_http_client(**kwargs) -> httpx.Client:
+def new_http_client(**kwargs) -> Client:
     return Client(
         transport=HTTPTransport(retries=kwargs.pop('retries', 0)),
         **kwargs,
@@ -38,12 +37,12 @@ def new_http_client(**kwargs) -> httpx.Client:
     )
 
 
-async def async_log_request(request: httpx.Request) -> None:
+async def async_log_request(request: Request) -> None:
     logger.debug(
         f"Send Request: {request.method} {request.url} - Waiting for response")
 
 
-async def async_check_response(response: httpx.Response) -> None:
+async def async_check_response(response: Response) -> None:
     check_response(response)
 
 

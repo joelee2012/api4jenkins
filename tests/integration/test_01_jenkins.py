@@ -74,8 +74,8 @@ class TestJenkins:
         assert params['ARG1'] in ''.join(output)
 
     def test_iter_jobs(self, jenkins):
-        assert len(list(jenkins.iter_jobs())) == 2
-        assert len(list(jenkins.iter_jobs(2))) == 12
+        assert len(list(jenkins.iter())) == 2
+        assert len(list(jenkins.iter(2))) == 12
         assert len(list(jenkins)) == 2
         assert len(list(jenkins(2))) == 12
 
@@ -160,8 +160,8 @@ class TestAsyncJenkins:
         assert params['ARG1'] in ''.join(output)
 
     async def test_iter_jobs(self, async_jenkins):
-        assert len([v async for v in async_jenkins.iter_jobs()]) == 2
-        assert len([v async for v in async_jenkins.iter_jobs(2)]) == 12
+        assert len([v async for v in async_jenkins.aiter()]) == 2
+        assert len([v async for v in async_jenkins.aiter(2)]) == 12
         assert len([v async for v in async_jenkins]) == 2
         assert len([v async for v in async_jenkins(2)]) == 12
 

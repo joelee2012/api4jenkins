@@ -4,7 +4,6 @@ import contextlib
 import logging
 import re
 from importlib import import_module
-from pprint import pformat
 
 import api4jenkins
 
@@ -42,13 +41,13 @@ def _new_item():
         class_name = delimiter.split(item['_class'])[-1]
         if isinstance(jenkins, api4jenkins.AsyncJenkins):
             class_name = f'Async{class_name}'
-        module = import_module(module)
-        if not hasattr(module, class_name):
-            msg = f'''{module} has no class {class_name} to describe
+        mod = import_module(module)
+        if not hasattr(mod, class_name):
+            msg = f'''{mod} has no class {class_name} to describe
                   {item["url"]}, patch new class with api4jenkins._patch_to,
                   see: https://api4jenkins.readthedocs.io/en/latest/user/example.html#patch'''
             raise AttributeError(msg)
-        _class = getattr(module, class_name)
+        _class = getattr(mod, class_name)
         return _class(jenkins, item['url'])
 
     return func
@@ -59,7 +58,7 @@ new_item = _new_item()
 
 class BaseItem:
     headers = {'Content-Type': 'text/xml; charset=utf-8'}
-    _dynamic_attrs = []
+    _attr_names = []
 
     def __init__(self, jenkins, url):
         self.jenkins = jenkins
@@ -82,10 +81,11 @@ class BaseItem:
             headers.update(crumb)
             kwargs['headers'] = headers
 
-    def _extract_attrs(self, data):
-        self.__class__._dynamic_attrs = \
-            [snake(key) for key, val in data.items() if isinstance(
-                val, (int, str, bool, type(None)))]
+    @classmethod
+    def _get_attr_names(cls, api_json):
+        types = (int, str, bool, type(None))
+        cls._attr_names = [snake(k)
+                           for k in api_json if isinstance(api_json[k], types)]
 
 
 class Item(BaseItem):
@@ -115,15 +115,26 @@ class Item(BaseItem):
 
     @property
     def dynamic_attrs(self):
-        if not self._dynamic_attrs:
-            self._extract_attrs(self.api_json())
-        return self._dynamic_attrs
+        if not self._attr_names:
+            self._get_attr_names(self.api_json())
+        return self._attr_names
 
     def __getattr__(self, name):
         if name in self.dynamic_attrs:
             attr = camel(name)
             return self.api_json(tree=attr)[attr]
         return super().__getattribute__(name)
+
+    def __getitem__(self, name):
+        if hasattr(self, 'get'):
+            return self.get(name)
+        raise TypeError(f"'{type(self).__name__}' object is not subscriptable")
+
+    def iter(self):
+        raise TypeError(f"'{type(self).__name__}' object is not iterable")
+
+    def __iter__(self):
+        yield from self.iter()
 
 
 class AsyncItem(BaseItem):
@@ -153,12 +164,24 @@ class AsyncItem(BaseItem):
 
     @property
     async def dynamic_attrs(self):
-        if not self._dynamic_attrs:
-            self._extract_attrs(await self.api_json())
-        return self._dynamic_attrs
+        if not self._attr_names:
+            self._get_attr_names(await self.api_json())
+        return self._attr_names
 
     async def __getattr__(self, name):
         if name in (await self.dynamic_attrs):
             attr = camel(name)
             return (await self.api_json(tree=attr))[attr]
         return super().__getattribute__(name)
+
+    async def __getitem__(self, name):
+        if hasattr(self, 'get'):
+            return await self.get(name)
+        raise TypeError(f"'{type(self).__name__}' object is not subscriptable")
+
+    async def aiter(self):
+        raise TypeError(f"'{type(self).__name__}' object is not iterable")
+
+    async def __aiter__(self):
+        async for item in self.aiter():
+            yield item

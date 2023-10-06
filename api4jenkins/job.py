@@ -6,7 +6,7 @@ from pathlib import PurePosixPath
 from urllib.parse import unquote_plus
 
 from .credential import AsyncCredentials, Credentials
-from .item import AsyncItem, Item, new_item, append_slash, snake
+from .item import AsyncItem, Item, append_slash, new_item, snake
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
                   AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn,
                   DeletionMixIn, DescriptionMixIn, EnableMixIn)
@@ -97,14 +97,8 @@ class Folder(Job):
     def credentials(self):
         return Credentials(self.jenkins, f'{self.url}credentials/store/folder/')
 
-    def __iter__(self):
-        yield from self.iter()
-
     def __call__(self, depth):
         yield from self.iter(depth)
-
-    def __getitem__(self, name):
-        return self.get(name)
 
 
 class WorkflowMultiBranchProject(Folder, EnableMixIn):
@@ -158,11 +152,12 @@ class Project(Job, EnableMixIn):
         resp = self.handle_req('POST', entry, params=params)
         return QueueItem(self.jenkins, resp.headers['Location'])
 
-    def get_build(self, number):
+    def get(self, number):
         return _get_build(self, self.api_json(tree='builds[number,displayName,url]'), number)
 
-    def iter_builds(self):
-        yield from self
+    def iter(self):
+        for item in self.api_json(tree='builds[number,url]')['builds']:
+            yield self._new_item('api4jenkins.build', item)
 
     def iter_all_builds(self):
         for item in self.api_json(tree='allBuilds[number,url]')['allBuilds']:
@@ -183,13 +178,6 @@ class Project(Job, EnableMixIn):
     def building(self):
         builds = self.api_json(tree='builds[building]')['builds']
         return any(b['building'] for b in builds)
-
-    def __iter__(self):
-        for item in self.api_json(tree='builds[number,url]')['builds']:
-            yield self._new_item('api4jenkins.build', item)
-
-    def __getitem__(self, number):
-        return self.get_build(number)
 
     def filter_builds_by_result(self, *, result):
         """filter build by build results, avaliable results are:
@@ -284,7 +272,7 @@ class AsyncFolder(AsyncJob):
                 return self._new_item(__name__, item)
         return None
 
-    async def iter(self, depth=0):
+    async def aiter(self, depth=0):
         for item in (await self.api_json(tree=_make_query(depth)))['jobs']:
             for job in _iter_jobs(self.jenkins, item):
                 yield job
@@ -305,16 +293,9 @@ class AsyncFolder(AsyncJob):
         return AsyncCredentials(self.jenkins,
                                 f'{self.url}credentials/store/folder/')
 
-    async def __aiter__(self):
-        async for item in self.iter():
-            yield item
-
     async def __call__(self, depth):
-        async for job in self.iter(depth):
+        async for job in self.aiter(depth):
             yield job
-
-    async def __getitem__(self, name):
-        return await self.get(name)
 
 
 class AsyncWorkflowMultiBranchProject(AsyncFolder, AsyncEnableMixIn):
@@ -357,12 +338,13 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         resp = await self.handle_req('POST', entry, params=params)
         return AsyncQueueItem(self.jenkins, resp.headers['Location'])
 
-    async def get_build(self, number):
+    async def get(self, number):
         return _get_build(self, await self.api_json(tree='builds[number,displayName,url]'), number)
 
-    async def iter_builds(self):
-        async for build in self:
-            yield build
+    async def aiter(self):
+        data = await self.api_json(tree='builds[number,url]')
+        for item in data['builds']:
+            yield self._new_item('api4jenkins.build', item)
 
     async def iter_all_builds(self):
         data = await self.api_json(tree='allBuilds[number,url]')
@@ -384,14 +366,6 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
     async def building(self):
         data = await self.api_json(tree='builds[building]')
         return any(b['building'] for b in data['builds'])
-
-    async def __aiter__(self):
-        data = await self.api_json(tree='builds[number,url]')
-        for item in data['builds']:
-            yield self._new_item('api4jenkins.build', item)
-
-    async def __getitem__(self, number):
-        return await self.get_build(number)
 
     async def filter_builds_by_result(self, *, result):
         """filter build by build results, avaliable results are:
