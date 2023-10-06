@@ -3,7 +3,7 @@
 
 class TestBuild:
     def test_get_job(self, job):
-        assert job == job[1].job
+        assert job == job[1].project
 
     def test_console_text(self, job):
         assert 'true' in ''.join(job[1].console_text())

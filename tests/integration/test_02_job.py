@@ -35,7 +35,7 @@ class TestProject:
 
     def test_iter_build(self, job):
         assert len(list(job)) == 2
-        assert len(list(job.iter_builds())) == 2
+        assert len(list(job.iter())) == 2
 
     def test_iter_all_builds(self, job):
         assert len(list(job.iter_all_builds())) == 2
@@ -85,7 +85,7 @@ class TestAsyncProject:
 
     async def test_iter_build(self, async_job):
         assert len([b async for b in async_job]) == 2
-        assert len([b async for b in async_job.iter_builds()]) == 2
+        assert len([b async for b in async_job.aiter()]) == 2
 
     async def test_iter_all_builds(self, async_job):
         assert len([b async for b in async_job.iter_all_builds()]) == 2
