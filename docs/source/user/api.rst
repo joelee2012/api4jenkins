@@ -73,7 +73,7 @@ API reference
    :undoc-members:
    :inherited-members:
 
-.. automodule:: api4jenkins.requester
+.. automodule:: api4jenkins.http
    :members:
    :undoc-members:
    :inherited-members:

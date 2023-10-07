@@ -27,7 +27,7 @@ Release History
 - set dependency version
 
 1.9.1 (2022-03-29)
------------------
+-------------------
 - change OrganizationFolder to inherit from WorkflowMultiBranchProject
 - `Jenkins.get_job` return consistent result
 
@@ -55,7 +55,7 @@ Release History
 - bugfix for `queue.get_build`
 
 1.5.1 (2021-05-11)
------------------
+-------------------
 - Bugfix for nodes.iter_builds
 
 1.5 (2021-04-29)

@@ -1,8 +1,8 @@
 # encoding: utf-8
 import asyncio
 import threading
-from importlib import import_module
 import typing
+from importlib import import_module
 
 from httpx import HTTPStatusError
 
@@ -203,7 +203,14 @@ class Jenkins(Item, UrlMixIn):
         job = self._get_job_and_check(full_name)
         return job.duplicate(new_name, recursive)
 
-    def is_name_safe(self, name):
+    def is_name_safe(self, name: str) -> bool:
+        """check if job name is safe
+
+        :param name: name of job
+        :type name: str
+        :return: True or False
+        :rtype: bool
+        """
         resp = self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
@@ -240,15 +247,16 @@ class Jenkins(Item, UrlMixIn):
     @property
     def crumb(self):
         '''Crumb of Jenkins'''
-        with self._sync_lock:
-            if self._crumb is None:
-                try:
-                    _crumb = self._request(
-                        'GET', f'{self.url}crumbIssuer/api/json').json()
-                    self._crumb = {
-                        _crumb['crumbRequestField']: _crumb['crumb']}
-                except HTTPStatusError:
-                    self._crumb = {}
+        if self._crumb is None:
+            with self._sync_lock:
+                if self._crumb is None:
+                    try:
+                        _crumb = self._request(
+                            'GET', f'{self.url}crumbIssuer/api/json').json()
+                        self._crumb = {
+                            _crumb['crumbRequestField']: _crumb['crumb']}
+                    except HTTPStatusError:
+                        self._crumb = {}
         return self._crumb
 
     @property
@@ -300,7 +308,7 @@ class Jenkins(Item, UrlMixIn):
     def me(self):
         return self.user
 
-    def __call__(self, depth):
+    def __call__(self, depth: int):
         yield from self.iter(depth)
 
     def __getitem__(self, full_name):
@@ -337,6 +345,21 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             yield job
 
     async def create_job(self, full_name, xml, recursive=False):
+        """
+        Asynchronously creates a new Jenkins job.
+
+        This method handles resolving the job name, recursively creating 
+        parent folders if needed, and then creating the job in Jenkins.
+
+        Args:
+            full_name (str): The full name of the Jenkins job to create.
+            xml (str): The XML configuration for the new job.
+            recursive (bool): Whether to recursively create parent folders if needed.
+
+        Returns:
+            Item: The created Jenkins job item.
+
+        """
         folder, name = self._resolve_name(full_name)
         if recursive and not await folder.exists():
             await self.create_job(folder.full_name, EMPTY_FOLDER_XML,
@@ -377,6 +400,13 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         return job
 
     async def is_name_safe(self, name: str) -> bool:
+        """check if name is safe
+
+        :param name: name of job
+        :type name: str
+        :return: True or False
+        :rtype: bool
+        """
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
@@ -398,14 +428,15 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
 
     @property
     async def crumb(self) -> typing.Dict[str, str]:
-        async with self._async_lock:
-            if self._crumb is None:
-                try:
-                    _crumb = (await self._request('GET', f'{self.url}crumbIssuer/api/json')).json()
-                    self._crumb = {
-                        _crumb['crumbRequestField']: _crumb['crumb']}
-                except HTTPStatusError:
-                    self._crumb = {}
+        if self._crumb is None:
+            async with self._async_lock:
+                if self._crumb is None:
+                    try:
+                        _crumb = (await self._request('GET', f'{self.url}crumbIssuer/api/json')).json()
+                        self._crumb = {
+                            _crumb['crumbRequestField']: _crumb['crumb']}
+                    except HTTPStatusError:
+                        self._crumb = {}
         return self._crumb
 
     @property
