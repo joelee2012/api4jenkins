@@ -345,21 +345,6 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             yield job
 
     async def create_job(self, full_name, xml, recursive=False):
-        """
-        Asynchronously creates a new Jenkins job.
-
-        This method handles resolving the job name, recursively creating 
-        parent folders if needed, and then creating the job in Jenkins.
-
-        Args:
-            full_name (str): The full name of the Jenkins job to create.
-            xml (str): The XML configuration for the new job.
-            recursive (bool): Whether to recursively create parent folders if needed.
-
-        Returns:
-            Item: The created Jenkins job item.
-
-        """
         folder, name = self._resolve_name(full_name)
         if recursive and not await folder.exists():
             await self.create_job(folder.full_name, EMPTY_FOLDER_XML,
