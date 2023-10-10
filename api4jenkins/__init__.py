@@ -203,14 +203,7 @@ class Jenkins(Item, UrlMixIn):
         job = self._get_job_and_check(full_name)
         return job.duplicate(new_name, recursive)
 
-    def is_name_safe(self, name: str) -> bool:
-        """check if job name is safe
-
-        :param name: name of job
-        :type name: str
-        :return: True or False
-        :rtype: bool
-        """
+    def is_name_safe(self, name):
         resp = self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
@@ -308,7 +301,7 @@ class Jenkins(Item, UrlMixIn):
     def me(self):
         return self.user
 
-    def __call__(self, depth: int):
+    def __call__(self, depth):
         yield from self.iter(depth)
 
     def __getitem__(self, full_name):
@@ -384,18 +377,11 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job
 
-    async def is_name_safe(self, name: str) -> bool:
-        """check if name is safe
-
-        :param name: name of job
-        :type name: str
-        :return: True or False
-        :rtype: bool
-        """
+    async def is_name_safe(self, name):
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
-    async def validate_jenkinsfile(self, content: str) -> str:
+    async def validate_jenkinsfile(self, content):
         data = await self.handle_req(
             'POST', 'pipeline-model-converter/validate', data={'jenkinsfile': content})
         return data.text
@@ -412,7 +398,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    async def crumb(self) -> typing.Dict[str, str]:
+    async def crumb(self):
         if self._crumb is None:
             async with self._async_lock:
                 if self._crumb is None:
