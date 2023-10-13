@@ -1,8 +1,8 @@
 # encoding: utf-8
 import asyncio
 import threading
-from importlib import import_module
 import typing
+from importlib import import_module
 
 from httpx import HTTPStatusError
 
@@ -240,15 +240,16 @@ class Jenkins(Item, UrlMixIn):
     @property
     def crumb(self):
         '''Crumb of Jenkins'''
-        with self._sync_lock:
-            if self._crumb is None:
-                try:
-                    _crumb = self._request(
-                        'GET', f'{self.url}crumbIssuer/api/json').json()
-                    self._crumb = {
-                        _crumb['crumbRequestField']: _crumb['crumb']}
-                except HTTPStatusError:
-                    self._crumb = {}
+        if self._crumb is None:
+            with self._sync_lock:
+                if self._crumb is None:
+                    try:
+                        _crumb = self._request(
+                            'GET', f'{self.url}crumbIssuer/api/json').json()
+                        self._crumb = {
+                            _crumb['crumbRequestField']: _crumb['crumb']}
+                    except HTTPStatusError:
+                        self._crumb = {}
         return self._crumb
 
     @property
@@ -376,11 +377,11 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job
 
-    async def is_name_safe(self, name: str) -> bool:
+    async def is_name_safe(self, name):
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
-    async def validate_jenkinsfile(self, content: str) -> str:
+    async def validate_jenkinsfile(self, content):
         data = await self.handle_req(
             'POST', 'pipeline-model-converter/validate', data={'jenkinsfile': content})
         return data.text
@@ -397,15 +398,16 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    async def crumb(self) -> typing.Dict[str, str]:
-        async with self._async_lock:
-            if self._crumb is None:
-                try:
-                    _crumb = (await self._request('GET', f'{self.url}crumbIssuer/api/json')).json()
-                    self._crumb = {
-                        _crumb['crumbRequestField']: _crumb['crumb']}
-                except HTTPStatusError:
-                    self._crumb = {}
+    async def crumb(self):
+        if self._crumb is None:
+            async with self._async_lock:
+                if self._crumb is None:
+                    try:
+                        _crumb = (await self._request('GET', f'{self.url}crumbIssuer/api/json')).json()
+                        self._crumb = {
+                            _crumb['crumbRequestField']: _crumb['crumb']}
+                    except HTTPStatusError:
+                        self._crumb = {}
         return self._crumb
 
     @property

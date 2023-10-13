@@ -1,5 +1,17 @@
 Release History
 ===============
+2.0.0 (2023-10-13)
+-------------------
+- Add Async Client
+
+1.15.0 (2023-08-30)
+-------------------
+- Support to manage domains for credential
+
+1.14.1 (2023-07-24)
+-------------------
+- Support additional session headers
+
 1.14 (2022-11-28)
 -----------------
 - Add AnkaCloudComputer (#70)
@@ -27,7 +39,7 @@ Release History
 - set dependency version
 
 1.9.1 (2022-03-29)
------------------
+-------------------
 - change OrganizationFolder to inherit from WorkflowMultiBranchProject
 - `Jenkins.get_job` return consistent result
 
@@ -55,7 +67,7 @@ Release History
 - bugfix for `queue.get_build`
 
 1.5.1 (2021-05-11)
------------------
+-------------------
 - Bugfix for nodes.iter_builds
 
 1.5 (2021-04-29)
