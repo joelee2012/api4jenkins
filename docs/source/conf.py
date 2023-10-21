@@ -10,19 +10,24 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
+
 import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath('../../'))
+repo_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(repo_root))
 # -- Project information -----------------------------------------------------
-import api4jenkins
 
-project = 'api4jenkins'
-copyright = '2023, Joe Lee'
-author = 'Joe Lee'
+about = {}
+with open(repo_root.joinpath('api4jenkins', '__version__.py')) as f:
+    exec(f.read(), about)
+
+project = about['__title__']
+copyright = about['__copyright__']
+author = about['__author__']
 
 # The full version, including alpha/beta/rc tags
-release = api4jenkins.__version__
+release = about['__version__']
 
 
 # -- General configuration ---------------------------------------------------
@@ -54,6 +59,6 @@ html_theme = 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 master_doc = 'index'

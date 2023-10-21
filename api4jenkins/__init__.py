@@ -8,9 +8,6 @@ from httpx import HTTPStatusError
 
 from api4jenkins.mix import UrlMixIn
 
-from .__version__ import (__author__, __author_email__, __copyright__,
-                          __description__, __license__, __title__, __url__,
-                          __version__)
 from .credential import AsyncCredentials, Credentials
 from .exceptions import AuthenticationError, ItemNotFoundError
 from .http import new_async_http_client, new_http_client
