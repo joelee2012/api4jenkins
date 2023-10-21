@@ -229,7 +229,7 @@ class Jenkins(Item, UrlMixIn):
         :returns: True or False
         '''
         try:
-            self.handle_req('GET', '')
+            self._request('HEAD', self.url)
             return True
         except Exception as e:
             return isinstance(e, (AuthenticationError, PermissionError))
@@ -389,7 +389,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
 
     async def exists(self):
         try:
-            await self.handle_req('GET', '')
+            await self._request('HEAD', self.url)
             return True
         except Exception as e:
             return isinstance(e, (AuthenticationError, PermissionError))

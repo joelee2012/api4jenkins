@@ -1,10 +1,11 @@
 import weakref
 
 import pytest
+
 from api4jenkins import Jenkins
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
 from api4jenkins.item import new_item, snake
-from api4jenkins.job import AsyncFolder, AsyncWorkflowJob, WorkflowJob, Folder
+from api4jenkins.job import AsyncFolder, AsyncWorkflowJob, Folder, WorkflowJob
 
 
 class TestJenkins:
@@ -128,7 +129,7 @@ class TestJenkins:
     @pytest.mark.parametrize('status, exist', [(403, True), (200, True),
                                                (404, False), (500, False)])
     def test_exists(self, jenkins, respx_mock, status, exist):
-        respx_mock.get(jenkins.url).respond(status)
+        respx_mock.head(jenkins.url).respond(status)
         assert jenkins.exists() == exist
 
     def test_iter_jobs(self, jenkins):
@@ -288,7 +289,7 @@ class TestAsyncJenkins:
     @pytest.mark.parametrize('status, exist', [(403, True), (200, True),
                                                (404, False), (500, False)])
     async def test_exists(self, async_jenkins, respx_mock, status, exist):
-        respx_mock.get(async_jenkins.url).respond(status)
+        respx_mock.head(async_jenkins.url).respond(status)
         assert await async_jenkins.exists() == exist
 
     async def test_iter_jobs(self, async_jenkins):
