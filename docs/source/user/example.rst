@@ -23,7 +23,7 @@ object is destoried by garbage collection.
 
 .. note::
 
-    Any parameter supported by `requests.Session.request <https://requests.readthedocs.io/en/latest/api/#requests.Session.request>`_
+    Any parameter supported by `httpx.Client <https://www.python-httpx.org/api/#client>`_
     can be passed to initialize Jenkins object.
 
 Now, we have a :class:`Jenkins <api4jenkins.Jenkins>` object `j`, let's check

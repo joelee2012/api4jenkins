@@ -66,7 +66,7 @@ Finished: SUCCESS
 False
 >>> build.result
 'SUCCESS'
-  ```
+```
 
 Async example
 

@@ -29,7 +29,7 @@ author = about['__author__']
 # The full version, including alpha/beta/rc tags
 release = about['__version__']
 
-
+version = about['__version__']
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -38,7 +38,7 @@ release = about['__version__']
 extensions = ["sphinx.ext.autodoc",
               "sphinx.ext.intersphinx",
               "sphinx.ext.todo",
-              "sphinx.ext.viewcode", ]
+              "sphinx.ext.viewcode",]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

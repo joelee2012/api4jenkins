@@ -9,7 +9,7 @@ from httpx import HTTPStatusError
 from api4jenkins.mix import UrlMixIn
 
 from .credential import AsyncCredentials, Credentials
-from .exceptions import AuthenticationError, ItemNotFoundError
+from .exceptions import ItemNotFoundError
 from .http import new_async_http_client, new_http_client
 from .item import AsyncItem, Item
 from .job import AsyncFolder, AsyncProject, Folder
@@ -32,7 +32,7 @@ class Jenkins(Item, UrlMixIn):
     :param token: (optional) Boolean, Create user token when initialize instance and
         revoke token once instance is destroied. useful when LDAP server refuse
         username and password used too much often. Defaults to ``False``.
-    :param \*\*kwargs: other kwargs are same as `requests.Session.request <https://requests.readthedocs.io/en/latest/api/#requests.Session.request>`_
+    :param \*\*kwargs: other kwargs are same as `httpx.Client <https://www.python-httpx.org/api/#client>`_
 
     Usage::
 
@@ -223,16 +223,16 @@ class Jenkins(Item, UrlMixIn):
         parent, name = self._parse_name(full_name)
         return Folder(self, self._name2url(parent)), name
 
-    def exists(self):
-        '''Check if Jenkins server is up
+    # def exists(self):
+    #     '''Check if Jenkins server is up
 
-        :returns: True or False
-        '''
-        try:
-            self._request('HEAD', self.url)
-            return True
-        except Exception as e:
-            return isinstance(e, (AuthenticationError, PermissionError))
+    #     :returns: True or False
+    #     '''
+    #     try:
+    #         self._request('HEAD', self.url)
+    #         return True
+    #     except Exception as e:
+    #         return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
     def crumb(self):
@@ -387,12 +387,12 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         parent, name = self._parse_name(full_name)
         return AsyncFolder(self, self._name2url(parent)), name
 
-    async def exists(self):
-        try:
-            await self._request('HEAD', self.url)
-            return True
-        except Exception as e:
-            return isinstance(e, (AuthenticationError, PermissionError))
+    # async def exists(self):
+    #     try:
+    #         await self._request('HEAD', self.url)
+    #         return True
+    #     except Exception as e:
+    #         return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
     async def crumb(self):
