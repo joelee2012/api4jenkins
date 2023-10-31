@@ -26,12 +26,13 @@ Jenkins Python Client
 Features
 --------
 
+- Provides ``sync`` and ``async`` APIs
 - Object oriented, each Jenkins item has corresponding class, easy to use and extend
-- Base on `api/json`, easy to query/filter attribute of item
+- Base on ``api/json``, easy to query/filter attribute of item
 - Setup relationship between class just like Jenkins item
 - Support api for almost every Jenkins item
 - Pythonic
-- Test with latest Jenkins LTS
+- Test with latest `Jenkins LTS <https://www.jenkins.io/changelog-stable/>`_
 
 
 Quick start
@@ -40,10 +41,11 @@ Quick start
 Here is an example to create and build job, then monitor progressive output 
 until it's done.
 
+Sync example::
 
     >>> from api4jenkins import Jenkins
-    >>> j = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
-    >>> j.version
+    >>> client = Jenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
+    >>> client.version
     '2.176.2'
     >>> xml = """<?xml version='1.1' encoding='UTF-8'?>
     ... <project>
@@ -53,21 +55,12 @@ until it's done.
     ...     </hudson.tasks.Shell>
     ...   </builders>
     ... </project>"""
-    >>> j.create_job('freestylejob', xml)
-    >>> job = j.get_job('freestylejob')
-    >>> print(job)
-    <FreeStyleProject: http://127.0.0.1:8080/job/freestylejob/>
-    >>> print(job.parent)
-    <Jenkins: http://127.0.0.1:8080/>
-    >>> print(job.jenkins)
-    <Jenkins: http://127.0.0.1:8080/>
+    >>> client.create_job('path/to/job', xml)
     >>> import time
-    >>> item = job.build()
+    >>> item = client.build_job('path/to/job')
     >>> while not item.get_build():
     ...      time.sleep(1)
     >>> build = item.get_build()
-    >>> print(build)
-    <FreeStyleBuild: http://127.0.0.1:8080/job/freestylejob/1/>
     >>> for line in build.progressive_output():
     ...     print(line)
     ...
@@ -82,6 +75,37 @@ until it's done.
     False
     >>> build.result
     'SUCCESS'
+
+
+Async example::
+
+    import asyncio
+    import time
+    from api4jenkins import AsyncJenkins
+
+    async main():
+        client = AsyncJenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
+        print(await client.version)
+        xml = """<?xml version='1.1' encoding='UTF-8'?>
+        <project>
+        <builders>
+            <hudson.tasks.Shell>
+            <command>echo $JENKINS_VERSION</command>
+            </hudson.tasks.Shell>
+        </builders>
+        </project>"""
+        await client.create_job('job', xml)
+        item = await client.build_job('job')
+        while not await item.get_build():
+            time.sleep(1)
+        build = await item.get_build()
+        async for line in build.progressive_output():
+            print(line)
+
+        print(await build.building)
+        print(await build.result)
+
+    asyncio.run(main())
 
 
 .. toctree::

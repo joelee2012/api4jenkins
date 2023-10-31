@@ -141,13 +141,7 @@ class SlaveComputer(Node):
 
 
 class KubernetesComputer(Node):
-
-    def exists(self):
-        try:
-            self.handle_req('GET', '')
-            return True
-        except ItemNotFoundError:
-            return False
+    pass
 
 
 class DockerComputer(Node):
@@ -225,13 +219,7 @@ class AsyncSlaveComputer(AsyncNode):
 
 
 class AsyncKubernetesComputer(AsyncNode):
-
-    async def exists(self):
-        try:
-            await self.handle_req('GET', '')
-            return True
-        except ItemNotFoundError:
-            return False
+    pass
 
 
 class AsyncDockerComputer(AsyncNode):
