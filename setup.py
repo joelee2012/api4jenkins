@@ -27,7 +27,7 @@ setup(
     author_email=about['__author_email__'],
     packages=['api4jenkins'],
     package_data={'': ['LICENSE']},
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=requires,
     license=about['__license__'],
     keywords=["RESTAPI", "Jenkins"],
