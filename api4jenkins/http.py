@@ -31,7 +31,18 @@ def check_response(response: Response) -> None:
 
 def new_http_client(**kwargs) -> Client:
     return Client(
-        transport=HTTPTransport(retries=kwargs.pop('retries', 0)),
+        transport=HTTPTransport(
+            verify=kwargs.pop('verify', True),
+            cert=kwargs.pop('cert', None),
+            http1=kwargs.pop('http1', True),
+            http2=kwargs.pop('http2', False),
+            trust_env=kwargs.pop('trust_env', True),
+            proxy=kwargs.pop('proxy', None),
+            uds=kwargs.pop('uds', None),
+            local_address=kwargs.pop('local_address', None),
+            retries=kwargs.pop('retries', 0),
+            socket_options=kwargs.pop('socket_options', None)
+        ),
         **kwargs,
         event_hooks={'request': [log_request], 'response': [check_response]}
     )
@@ -48,7 +59,18 @@ async def async_check_response(response: Response) -> None:
 
 def new_async_http_client(**kwargs) -> AsyncClient:
     return AsyncClient(
-        transport=AsyncHTTPTransport(retries=kwargs.pop('retries', 0)),
+        transport=AsyncHTTPTransport(
+            verify=kwargs.pop('verify', True),
+            cert=kwargs.pop('cert', None),
+            http1=kwargs.pop('http1', True),
+            http2=kwargs.pop('http2', False),
+            trust_env=kwargs.pop('trust_env', True),
+            proxy=kwargs.pop('proxy', None),
+            uds=kwargs.pop('uds', None),
+            local_address=kwargs.pop('local_address', None),
+            retries=kwargs.pop('retries', 0),
+            socket_options=kwargs.pop('socket_options', None)
+        ),
         **kwargs,
         event_hooks={'request': [async_log_request],
                      'response': [async_check_response]}
