@@ -1,6 +1,8 @@
 import pytest
+from httpx import HTTPTransport
 
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
+from api4jenkins.http import _new_transport
 from api4jenkins.item import new_item, snake
 from api4jenkins.job import AsyncFolder, AsyncWorkflowJob, Folder, WorkflowJob
 
@@ -306,3 +308,10 @@ class TestAsyncJenkins:
         respx_mock.post(req_url)
         await async_jenkins.duplicate_job('folder', 'folder2')
         assert respx_mock.calls[1].request.url == req_url
+
+
+def test_new_transport():
+    kwargs = {'verify': True, 'http2': True, 'other': '1111'}
+    trans = _new_transport(HTTPTransport, kwargs)
+    assert isinstance(trans, HTTPTransport)
+    assert kwargs == {'other': '1111'}
