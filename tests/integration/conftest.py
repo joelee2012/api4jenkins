@@ -6,8 +6,10 @@ import time
 from pathlib import Path
 
 import pytest
-from api4jenkins import Jenkins,  Folder, EMPTY_FOLDER_XML, AsyncJenkins, AsyncFolder
-from api4jenkins.job import WorkflowJob, AsyncWorkflowJob
+
+from api4jenkins import (EMPTY_FOLDER_XML, AsyncFolder, AsyncJenkins, Folder,
+                         Jenkins)
+from api4jenkins.job import AsyncWorkflowJob, WorkflowJob
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
 

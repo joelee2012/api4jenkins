@@ -8,6 +8,7 @@ import api4jenkins
 
 from .exceptions import ItemNotFoundError
 
+
 def camel(s):
     if s[0] == '_':
         return s
