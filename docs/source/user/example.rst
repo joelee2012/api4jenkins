@@ -146,7 +146,7 @@ build with parameters is supported too::
 it's also possiable to iterate jobs of Jenkins,  iterate jobs in first level::
 
     # call function straightforward
-    >>> for job in j.iter_jobs():
+    >>> for job in j.iter():
     ...     print(job)
 
     # or pythonic
@@ -158,7 +158,7 @@ it's also possiable to iterate jobs of Jenkins,  iterate jobs in first level::
 
 or iterate with depth ::
 
-    >>> for job in j.iter_jobs(3):
+    >>> for job in j.iter(3):
     ...     print(job)
 
     >>> for job in j(3):
@@ -318,8 +318,8 @@ check if any build of project is running
 
 get build with given number or display name
 
-    >>> build = job.get_build(1)
-    >>> build = job.get_build("some new build name")
+    >>> build = job.get(1)
+    >>> build = job.get("some new build name")
 
 or subscript with build number
 
@@ -346,7 +346,7 @@ iterate builds(latest 100 builds) of this project, following are same
     >>> for build in job:
     ...     print(build)
     ...
-    >>> for build in job.iter_builds():
+    >>> for build in job.iter():
     ...     print(build)
     ...
 
@@ -466,7 +466,7 @@ stop/term/kill build, more detail can be found: https://www.jenkins.io/doc/book/
 
 get job of build:
 
-    >>> job = build.get_job()
+    >>> job = build.project
 
 or get previous/next build:
 

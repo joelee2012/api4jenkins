@@ -1,15 +1,12 @@
 # encoding: utf-8
 
 import contextlib
-import logging
 import re
 from importlib import import_module
 
 import api4jenkins
 
 from .exceptions import ItemNotFoundError
-
-logger = logging.getLogger(__name__)
 
 
 def camel(s):
