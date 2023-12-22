@@ -151,12 +151,12 @@ async def async_retrive_build_and_output():
 
 # workaround for https://github.com/pytest-dev/pytest-asyncio/issues/371
 
-if sys.version_info.minor < 12:
-    @pytest.fixture(scope="session")
-    def event_loop():
-        policy = asyncio.get_event_loop_policy()
-        loop = policy.new_event_loop()
-        yield loop
-        if loop.is_running():
-            time.sleep(2)
-        loop.close()
+
+@pytest.fixture(scope="session")
+def event_loop():
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    if loop.is_running():
+        time.sleep(2)
+    loop.close()
