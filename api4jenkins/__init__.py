@@ -29,9 +29,6 @@ class Jenkins(Item, UrlMixIn):
 
     :param url: URL of Jenkins server, ``str``
     :param auth: (optional) Auth ``tuple`` to enable Basic/Digest/Custom HTTP Auth.
-    :param token: (optional) Boolean, Create user token when initialize instance and
-        revoke token once instance is destroied. useful when LDAP server refuse
-        username and password used too much often. Defaults to ``False``.
     :param \*\*kwargs: other kwargs are same as `httpx.Client <https://www.python-httpx.org/api/#client>`_
 
     Usage::
