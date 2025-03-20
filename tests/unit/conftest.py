@@ -143,7 +143,7 @@ def async_multi_job(async_jenkins):
 
 
 @pytest.fixture(scope='module')
-def org_job(async_jenkins):
+def async_org_job(async_jenkins):
     return AsyncOrganizationFolder(async_jenkins, f'{async_jenkins.url}job/folder/org-pipe/')
 
 
