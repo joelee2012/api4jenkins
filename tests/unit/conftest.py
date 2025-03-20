@@ -10,9 +10,10 @@ from api4jenkins.credential import (AsyncCredential, AsyncCredentials,
                                     AsyncDomain, Credential, Credentials,
                                     Domain)
 from api4jenkins.item import AsyncItem, Item
-from api4jenkins.job import (AsyncFolder, AsyncWorkflowJob,
-                             AsyncWorkflowMultiBranchProject, Folder,
-                             WorkflowJob, WorkflowMultiBranchProject)
+from api4jenkins.job import (AsyncFolder, AsyncOrganizationFolder,
+                             AsyncWorkflowJob, AsyncWorkflowMultiBranchProject,
+                             Folder, OrganizationFolder, WorkflowJob,
+                             WorkflowMultiBranchProject)
 from api4jenkins.node import AsyncNode, AsyncNodes, Node, Nodes
 from api4jenkins.plugin import AsyncPluginsManager, PluginsManager
 from api4jenkins.queue import AsyncQueue, AsyncQueueItem, Queue, QueueItem
@@ -132,8 +133,18 @@ def multi_job(jenkins):
 
 
 @pytest.fixture(scope='module')
+def org_job(jenkins):
+    return OrganizationFolder(jenkins, f'{jenkins.url}job/folder/org-pipe/')
+
+
+@pytest.fixture(scope='module')
 def async_multi_job(async_jenkins):
     return AsyncWorkflowMultiBranchProject(async_jenkins, f'{async_jenkins.url}job/folder/multi-pipe/')
+
+
+@pytest.fixture(scope='module')
+def async_org_job(async_jenkins):
+    return AsyncOrganizationFolder(async_jenkins, f'{async_jenkins.url}job/folder/org-pipe/')
 
 
 @pytest.fixture(scope='module')

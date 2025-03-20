@@ -116,7 +116,9 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
 
 
 class OrganizationFolder(WorkflowMultiBranchProject):
-    pass
+    def get_scan_log(self):
+        with self.handle_stream('GET', 'computation/consoleText') as resp:
+            yield from resp.iter_lines()
 
 
 def _set_get_methods(job, func):
@@ -314,7 +316,10 @@ class AsyncWorkflowMultiBranchProject(AsyncFolder, AsyncEnableMixIn):
 
 
 class AsyncOrganizationFolder(AsyncWorkflowMultiBranchProject):
-    pass
+    async def get_scan_log(self):
+        async with self.handle_stream('GET', 'computation/consoleText') as resp:
+            async for line in resp.aiter_lines():
+                yield line
 
 
 class AsyncProject(AsyncJob, AsyncEnableMixIn):
