@@ -1,5 +1,6 @@
 # encoding: utf-8
 import pytest
+
 from api4jenkins.build import AsyncWorkflowRun, WorkflowRun
 from api4jenkins.item import snake
 
@@ -33,6 +34,14 @@ class TestWorkflowMultiBranchProject:
         respx_mock.get(
             f'{multi_job.url}indexing/consoleText').respond(content=body)
         assert list(multi_job.get_scan_log()) == body.split('\n')
+
+
+class TestOrganizationFolder:
+    def test_get_scan_log(self, org_job, respx_mock):
+        body = 'a\nb'
+        respx_mock.get(
+            f'{org_job.url}computation/consoleText').respond(content=body)
+        assert list(org_job.get_scan_log()) == body.split('\n')
 
 
 class TestProject:
@@ -98,6 +107,14 @@ class TestAsyncWorkflowMultiBranchProject:
         respx_mock.get(
             f'{async_multi_job.url}indexing/consoleText').respond(content=body)
         assert [line async for line in async_multi_job.get_scan_log()] == body.split('\n')
+
+
+class TestAsyncOrganizationFolder:
+    async def test_get_scan_log(self, async_org_job, respx_mock):
+        body = 'a\nb'
+        respx_mock.get(
+            f'{async_org_job.url}computation/consoleText').respond(content=body)
+        assert [line async for line in async_org_job.get_scan_log()] == body.split('\n')
 
 
 class TestAsyncProject:
