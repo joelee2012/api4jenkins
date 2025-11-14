@@ -1,14 +1,14 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def plugin(jenkins):
     jenkins.plugins.install('nodejs', block=True)
     yield jenkins.plugins.get('nodejs')
     jenkins.plugins.uninstall('nodejs')
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 async def async_plugin(async_jenkins):
     await async_jenkins.plugins.install('nodejs', block=True)
     yield await async_jenkins.plugins.get('nodejs')
