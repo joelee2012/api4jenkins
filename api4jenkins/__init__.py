@@ -1,7 +1,6 @@
 # encoding: utf-8
 import asyncio
 import threading
-import typing
 from importlib import import_module
 
 from httpx import HTTPStatusError

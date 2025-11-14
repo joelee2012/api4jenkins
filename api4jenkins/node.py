@@ -2,7 +2,6 @@
 
 import json
 
-from .exceptions import ItemNotFoundError
 from .item import AsyncItem, Item, new_item
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
                   AsyncRunScriptMixIn, ConfigurationMixIn, DeletionMixIn,
