@@ -4,6 +4,8 @@ import xml.etree.ElementTree as ET
 from functools import partial
 from pathlib import PurePosixPath
 from urllib.parse import unquote_plus
+from typing import Optional, Dict, List, Any, Union, Iterator, AsyncIterator
+from typing import override
 
 from .credential import AsyncCredentials, Credentials
 from .item import AsyncItem, Item, append_slash, new_item, snake
@@ -24,32 +26,46 @@ from .view import Views
 class NameMixIn:
     # pylint: disable=no-member
     @property
-    def full_name(self):
+    def jenkins(self) -> Any:
+        raise NotImplementedError
+        
+    @property
+    def url(self) -> str:
+        raise NotImplementedError
+        
+    @url.setter
+    def url(self, value: str) -> None:
+        raise NotImplementedError
+
+    @property
+    def full_name(self) -> str:
         return unquote_plus(self.jenkins._url2name(self.url))
 
     @property
-    def full_display_name(self):
+    def full_display_name(self) -> str:
         return unquote_plus(self.full_name.replace('/', ' » '))
 
 
 class Job(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn, NameMixIn):
-    def move(self, path):
+
+    def move(self, path: str) -> Any:
         path = path.strip('/')
         params = {'destination': f'/{path}', 'json': json.dumps({'destination': f'/{path}'})}
         resp = self.handle_req('POST', 'move/move', data=params)
         self.url = resp.headers['Location']
         return resp
 
-    def rename(self, name):
-        resp = self.handle_req('POST', 'confirmRename', params={'newName': name})
+    def rename(self, name: str) -> Any:
+        resp = self.handle_req('POST', 'confirmRename',
+                               params={'newName': name})
         self.url = append_slash(resp.headers['Location'])
         return resp
 
-    def duplicate(self, path, recursive=False):
+    def duplicate(self, path: str, recursive: bool = False) -> None:
         self.jenkins.create_job(path, self.configure(), recursive=recursive)
 
     @property
-    def parent(self):
+    def parent(self) -> Any:
         path = PurePosixPath(self.full_name)
         if path.parent.name == '':
             return self.jenkins
@@ -80,7 +96,12 @@ class Folder(Job):
                 return self._new_item(__name__, item)
         return None
 
-    def iter(self, depth=0):
+    @override
+    def iter(self, depth: int = 0) -> Iterator[Any]:  # type: ignore[override]
+        """Override base Item.iter() to provide job iteration.
+        Note: This intentionally changes the return type from NoReturn to Iterator
+        as part of the design pattern where base class prohibits iteration
+        but concrete implementations enable it."""
         for item in self.api_json(tree=_make_query(depth))['jobs']:
             yield from _iter_jobs(self.jenkins, item)
 
@@ -112,8 +133,9 @@ class WorkflowMultiBranchProject(Folder, EnableMixIn):
             yield from resp.iter_lines()
 
     @property
-    def buildable(self):
-        return ET.XML(self.configure()).find('disabled').text == 'false'
+    def buildable(self) -> bool:
+        disabled = ET.XML(self.configure()).find('disabled')
+        return disabled is not None and disabled.text == 'false'
 
 
 class OrganizationFolder(WorkflowMultiBranchProject):
@@ -174,7 +196,12 @@ class Project(Job, EnableMixIn):
     def get(self, number):
         return _get_build(self, self.api_json(tree='builds[number,displayName,url]'), number)
 
-    def iter(self):
+    @override
+    def iter(self) -> Iterator[Any]:  # type: ignore[override]
+        """Override base Item.iter() to provide build iteration.
+        Note: This intentionally changes the return type from NoReturn to Iterator
+        as part of the design pattern where base class prohibits iteration
+        but concrete implementations enable it."""
         for item in self.api_json(tree='builds[number,url]')['builds']:
             yield self._new_item('api4jenkins.build', item)
 
@@ -288,7 +315,12 @@ class AsyncFolder(AsyncJob):
                 return self._new_item(__name__, item)
         return None
 
-    async def aiter(self, depth=0):
+    @override
+    async def aiter(self, depth: int = 0) -> AsyncIterator[Any]:  # type: ignore[override]
+        """Override base AsyncItem.aiter() to provide async job iteration.
+        Note: This intentionally changes the return type from Coroutine to AsyncIterator
+        as part of the design pattern where base class prohibits iteration
+        but concrete implementations enable it."""
         for item in (await self.api_json(tree=_make_query(depth)))['jobs']:
             for job in _iter_jobs(self.jenkins, item):
                 yield job
@@ -323,8 +355,9 @@ class AsyncWorkflowMultiBranchProject(AsyncFolder, AsyncEnableMixIn):
                 yield line
 
     @property
-    async def buildable(self):
-        return ET.XML(await self.configure()).find('disabled').text == 'false'
+    async def buildable(self) -> bool:
+        disabled = ET.XML(await self.configure()).find('disabled')
+        return disabled is not None and disabled.text == 'false'
 
 
 class AsyncOrganizationFolder(AsyncWorkflowMultiBranchProject):
@@ -353,7 +386,12 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
     async def get(self, number):
         return _get_build(self, await self.api_json(tree='builds[number,displayName,url]'), number)
 
-    async def aiter(self):
+    @override
+    async def aiter(self) -> AsyncIterator[Any]:  # type: ignore[override]
+        """Override base AsyncItem.aiter() to provide async build iteration.
+        Note: This intentionally changes the return type from Coroutine to AsyncIterator
+        as part of the design pattern where base class prohibits iteration
+        but concrete implementations enable it."""
         data = await self.api_json(tree='builds[number,url]')
         for item in data['builds']:
             yield self._new_item('api4jenkins.build', item)

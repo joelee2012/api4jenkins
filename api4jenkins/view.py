@@ -1,9 +1,12 @@
 # encoding: utf-8
 
+from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from httpx import Response
 from .item import AsyncItem, Item
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
                   AsyncDescriptionMixIn, ConfigurationMixIn,
                   DeletionMixIn, DescriptionMixIn)
+from .job import Job, AsyncJob
 
 
 class Views(Item):
@@ -18,38 +21,38 @@ class Views(Item):
         self.owner = owner
         super().__init__(owner.jenkins, owner.url)
 
-    def get(self, name):
+    def get(self, name: str) -> Optional['View']:
         for item in self.api_json(tree='views[name,url]')['views']:
             if name == item['name']:
                 return self._new_item(__name__, item)
         return None
 
-    def create(self, name, xml):
-        self.handle_req('POST', 'createView', params={'name': name},
-                        headers=self.headers, content=xml)
+    def create(self, name: str, xml: str) -> Response:
+        return self.handle_req('POST', 'createView', params={'name': name},
+                             headers=self.headers, content=xml)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator['View']:
         for item in self.api_json(tree='views[name,url]')['views']:
             yield self._new_item(__name__, item)
 
 
 class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
-    def get(self, name):
+    def get(self, name: str) -> Optional[Job]:
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Job]:
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             yield self._new_item('api4jenkins.job', item)
 
-    def include(self, name):
-        self.handle_req('POST', 'addJobToView', params={'name': name})
+    def include(self, name: str) -> Response:
+        return self.handle_req('POST', 'addJobToView', params={'name': name})
 
-    def exclude(self, name):
-        self.handle_req('POST', 'removeJobFromView', params={'name': name})
+    def exclude(self, name: str) -> Response:
+        return self.handle_req('POST', 'removeJobFromView', params={'name': name})
 
 
 class AllView(View):
@@ -74,7 +77,7 @@ class Dashboard(View):
 class NestedView(View):
 
     @property
-    def views(self):
+    def views(self) -> 'Views':
         return Views(self)
 
 
@@ -94,18 +97,18 @@ class AsyncViews(AsyncItem):
         self.owner = owner
         super().__init__(owner.jenkins, owner.url)
 
-    async def get(self, name):
+    async def get(self, name: str) -> Optional['AsyncView']:
         data = await self.api_json(tree='views[name,url]')
         for item in data['views']:
             if name == item['name']:
                 return self._new_item(__name__, item)
         return None
 
-    async def create(self, name, xml):
-        await self.handle_req('POST', 'createView', params={'name': name},
-                              headers=self.headers, content=xml)
+    async def create(self, name: str, xml: str) -> Response:
+        return await self.handle_req('POST', 'createView', params={'name': name},
+                                   headers=self.headers, content=xml)
 
-    async def __aiter__(self):
+    async def __aiter__(self) -> AsyncIterator['AsyncView']:
         data = await self.api_json(tree='views[name,url]')
         for item in data['views']:
             yield self._new_item(__name__, item)
@@ -113,23 +116,23 @@ class AsyncViews(AsyncItem):
 
 class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn):
 
-    async def get(self, name):
+    async def get(self, name: str) -> Optional[AsyncJob]:
         data = await self.api_json(tree='jobs[name,url]')
         for item in data['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
 
-    async def __aiter__(self):
+    async def __aiter__(self) -> AsyncIterator[AsyncJob]:
         data = await self.api_json(tree='jobs[name,url]')
         for item in data['jobs']:
             yield self._new_item('api4jenkins.job', item)
 
-    async def include(self, name):
-        await self.handle_req('POST', 'addJobToView', params={'name': name})
+    async def include(self, name: str) -> Response:
+        return await self.handle_req('POST', 'addJobToView', params={'name': name})
 
-    async def exclude(self, name):
-        await self.handle_req('POST', 'removeJobFromView', params={'name': name})
+    async def exclude(self, name: str) -> Response:
+        return await self.handle_req('POST', 'removeJobFromView', params={'name': name})
 
 
 class AsyncAllView(AsyncView):
@@ -154,7 +157,7 @@ class AsyncDashboard(AsyncView):
 class AsyncNestedView(AsyncView):
 
     @property
-    def views(self):
+    def views(self) -> 'AsyncViews':
         return AsyncViews(self)
 
 

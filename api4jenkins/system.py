@@ -1,6 +1,8 @@
 # encoding: utf-8
 import json
 from functools import partial
+from typing import Any, Dict, Optional
+from httpx import Response
 
 from .item import AsyncItem, Item, snake
 from .mix import AsyncRunScriptMixIn, RunScriptMixIn
@@ -21,13 +23,13 @@ class System(Item, RunScriptMixIn):
                       'safeExit', 'quietDown', 'cancelQuietDown']:
             setattr(self, snake(entry), partial(_post, entry))
 
-    def reload_jcasc(self):
+    def reload_jcasc(self) -> Response:
         return self.handle_req('POST', 'configuration-as-code/reload')
 
-    def export_jcasc(self):
+    def export_jcasc(self) -> str:
         return self.handle_req('POST', 'configuration-as-code/export').text
 
-    def apply_jcasc(self, content):
+    def apply_jcasc(self, content: str) -> Response:
         params = {"newSource": content}
         resp = self.handle_req(
             'POST', 'configuration-as-code/checkNewSource', params=params)
@@ -37,7 +39,7 @@ class System(Item, RunScriptMixIn):
                 'replace': 'Apply new configuration'}
         return self.handle_req('POST', 'configuration-as-code/replace', data=data)
 
-    def decrypt_secret(self, text):
+    def decrypt_secret(self, text: str) -> str:
         cmd = f'println(hudson.util.Secret.decrypt("{text}"))'
         return self.run_script(cmd)
 
@@ -59,14 +61,14 @@ class AsyncSystem(AsyncItem, AsyncRunScriptMixIn):
                       'safeExit', 'quietDown', 'cancelQuietDown']:
             setattr(self, snake(entry), partial(_post, entry))
 
-    async def reload_jcasc(self):
+    async def reload_jcasc(self) -> Response:
         return await self.handle_req('POST', 'configuration-as-code/reload')
 
-    async def export_jcasc(self):
+    async def export_jcasc(self) -> str:
         data = await self.handle_req('POST', 'configuration-as-code/export')
         return data.text
 
-    async def apply_jcasc(self, content):
+    async def apply_jcasc(self, content: str) -> Response:
         params = {"newSource": content}
         resp = await self.handle_req(
             'POST', 'configuration-as-code/checkNewSource', params=params)
@@ -76,6 +78,6 @@ class AsyncSystem(AsyncItem, AsyncRunScriptMixIn):
                 'replace': 'Apply new configuration'}
         return await self.handle_req('POST', 'configuration-as-code/replace', data=data)
 
-    async def decrypt_secret(self, text):
+    async def decrypt_secret(self, text: str) -> str:
         cmd = f'println(hudson.util.Secret.decrypt("{text}"))'
         return await self.run_script(cmd)

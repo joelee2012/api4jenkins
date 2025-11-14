@@ -1,6 +1,7 @@
 # encoding: utf-8
 import inspect
 import logging
+from typing import Any, Dict
 
 from httpx import (AsyncClient, AsyncHTTPTransport, Client, HTTPTransport,
                    Request, Response)
@@ -30,7 +31,7 @@ def check_response(response: Response) -> None:
     response.raise_for_status()
 
 
-def _new_transport(obj, kwargs):
+def _new_transport(obj: Any, kwargs: Dict[str, Any]) -> Any:
     init_args = {
         arg: kwargs.pop(arg)
         for arg in inspect.getfullargspec(obj).args

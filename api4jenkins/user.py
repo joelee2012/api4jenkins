@@ -1,6 +1,6 @@
 # encoding: utf-8
 from collections import namedtuple
-
+from typing import Any, Iterator, AsyncIterator, Optional
 from .item import AsyncItem, Item
 from .mix import (AsyncDeletionMixIn, AsyncDescriptionMixIn,
                   DeletionMixIn, DescriptionMixIn)
@@ -12,11 +12,11 @@ revoke_token_url = 'descriptorByName/jenkins.security.ApiTokenProperty/revoke'
 
 class Users(Item):
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator['User']:
         for user in self.api_json(tree=user_tree)['users']:
             yield User(self.jenkins, user['user']['absoluteUrl'])
 
-    def get(self, name):
+    def get(self, name: str) -> Optional['User']:
         for user in self.api_json(tree=user_tree)['users']:
             if name in [user['user']['id'], user['user']['fullName']]:
                 return User(self.jenkins, user['user']['absoluteUrl'])
@@ -28,12 +28,12 @@ ApiToken = namedtuple('ApiToken', ['name', 'uuid', 'value'])
 
 class User(Item, DeletionMixIn, DescriptionMixIn):
 
-    def generate_token(self, name=''):
+    def generate_token(self, name: str = '') -> ApiToken:
         data = self.handle_req('POST', new_token_url,
                                params={'newTokenName': name}).json()['data']
         return ApiToken(data['tokenName'], data['tokenUuid'], data['tokenValue'])
 
-    def revoke_token(self, uuid):
+    def revoke_token(self, uuid: str) -> Any:
         return self.handle_req('POST', revoke_token_url, params={'tokenUuid': uuid})
 
 # async class
@@ -41,11 +41,11 @@ class User(Item, DeletionMixIn, DescriptionMixIn):
 
 class AsyncUsers(AsyncItem):
 
-    async def __aiter__(self):
+    async def __aiter__(self) -> AsyncIterator['AsyncUser']:
         for user in (await self.api_json(tree=user_tree))['users']:
             yield AsyncUser(self.jenkins, user['user']['absoluteUrl'])
 
-    async def get(self, name):
+    async def get(self, name: str) -> Optional['AsyncUser']:
         for user in (await self.api_json(tree=user_tree))['users']:
             if name in [user['user']['id'], user['user']['fullName']]:
                 return AsyncUser(self.jenkins, user['user']['absoluteUrl'])
@@ -54,10 +54,10 @@ class AsyncUsers(AsyncItem):
 
 class AsyncUser(AsyncItem, AsyncDeletionMixIn, AsyncDescriptionMixIn):
 
-    async def generate_token(self, name=''):
+    async def generate_token(self, name: str = '') -> ApiToken:
         data = (await self.handle_req('POST', new_token_url,
                                       params={'newTokenName': name})).json()['data']
         return ApiToken(data['tokenName'], data['tokenUuid'], data['tokenValue'])
 
-    async def revoke_token(self, uuid):
+    async def revoke_token(self, uuid: str) -> Any:
         return await self.handle_req('POST', revoke_token_url, params={'tokenUuid': uuid})

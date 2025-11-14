@@ -1,6 +1,9 @@
 # encoding: utf-8
 
 import json
+from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from httpx import Response
+from .build import Build, AsyncBuild
 
 from .item import AsyncItem, Item, new_item
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
@@ -68,9 +71,14 @@ def _get_node(jenkins, api_json, name):
     return None
 
 
+from abc import abstractmethod
+
 class IterBuildingBuildsMixIn:
+    @abstractmethod
+    def iter_builds(self) -> Iterator[Build]: ...
+    
     # pylint: disable=no-member
-    def iter_building_builds(self):
+    def iter_building_builds(self) -> Iterator[Build]:
         yield from filter(lambda build: build.building, self.iter_builds())
 
 
@@ -79,26 +87,26 @@ class Nodes(Item, IterBuildingBuildsMixIn):
     classdocs
     '''
 
-    def create(self, name, **kwargs):
-        self.handle_req('POST', 'doCreateItem',
-                        data=_make_node_setting(name, **kwargs))
+    def create(self, name: str, **kwargs: Any) -> Response:
+        return self.handle_req('POST', 'doCreateItem',
+                             data=_make_node_setting(name, **kwargs))
 
-    def get(self, name):
+    def get(self, name: str) -> Optional['Node']:
         return _get_node(self.jenkins, self.api_json(tree='computer[displayName]'), name)
 
-    def iter_builds(self):
+    def iter_builds(self) -> Iterator[Build]:
         yield from _new_builds(self.jenkins, self.api_json(_nodes_tree, 2))
 
-    def iter(self):
+    def iter(self) -> Iterator['Node']:
         yield from _iter_node(self.jenkins, self.api_json(tree='computer[displayName]'))
 
-    def filter_node_by_label(self, *labels):
+    def filter_node_by_label(self, *labels: str) -> Iterator['Node']:
         for node in self:
             for label in node.api_json()['assignedLabels']:
                 if label['name'] in labels:
                     yield node
 
-    def filter_node_by_status(self, *, online):
+    def filter_node_by_status(self, *, online: bool) -> Iterator['Node']:
         yield from filter(lambda node: online != node.offline, self)
 
 # following two functions should be used in this module only
@@ -106,83 +114,102 @@ class Nodes(Item, IterBuildingBuildsMixIn):
 
 class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn, IterBuildingBuildsMixIn):
 
-    def enable(self):
+    def enable(self) -> Optional[Response]:
         if self.offline:
-            self.handle_req('POST', 'toggleOffline',
-                            params={'offlineMessage': ''})
+            return self.handle_req('POST', 'toggleOffline',
+                                 params={'offlineMessage': ''})
+        return None
 
-    def disable(self, msg=''):
+    def disable(self, msg: str = '') -> Optional[Response]:
         if not self.offline:
-            self.handle_req('POST', 'toggleOffline',
-                            params={'offlineMessage': msg})
+            return self.handle_req('POST', 'toggleOffline',
+                                 params={'offlineMessage': msg})
+        return None
 
-    def iter_builds(self):
+    def iter_builds(self) -> Iterator[Build]:  # type: ignore[override]
+        """Override Item.iter_builds() to provide build iteration.
+        Note: This intentionally changes the return type."""
         for item in _parse_builds(self.api_json(_node_tree, 2)):
             yield new_item(self.jenkins, 'api4jenkins.build', item)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Build]:  # type: ignore[override]
+        """Override Item.__iter__() to provide build iteration.
+        Note: This intentionally changes the return type."""
         yield from self.iter_builds()
 
 
 class MasterComputerMixIn:
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
+        """Initialize master computer with proper URL.
+        Args:
+            jenkins: Jenkins instance
+            url: Base URL for the computer
+        """
         # rename built-in node: https://www.jenkins.io/doc/upgrade-guide/2.319/
         name = 'master' if url.endswith('/master/') else 'built-in'
-        super().__init__(jenkins, f'{jenkins.url}computer/({name})/')
+        super().__init__(jenkins, f'{jenkins.url}computer/({name})/')  # type: ignore
 
 
 class MasterComputer(MasterComputerMixIn, Node):
-    pass
+    pass  # Inherits all type annotations from Node and MasterComputerMixIn
 
 
 class SlaveComputer(Node):
-    pass
+    pass  # Inherits all type annotations from Node
 
 
 class KubernetesComputer(Node):
-    pass
+    pass  # Inherits all type annotations from Node
 
 
 class DockerComputer(Node):
-    pass
+    pass  # Inherits all type annotations from Node
 
 
 class EC2Computer(Node):
-    pass
+    pass  # Inherits all type annotations from Node
 
 
 class AsyncIterBuildingBuildsMixIn:
+    @abstractmethod
+    async def iter_builds(self) -> AsyncIterator[AsyncBuild]: ...
+    
     # pylint: disable=no-member
-    async def iter_building_builds(self):
+    async def iter_building_builds(self) -> AsyncIterator[AsyncBuild]:
         async for build in self.iter_builds():
             if await build.building:
                 yield build
 
 
 class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
-    async def create(self, name, **kwargs):
-        await self.handle_req('POST', 'doCreateItem', data=_make_node_setting(name, **kwargs))
+    async def create(self, name: str, **kwargs: Any) -> Response:
+        return await self.handle_req('POST', 'doCreateItem', 
+                                   data=_make_node_setting(name, **kwargs))
 
-    async def get(self, name):
+    async def get(self, name: str) -> Optional['AsyncNode']:
         return _get_node(self.jenkins, await self.api_json(tree='computer[displayName]'), name)
 
-    async def iter_builds(self):
+    async def iter_builds(self) -> AsyncIterator[AsyncBuild]:  # type: ignore[override]
+        """Override AsyncItem.iter_builds() to provide async build iteration.
+        Note: This intentionally changes the return type."""
         for build in _new_builds(self.jenkins, await self.api_json(_nodes_tree, 2)):
             yield build
 
-    async def aiter(self):
+    async def aiter(self) -> AsyncIterator['AsyncNode']:  # type: ignore[override]
+        """Override AsyncItem.aiter() to provide async node iteration.
+        Note: This intentionally changes the return type."""
         data = await self.api_json(tree='computer[displayName]')
         for node in _iter_node(self.jenkins, data):
             yield node
 
-    async def filter_node_by_label(self, *labels):
+    async def filter_node_by_label(self, *labels: str) -> AsyncIterator['AsyncNode']:
         async for node in self:
             data = await node.api_json()
             for label in data['assignedLabels']:
                 if label['name'] in labels:
                     yield node
 
-    async def filter_node_by_status(self, *, online):
+    async def filter_node_by_status(self, *, online: bool) -> AsyncIterator['AsyncNode']:
         async for node in self:
             if online != await node.offline:
                 yield node
@@ -190,40 +217,46 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
 
 class AsyncNode(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncRunScriptMixIn, AsyncIterBuildingBuildsMixIn):
 
-    async def enable(self):
+    async def enable(self) -> Optional[Response]:
         if await self.offline:
-            await self.handle_req('POST', 'toggleOffline',
-                                  params={'offlineMessage': ''})
+            return await self.handle_req('POST', 'toggleOffline',
+                                       params={'offlineMessage': ''})
+        return None
 
-    async def disable(self, msg=''):
+    async def disable(self, msg: str = '') -> Optional[Response]:
         if not await self.offline:
-            await self.handle_req('POST', 'toggleOffline',
-                                  params={'offlineMessage': msg})
+            return await self.handle_req('POST', 'toggleOffline',
+                                       params={'offlineMessage': msg})
+        return None
 
-    async def iter_builds(self):
+    async def iter_builds(self) -> AsyncIterator[AsyncBuild]:  # type: ignore[override]
+        """Override AsyncItem.iter_builds() to provide async build iteration.
+        Note: This intentionally changes the return type."""
         for item in _parse_builds(await self.api_json(_node_tree, 2)):
             yield new_item(self.jenkins, 'api4jenkins.build', item)
 
-    async def __aiter__(self):
+    async def __aiter__(self) -> AsyncIterator[AsyncBuild]:  # type: ignore[override]
+        """Override AsyncItem.__aiter__() to provide async build iteration.
+        Note: This intentionally changes the return type."""
         async for build in self.iter_builds():
             yield build
 
 
 class AsyncMasterComputer(MasterComputerMixIn, AsyncNode):
-    pass
+    pass  # Inherits all type annotations from AsyncNode and MasterComputerMixIn
 
 
 class AsyncSlaveComputer(AsyncNode):
-    pass
+    pass  # Inherits all type annotations from AsyncNode
 
 
 class AsyncKubernetesComputer(AsyncNode):
-    pass
+    pass  # Inherits all type annotations from AsyncNode
 
 
 class AsyncDockerComputer(AsyncNode):
-    pass
+    pass  # Inherits all type annotations from AsyncNode
 
 
 class AsyncEC2Computer(AsyncNode):
-    pass
+    pass  # Inherits all type annotations from AsyncNode
