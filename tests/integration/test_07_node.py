@@ -1,12 +1,12 @@
 import pytest
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def node(jenkins):
     return jenkins.nodes.get('Built-In Node')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 async def anode(async_jenkins):
     return await async_jenkins.nodes.get('Built-In Node')
 

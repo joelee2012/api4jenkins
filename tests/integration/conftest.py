@@ -16,17 +16,17 @@ def load_xml(name):
         return f.read()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def jenkins():
     yield Jenkins(os.environ['JENKINS_URL'], auth=(os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def async_jenkins():
     yield AsyncJenkins(os.environ['JENKINS_URL'], auth=(os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def folder_xml():
     return EMPTY_FOLDER_XML
 
@@ -41,47 +41,47 @@ def folder_xml():
 #     return load_xml('job_params.xml')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def credential_xml():
     return load_xml('credential.xml')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def view_xml():
     return load_xml('view.xml')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def folder(jenkins: Jenkins):
     return Folder(jenkins, jenkins._name2url('folder'))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def async_folder(async_jenkins: AsyncJenkins):
     return AsyncFolder(async_jenkins, async_jenkins._name2url('async_folder'))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def job(jenkins: Jenkins):
     return WorkflowJob(jenkins, jenkins._name2url('folder/job'))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def async_job(async_jenkins: AsyncJenkins):
     return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/job'))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def args_job(jenkins: Jenkins):
     return WorkflowJob(jenkins, jenkins._name2url('folder/args_job'))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def async_args_job(async_jenkins: AsyncJenkins):
     return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/args_job'))
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture( autouse=True)
 def setup(jenkins, credential_xml, view_xml):
     try:
         for name in [
@@ -117,7 +117,7 @@ def setup(jenkins, credential_xml, view_xml):
         jenkins.views.get('global-view').delete()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def retrive_build_and_output():
     def _retrive(item):
         for _ in range(10):
@@ -135,7 +135,7 @@ def retrive_build_and_output():
     return _retrive
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 async def async_retrive_build_and_output():
     async def _retrive(item):
         for _ in range(10):
