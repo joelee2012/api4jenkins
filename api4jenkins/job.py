@@ -5,20 +5,13 @@ from functools import partial
 from pathlib import PurePosixPath
 from urllib.parse import unquote_plus
 
-from api4jenkins.credential import AsyncCredentials, Credentials
-from api4jenkins.item import AsyncItem, Item, append_slash, new_item, snake
-from api4jenkins.mix import (
-    AsyncConfigurationMixIn,
-    AsyncDeletionMixIn,
-    AsyncDescriptionMixIn,
-    AsyncEnableMixIn,
-    ConfigurationMixIn,
-    DeletionMixIn,
-    DescriptionMixIn,
-    EnableMixIn,
-)
-from api4jenkins.queue import AsyncQueueItem, QueueItem
-from api4jenkins.view import Views
+from .credential import AsyncCredentials, Credentials
+from .item import AsyncItem, Item, append_slash, new_item, snake
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
+                  AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn,
+                  DeletionMixIn, DescriptionMixIn, EnableMixIn)
+from .queue import AsyncQueueItem, QueueItem
+from .view import Views
 
 
 class NameMixIn:

@@ -1,11 +1,13 @@
 # encoding: utf-8
 
 
-from api4jenkins.item import AsyncItem, Item
-from api4jenkins.mix import AsyncConfigurationMixIn, AsyncDeletionMixIn, ConfigurationMixIn, DeletionMixIn
+from .item import AsyncItem, Item
+from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
+                  ConfigurationMixIn, DeletionMixIn)
 
 
 class Credentials(Item):
+
     def get(self, name):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
             if key == name:
@@ -13,7 +15,8 @@ class Credentials(Item):
         return None
 
     def create(self, xml):
-        self.handle_req('POST', 'createDomain', headers=self.headers, content=xml)
+        self.handle_req('POST', 'createDomain',
+                        headers=self.headers, content=xml)
 
     def iter(self):
         for key in self.api_json(tree='domains[urlName]')['domains'].keys():
@@ -25,6 +28,7 @@ class Credentials(Item):
 
 
 class Domain(Item, ConfigurationMixIn, DeletionMixIn):
+
     def get(self, id):
         for item in self.api_json(tree='credentials[id]')['credentials']:
             if item['id'] == id:
@@ -32,7 +36,8 @@ class Domain(Item, ConfigurationMixIn, DeletionMixIn):
         return None
 
     def create(self, xml):
-        self.handle_req('POST', 'createCredentials', headers=self.headers, content=xml)
+        self.handle_req('POST', 'createCredentials',
+                        headers=self.headers, content=xml)
 
     def iter(self):
         for item in self.api_json(tree='credentials[id]')['credentials']:
@@ -45,6 +50,7 @@ class Credential(Item, ConfigurationMixIn, DeletionMixIn):
 
 # async class
 class AsyncCredentials(AsyncItem):
+
     async def get(self, name):
         data = await self.api_json(tree='domains[urlName]')
         for key in data['domains'].keys():
@@ -53,7 +59,8 @@ class AsyncCredentials(AsyncItem):
         return None
 
     async def create(self, xml):
-        await self.handle_req('POST', 'createDomain', headers=self.headers, content=xml)
+        await self.handle_req('POST', 'createDomain',
+                              headers=self.headers, content=xml)
 
     async def aiter(self):
         data = await self.api_json(tree='domains[urlName]')
@@ -66,6 +73,7 @@ class AsyncCredentials(AsyncItem):
 
 
 class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn):
+
     async def get(self, id):
         data = await self.api_json(tree='credentials[id]')
         for item in data['credentials']:
@@ -74,7 +82,8 @@ class AsyncDomain(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn):
         return None
 
     async def create(self, xml):
-        await self.handle_req('POST', 'createCredentials', headers=self.headers, content=xml)
+        await self.handle_req('POST', 'createCredentials',
+                              headers=self.headers, content=xml)
 
     async def aiter(self):
         data = await self.api_json(tree='credentials[id]')
