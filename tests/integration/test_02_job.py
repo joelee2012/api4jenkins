@@ -12,7 +12,7 @@ class TestFolder:
     def test_iter_jobs(self, folder):
         assert len(list(folder.iter(2))) == 5
         assert len(list(folder(2))) == 5
-        assert len(list(folder)) == 4
+        assert len(list(folder)) == 5
         assert folder['job']
 
 

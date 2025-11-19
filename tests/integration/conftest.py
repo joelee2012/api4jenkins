@@ -81,7 +81,7 @@ def async_args_job(async_jenkins: AsyncJenkins):
     return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/args_job'))
 
 
-@pytest.fixture( autouse=True)
+@pytest.fixture(scope='package', autouse=True)
 def setup(jenkins, credential_xml, view_xml):
     try:
         for name in [
@@ -164,4 +164,3 @@ async def async_retrive_build_and_output():
 #     if loop.is_running():
 #         time.sleep(2)
 #     loop.close()
-

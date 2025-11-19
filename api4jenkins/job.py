@@ -7,9 +7,16 @@ from urllib.parse import unquote_plus
 
 from .credential import AsyncCredentials, Credentials
 from .item import AsyncItem, Item, append_slash, new_item, snake
-from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
-                  AsyncDescriptionMixIn, AsyncEnableMixIn, ConfigurationMixIn,
-                  DeletionMixIn, DescriptionMixIn, EnableMixIn)
+from .mix import (
+    AsyncConfigurationMixIn,
+    AsyncDeletionMixIn,
+    AsyncDescriptionMixIn,
+    AsyncEnableMixIn,
+    ConfigurationMixIn,
+    DeletionMixIn,
+    DescriptionMixIn,
+    EnableMixIn,
+)
 from .queue import AsyncQueueItem, QueueItem
 from .view import Views
 
@@ -135,6 +142,19 @@ def _get_build(job, api_json, number):
             return job._new_item('api4jenkins.build', item)
 
 
+def _parse_build_params(params):
+    reserved = ['token', 'delay']
+    entry = 'buildWithParameters'
+    if not params or all(k in reserved for k in params):
+        entry = 'build'
+    files = {}
+    for k in list(params):
+        v = params[k]
+        if hasattr(v, 'read') or (isinstance(v, tuple) and hasattr(v[1], 'read')):
+            files[k] = params.pop(k)
+    return entry, params, files
+
+
 class Project(Job, EnableMixIn):
     def __init__(self, jenkins, url):
         super().__init__(jenkins, url)
@@ -147,7 +167,7 @@ class Project(Job, EnableMixIn):
         _set_get_methods(self, _get_build_by_key)
 
     def build(self, **params):
-        entry, params, files = parse_build_params(params)
+        entry, params, files = _parse_build_params(params)
         resp = self.handle_req('POST', entry, params=params, files=files)
         return QueueItem(self.jenkins, resp.headers['Location'])
 
@@ -312,19 +332,6 @@ class AsyncOrganizationFolder(AsyncWorkflowMultiBranchProject):
                 yield line
 
 
-def parse_build_params(params):
-    reserved = ['token', 'delay']
-    entry = 'buildWithParameters'
-    if not params or all(k in reserved for k in params):
-        entry = 'build'
-    files = {}
-    for k in list(params):
-        v = params[k]
-        if hasattr(v, 'read') or (isinstance(v, tuple) and hasattr(v[1], 'read')):
-            files[k] = params.pop(k)
-    return entry, params, files
-
-
 class AsyncProject(AsyncJob, AsyncEnableMixIn):
     def __init__(self, jenkins, url):
         super().__init__(jenkins, url)
@@ -337,7 +344,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         _set_get_methods(self, _get_build_by_key)
 
     async def build(self, **params):
-        entry, params, files = parse_build_params(params)
+        entry, params, files = _parse_build_params(params)
         resp = await self.handle_req('POST', entry, params=params, files=files)
         return AsyncQueueItem(self.jenkins, resp.headers['Location'])
 
