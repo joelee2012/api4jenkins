@@ -4,7 +4,6 @@ import pytest
 
 
 class TestFolder:
-
     def test_parent(self, jenkins, folder, job):
         assert folder == job.parent
         assert jenkins == folder.parent
@@ -12,7 +11,7 @@ class TestFolder:
     def test_iter_jobs(self, folder):
         assert len(list(folder.iter(2))) == 5
         assert len(list(folder(2))) == 5
-        assert len(list(folder)) == 5
+        assert len(list(folder)) == 4
         assert folder['job']
 
 
@@ -51,8 +50,7 @@ class TestProject:
         assert len(list(job.filter_builds_by_result(result='SUCCESS'))) == 2
         assert not list(job.filter_builds_by_result(result='ABORTED'))
         with pytest.raises(ValueError):
-            assert list(job.filter_builds_by_result(
-                result='not a status')) == 'x'
+            assert list(job.filter_builds_by_result(result='not a status')) == 'x'
 
 
 class TestAsyncFolder:

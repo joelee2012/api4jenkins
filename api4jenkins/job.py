@@ -183,7 +183,9 @@ class Project(Job, EnableMixIn):
             yield self._new_item('api4jenkins.build', item)
 
     def set_next_build_number(self, number):
-        self.handle_req('POST', 'nextbuildnumber/submit', params={'nextBuildNumber': number})
+        data = {'nextBuildNumber': number, 'Submit': 'Submit'} | self.jenkins.crumb
+        data['json'] = json.dumps(data)
+        self.handle_req('POST', 'nextbuildnumber/submit', data=data)
 
     def get_parameters(self):
         params = []
@@ -362,7 +364,9 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
             yield self._new_item('api4jenkins.build', item)
 
     async def set_next_build_number(self, number):
-        await self.handle_req('POST', 'nextbuildnumber/submit', params={'nextBuildNumber': number})
+        data = {'nextBuildNumber': number, 'Submit': 'Submit'} | await self.jenkins.crumb
+        data['json'] = json.dumps(data)
+        await self.handle_req('POST', 'nextbuildnumber/submit', data=data)
 
     async def get_parameters(self):
         params = []
