@@ -1,11 +1,14 @@
 import asyncio
+import contextlib
 import os
+import sys
 import time
 from pathlib import Path
 
 import pytest
 
-from api4jenkins import EMPTY_FOLDER_XML, AsyncFolder, AsyncJenkins, Folder, Jenkins
+from api4jenkins import (EMPTY_FOLDER_XML, AsyncFolder, AsyncJenkins, Folder,
+                         Jenkins)
 from api4jenkins.job import AsyncWorkflowJob, WorkflowJob
 
 TEST_DATA_DIR = Path(__file__).with_name('tests_data')
@@ -16,17 +19,19 @@ def load_xml(name):
         return f.read()
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def jenkins():
-    yield Jenkins(os.environ['JENKINS_URL'], auth=(os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
+    yield Jenkins(os.environ['JENKINS_URL'], auth=(
+        os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def async_jenkins():
-    yield AsyncJenkins(os.environ['JENKINS_URL'], auth=(os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
+    yield AsyncJenkins(os.environ['JENKINS_URL'], auth=(
+        os.environ['JENKINS_USER'], os.environ['JENKINS_PASSWORD']))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def folder_xml():
     return EMPTY_FOLDER_XML
 
@@ -41,57 +46,50 @@ def folder_xml():
 #     return load_xml('job_params.xml')
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def credential_xml():
     return load_xml('credential.xml')
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def view_xml():
     return load_xml('view.xml')
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def folder(jenkins: Jenkins):
     return Folder(jenkins, jenkins._name2url('folder'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def async_folder(async_jenkins: AsyncJenkins):
     return AsyncFolder(async_jenkins, async_jenkins._name2url('async_folder'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def job(jenkins: Jenkins):
     return WorkflowJob(jenkins, jenkins._name2url('folder/job'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def async_job(async_jenkins: AsyncJenkins):
     return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/job'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def args_job(jenkins: Jenkins):
     return WorkflowJob(jenkins, jenkins._name2url('folder/args_job'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def async_args_job(async_jenkins: AsyncJenkins):
     return AsyncWorkflowJob(async_jenkins, async_jenkins._name2url('async_folder/args_job'))
 
 
-@pytest.fixture(scope='package', autouse=True)
+@pytest.fixture(scope='session', autouse=True)
 def setup(jenkins, credential_xml, view_xml):
     try:
-        for name in [
-            'folder/folder',
-            'folder/for_rename',
-            'folder/for_move',
-            'async_folder/folder',
-            'async_folder/for_rename',
-            'async_folder/for_move',
-        ]:
+        for name in ['folder/folder', 'folder/for_rename', 'folder/for_move', 'async_folder/folder', 'async_folder/for_rename', 'async_folder/for_move']:
             jenkins.create_job(name, EMPTY_FOLDER_XML, True)
 
         for name in ['folder/job', 'async_folder/job']:
@@ -104,7 +102,8 @@ def setup(jenkins, credential_xml, view_xml):
         jenkins.credentials.create(load_xml('domain.xml'))
         jenkins.views.create('global-view', view_xml)
         jenkins['folder'].credentials.global_domain.create(credential_xml)
-        jenkins['async_folder'].credentials.global_domain.create(credential_xml)
+        jenkins['async_folder'].credentials.global_domain.create(
+            credential_xml)
         jenkins['folder'].views.create('folder-view', view_xml)
         jenkins['async_folder'].views.create('folder-view', view_xml)
 
@@ -117,7 +116,7 @@ def setup(jenkins, credential_xml, view_xml):
         jenkins.views.get('global-view').delete()
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def retrive_build_and_output():
     def _retrive(item):
         for _ in range(10):
@@ -131,11 +130,10 @@ def retrive_build_and_output():
         for line in build.progressive_output():
             output.append(str(line))
         return build, output
-
     return _retrive
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 async def async_retrive_build_and_output():
     async def _retrive(item):
         for _ in range(10):
@@ -149,9 +147,7 @@ async def async_retrive_build_and_output():
         async for line in build.progressive_output():
             output.append(str(line))
         return build, output
-
     return _retrive
-
 
 # workaround for https://github.com/pytest-dev/pytest-asyncio/issues/371
 
@@ -161,6 +157,4 @@ async def async_retrive_build_and_output():
 #     policy = asyncio.get_event_loop_policy()
 #     loop = policy.new_event_loop()
 #     yield loop
-#     if loop.is_running():
-#         time.sleep(2)
 #     loop.close()
