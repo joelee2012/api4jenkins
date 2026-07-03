@@ -2,7 +2,7 @@
 import json
 import time
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from typing import Iterator, AsyncIterator, Optional, List
 from httpx import Response
 
 from .item import AsyncItem, Item

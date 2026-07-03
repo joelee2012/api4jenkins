@@ -1,6 +1,6 @@
 # encoding: utf-8
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict
 from .item import AsyncItem, Item
 from .mix import AsyncRawJsonMixIn, RawJsonMixIn
 

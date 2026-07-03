@@ -1,6 +1,6 @@
 # encoding: utf-8
 from abc import abstractmethod
-from typing import Any, Dict, Generator, Iterator, TYPE_CHECKING
+from typing import Any, Dict, Generator, Iterator, TYPE_CHECKING, Protocol, Generic, TypeVar
 import sys
 
 if TYPE_CHECKING or sys.version_info >= (3, 9):
@@ -127,7 +127,6 @@ class CoverageTrend(ResultBase):
 
 
 # async class
-from typing import Protocol, Generic, TypeVar
 
 
 class AsyncIterableMixIn(Protocol):

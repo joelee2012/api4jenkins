@@ -3,7 +3,7 @@
 import contextlib
 import re
 from importlib import import_module
-from typing import Any, Dict, List, Optional, Union, Iterator, AsyncIterator, ContextManager, AsyncContextManager
+from typing import Any, Dict, List, Optional, Union, Iterator, AsyncIterator
 from httpx import Response
 
 import api4jenkins

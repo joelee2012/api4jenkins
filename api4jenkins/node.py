@@ -1,7 +1,8 @@
 # encoding: utf-8
 
 import json
-from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from abc import abstractmethod
+from typing import Any, Dict, Iterator, AsyncIterator, Optional
 from httpx import Response
 from .build import Build, AsyncBuild
 
@@ -69,9 +70,6 @@ def _get_node(jenkins: Any, api_json: Dict[str, Any], name: str) -> Optional[Any
             item['url'] = f"{jenkins.url}computer/{item['displayName']}/"
             return new_item(jenkins, __name__, item)
     return None
-
-
-from abc import abstractmethod
 
 
 class IterBuildingBuildsMixIn:

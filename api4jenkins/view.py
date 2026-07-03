@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from typing import Any, Dict, Iterator, AsyncIterator, Optional, List, TYPE_CHECKING
+from typing import Any, Iterator, AsyncIterator, Optional, TYPE_CHECKING
 from httpx import Response
 from .item import AsyncItem, Item
 

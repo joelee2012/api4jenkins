@@ -1,6 +1,6 @@
 # encoding: utf-8
 import re
-from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from typing import Any, Iterator, AsyncIterator, Optional
 from httpx import Response
 from .item import AsyncItem, Item
 from .mix import (ActionsMixIn, AsyncActionsMixIn)

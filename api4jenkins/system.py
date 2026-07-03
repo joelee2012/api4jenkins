@@ -1,7 +1,7 @@
 # encoding: utf-8
 import json
 from functools import partial
-from typing import Any, Dict, Optional
+from typing import Any
 from httpx import Response
 
 from .item import AsyncItem, Item, snake

@@ -22,7 +22,10 @@ from .mix import (
     EnableMixIn,
 )
 from .view import Views
-# QueueItem is imported using string literal type annotation to avoid circular import
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .queue import QueueItem, AsyncQueueItem
 
 
 class NameMixIn:

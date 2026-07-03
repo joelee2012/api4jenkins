@@ -3,7 +3,7 @@
 import asyncio
 import re
 import time
-from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from typing import Any, Iterator, AsyncIterator, Optional, List
 from httpx import Response
 
 from .artifact import Artifact, async_save_response_to, save_response_to

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from typing import Any, Dict, Iterator, AsyncIterator, Optional
+from typing import Iterator, AsyncIterator, Optional
 from .item import AsyncItem, Item
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
                   ConfigurationMixIn, DeletionMixIn)
