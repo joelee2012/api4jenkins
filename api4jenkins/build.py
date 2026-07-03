@@ -3,7 +3,7 @@
 import asyncio
 import re
 import time
-from typing import Any, Iterator, AsyncIterator, Optional, List
+from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
 from httpx import Response
 
 from .artifact import Artifact, async_save_response_to, save_response_to
@@ -14,6 +14,27 @@ from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncDeletionMixIn,
 from .report import (AsyncCoverageReport, AsyncCoverageResult,
                      AsyncCoverageTrends, AsyncTestReport, CoverageReport,
                      CoverageResult, CoverageTrends, TestReport)
+
+
+class Stage:
+    '''Pipeline stage information wrapper.
+
+    Provides convenient attribute access to the raw stage data returned
+    by Jenkins pipeline stage API (e.g. `id`, `name`, `status`,
+    `durationMillis`, `startTimeMillis`, `pauseDurationMillis`).
+    '''
+
+    def __init__(self, raw: Dict[str, Any]) -> None:
+        self.raw = raw
+
+    def __getattr__(self, name: str) -> Any:
+        if name in self.raw:
+            return self.raw[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    def __repr__(self) -> str:
+        return f'<{type(self).__name__}: {self.name}>'
 
 
 class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
@@ -94,6 +115,11 @@ class WorkflowRun(Build):
     def artifacts(self) -> List[Artifact]:
         artifacts = self.handle_req('GET', 'wfapi/artifacts').json()
         return [Artifact(self.jenkins, art) for art in artifacts]
+
+    def get_stages(self) -> List[Stage]:
+        '''get pipeline stages'''
+        data = self.handle_req('GET', 'wfapi/describe').json()
+        return [Stage(stage) for stage in data.get('stages', [])]
 
     def save_artifacts(self, filename: str = 'archive.zip') -> None:
         with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:
@@ -188,6 +214,11 @@ class AsyncWorkflowRun(AsyncBuild):
     async def artifacts(self) -> List[Artifact]:
         artifacts = (await self.handle_req('GET', 'wfapi/artifacts')).json()
         return [Artifact(self.jenkins, art) for art in artifacts]
+
+    async def get_stages(self) -> List[Stage]:
+        '''get pipeline stages'''
+        data = (await self.handle_req('GET', 'wfapi/describe')).json()
+        return [Stage(stage) for stage in data.get('stages', [])]
 
     async def save_artifacts(self, filename: str = 'archive.zip') -> None:
         async with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:

@@ -2,7 +2,7 @@
 import pytest
 from respx import MockResponse
 
-from api4jenkins.build import AsyncWorkflowRun, WorkflowRun
+from api4jenkins.build import AsyncWorkflowRun, Stage, WorkflowRun
 from api4jenkins.input import PendingInputAction
 
 
@@ -80,6 +80,18 @@ class TestWorkflowRun:
         filename = tmp_path / 'my_archive.zip'
         build.save_artifacts(filename)
         assert filename.exists()
+
+    @pytest.mark.parametrize('data, count', [
+        ({'stages': []}, 0),
+        ({'stages': [{'name': 'Build', 'status': 'SUCCESS'}]}, 1),
+    ], ids=['empty', 'one stage'])
+    def test_get_stages(self, build, respx_mock, data, count):
+        respx_mock.get(f'{build.url}wfapi/describe').respond(json=data)
+        stages = build.get_stages()
+        assert len(stages) == count
+        for i, stage in enumerate(stages):
+            assert isinstance(stage, Stage)
+            assert stage.name == data['stages'][i]['name']
 
 
 class TestAsyncBuild:
@@ -159,3 +171,15 @@ class TestAsyncWorkflowRun:
         filename = tmp_path / 'my_archive.zip'
         await async_build.save_artifacts(filename)
         assert filename.exists()
+
+    @pytest.mark.parametrize('data, count', [
+        ({'stages': []}, 0),
+        ({'stages': [{'name': 'Build', 'status': 'SUCCESS'}]}, 1),
+    ], ids=['empty', 'one stage'])
+    async def test_get_stages(self, async_build, respx_mock, data, count):
+        respx_mock.get(f'{async_build.url}wfapi/describe').respond(json=data)
+        stages = await async_build.get_stages()
+        assert len(stages) == count
+        for i, stage in enumerate(stages):
+            assert isinstance(stage, Stage)
+            assert stage.name == data['stages'][i]['name']
