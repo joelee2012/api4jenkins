@@ -2,6 +2,7 @@
 import asyncio
 import threading
 from importlib import import_module
+from typing import Any, AsyncIterator, Dict, Iterator, Optional, Tuple
 
 from httpx import HTTPStatusError
 
@@ -40,16 +41,16 @@ class Jenkins(Item, UrlMixIn):
         '2.176.2'
     '''
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url: str, **kwargs: Any) -> None:
         self.http_client = new_http_client(**kwargs)
-        self._crumb = None
-        self._auth = kwargs.get('auth')
+        self._crumb: Optional[Dict[str, str]] = None
+        self._auth: Optional[Tuple[str, str]] = kwargs.get('auth')
         self._sync_lock = threading.Lock()
         super().__init__(self, url)
-        self.user = User(
+        self.user: Optional[User] = User(
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
 
-    def get_job(self, full_name):
+    def get_job(self, full_name: str) -> Optional[Item]:
         '''Get job by full name
 
         :param full_name: ``str``, full name of job
@@ -67,7 +68,7 @@ class Jenkins(Item, UrlMixIn):
         if folder.exists():
             return folder.get(name)
 
-    def iter(self, depth=0):
+    def iter(self, depth: int = 0) -> Iterator[Item]:
         '''Iterate jobs with depth
 
         :param depth: ``int``, depth to iterate, default is 0
@@ -84,7 +85,7 @@ class Jenkins(Item, UrlMixIn):
         '''
         yield from Folder(self, self.url)(depth)
 
-    def create_job(self, full_name, xml, recursive=False):
+    def create_job(self, full_name: str, xml: str, recursive: bool = False) -> Any:
         '''Create new jenkins job with given xml configuration
 
         :param full_name: ``str``, full name of job
@@ -114,7 +115,7 @@ class Jenkins(Item, UrlMixIn):
                             recursive=recursive)
         return folder.create(name, xml)
 
-    def copy_job(self, full_name, dest):
+    def copy_job(self, full_name: str, dest: str) -> Any:
         '''Create job by copying other job, the source job and dest job are in
         same folder.
 
@@ -133,7 +134,7 @@ class Jenkins(Item, UrlMixIn):
         folder, name = self._resolve_name(full_name)
         return folder.copy(name, dest)
 
-    def delete_job(self, full_name):
+    def delete_job(self, full_name: str) -> None:
         '''Delete job
 
         :param full_name: ``str``, full name of job
@@ -153,7 +154,7 @@ class Jenkins(Item, UrlMixIn):
         if job := self.get_job(full_name):
             job.delete()
 
-    def build_job(self, full_name, **params):
+    def build_job(self, full_name: str, **params: Any) -> Any:
         '''Build job with/without params
 
         :param full_name: ``str``, full name of job
@@ -178,29 +179,29 @@ class Jenkins(Item, UrlMixIn):
         job = self._get_job_and_check(full_name)
         return job.build(**params)
 
-    def _get_job_and_check(self, full_name):
+    def _get_job_and_check(self, full_name: str) -> Item:
         job = self.get_job(full_name)
         if job is None:
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job
 
-    def rename_job(self, full_name, new_name):
+    def rename_job(self, full_name: str, new_name: str) -> Any:
         job = self._get_job_and_check(full_name)
         return job.rename(new_name)
 
-    def move_job(self, full_name, new_full_name):
+    def move_job(self, full_name: str, new_full_name: str) -> Any:
         job = self._get_job_and_check(full_name)
         return job.move(new_full_name)
 
-    def duplicate_job(self, full_name, new_name, recursive=False):
+    def duplicate_job(self, full_name: str, new_name: str, recursive: bool = False) -> None:
         job = self._get_job_and_check(full_name)
         return job.duplicate(new_name, recursive)
 
-    def is_name_safe(self, name):
+    def is_name_safe(self, name: str) -> bool:
         resp = self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
-    def validate_jenkinsfile(self, content):
+    def validate_jenkinsfile(self, content: str) -> str:
         """validate Jenkinsfile, see
         https://www.jenkins.io/doc/book/pipeline/development/#linter
 
@@ -215,7 +216,7 @@ class Jenkins(Item, UrlMixIn):
         return self.handle_req(
             'POST', 'pipeline-model-converter/validate', data=data).text
 
-    def _resolve_name(self, full_name):
+    def _resolve_name(self, full_name: str) -> Tuple[Folder, str]:
         parent, name = self._parse_name(full_name)
         return Folder(self, self._name2url(parent)), name
 
@@ -231,8 +232,7 @@ class Jenkins(Item, UrlMixIn):
     #         return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    def crumb(self):
-        '''Crumb of Jenkins'''
+    def crumb(self) -> Dict[str, str]:
         if self._crumb is None:
             with self._sync_lock:
                 if self._crumb is None:
@@ -246,62 +246,49 @@ class Jenkins(Item, UrlMixIn):
         return self._crumb
 
     @property
-    def system(self):
-        '''An object for managing system operation.
-        see :class:`System <api4jenkins.system.System>`'''
+    def system(self) -> System:
         return System(self, self.url)
 
     @property
-    def plugins(self):
-        '''An object for managing plugins.
-        see :class:`PluginsManager <api4jenkins.plugin.PluginsManager>`'''
+    def plugins(self) -> PluginsManager:
         return PluginsManager(self, f'{self.url}pluginManager/')
 
     @property
-    def version(self):
-        '''Version of Jenkins'''
+    def version(self) -> str:
         return self.handle_req('HEAD', '').headers['X-Jenkins']
 
     @property
-    def credentials(self):
-        '''An object for managing credentials.
-        see :class:`Credentials <api4jenkins.credential.Credentials>`'''
+    def credentials(self) -> Credentials:
         return Credentials(self, f'{self.url}credentials/store/system/')
 
     @property
-    def views(self):
-        '''An object for managing views of main window.
-        see :class:`Views <api4jenkins.view.Views>`'''
+    def views(self) -> Views:
         return Views(self)
 
     @property
-    def nodes(self):
-        '''An object for managing nodes.
-        see :class:`Nodes <api4jenkins.node.Nodes>`'''
+    def nodes(self) -> Nodes:
         return Nodes(self, f'{self.url}computer/')
 
     @property
-    def queue(self):
-        '''An object for managing build queue.
-        see :class:`Queue <api4jenkins.queue.Queue>`'''
+    def queue(self) -> Queue:
         return Queue(self, f'{self.url}queue/')
 
     @property
-    def users(self):
+    def users(self) -> Users:
         return Users(self, f'{self.url}asynchPeople/')
 
     @property
-    def me(self):
+    def me(self) -> Optional[User]:
         return self.user
 
-    def __call__(self, depth):
+    def __call__(self, depth: int) -> Iterator[Item]:
         yield from self.iter(depth)
 
-    def __getitem__(self, full_name):
+    def __getitem__(self, full_name: str) -> Optional[Item]:
         return self.get_job(full_name)
 
 
-def _patch_to(module, cls, func=None):
+def _patch_to(module: str, cls: Any, func: Optional[Any] = None) -> None:
     _module = import_module(module)
     if func:
         _class = getattr(_module, cls.__name__)
@@ -312,7 +299,7 @@ def _patch_to(module, cls, func=None):
 
 class AsyncJenkins(AsyncItem, UrlMixIn):
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url: str, **kwargs: Any) -> None:
         self.http_client = new_async_http_client(**kwargs)
         self._crumb = None
         self._async_lock = asyncio.Lock()
@@ -321,65 +308,65 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         self.user = AsyncUser(
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
 
-    async def get_job(self, full_name):
+    async def get_job(self, full_name: str) -> Optional[AsyncItem]:
         folder, name = self._resolve_name(full_name)
         if await folder.exists():
             return await folder.get(name)
 
-    async def aiter(self, depth=0):
+    async def aiter(self, depth: int = 0) -> AsyncIterator[AsyncItem]:
         async for job in AsyncFolder(self, self.url)(depth):
             yield job
 
-    async def create_job(self, full_name, xml, recursive=False):
+    async def create_job(self, full_name: str, xml: str, recursive: bool = False) -> Any:
         folder, name = self._resolve_name(full_name)
         if recursive and not await folder.exists():
             await self.create_job(folder.full_name, EMPTY_FOLDER_XML,
                                   recursive=recursive)
         return await folder.create(name, xml)
 
-    async def copy_job(self, full_name, dest):
+    async def copy_job(self, full_name: str, dest: str) -> Any:
         folder, name = self._resolve_name(full_name)
         return await folder.copy(name, dest)
 
-    async def delete_job(self, full_name):
+    async def delete_job(self, full_name: str) -> None:
         job = await self.get_job(full_name)
         if job:
             await job.delete()
 
-    async def build_job(self, full_name, **params):
+    async def build_job(self, full_name: str, **params: Any) -> Any:
         job = await self._get_job_and_check(full_name)
         if not isinstance(job, AsyncProject):
             raise AttributeError(f'{job} has no attribute build')
         return await job.build(**params)
 
-    async def rename_job(self, full_name, new_name):
+    async def rename_job(self, full_name: str, new_name: str) -> Any:
         job = await self._get_job_and_check(full_name)
         return await job.rename(new_name)
 
-    async def move_job(self, full_name, new_full_name):
+    async def move_job(self, full_name: str, new_full_name: str) -> Any:
         job = await self._get_job_and_check(full_name)
         return await job.move(new_full_name)
 
-    async def duplicate_job(self, full_name, new_name, recursive=False):
+    async def duplicate_job(self, full_name: str, new_name: str, recursive: bool = False) -> None:
         job = await self._get_job_and_check(full_name)
         return await job.duplicate(new_name, recursive)
 
-    async def _get_job_and_check(self, full_name: str):
+    async def _get_job_and_check(self, full_name: str) -> AsyncItem:
         job = await self.get_job(full_name)
         if job is None:
             raise ItemNotFoundError(f'No such job: {full_name}')
         return job
 
-    async def is_name_safe(self, name):
+    async def is_name_safe(self, name: str) -> bool:
         resp = await self.handle_req('GET', 'checkJobName', params={'value': name})
         return 'is an unsafe character' not in resp.text
 
-    async def validate_jenkinsfile(self, content):
+    async def validate_jenkinsfile(self, content: str) -> str:
         data = await self.handle_req(
             'POST', 'pipeline-model-converter/validate', data={'jenkinsfile': content})
         return data.text
 
-    def _resolve_name(self, full_name):
+    def _resolve_name(self, full_name: str) -> Tuple[AsyncFolder, str]:
         parent, name = self._parse_name(full_name)
         return AsyncFolder(self, self._name2url(parent)), name
 
@@ -391,7 +378,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
     #         return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    async def crumb(self):
+    async def crumb(self) -> Dict[str, str]:
         if self._crumb is None:
             async with self._async_lock:
                 if self._crumb is None:
@@ -404,44 +391,44 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         return self._crumb
 
     @property
-    def system(self):
+    def system(self) -> AsyncSystem:
         return AsyncSystem(self, self.url)
 
     @property
-    def plugins(self):
+    def plugins(self) -> AsyncPluginsManager:
         return AsyncPluginsManager(self, f'{self.url}pluginManager/')
 
     @property
-    async def version(self):
+    async def version(self) -> str:
         return (await self.handle_req('HEAD', '')).headers['X-Jenkins']
 
     @property
-    def credentials(self):
+    def credentials(self) -> AsyncCredentials:
         return AsyncCredentials(self, f'{self.url}credentials/store/system/')
 
     @property
-    def views(self):
+    def views(self) -> AsyncViews:
         return AsyncViews(self)
 
     @property
-    def nodes(self):
+    def nodes(self) -> AsyncNodes:
         return AsyncNodes(self, f'{self.url}computer/')
 
     @property
-    def queue(self):
+    def queue(self) -> AsyncQueue:
         return AsyncQueue(self, f'{self.url}queue/')
 
     @property
-    def users(self):
+    def users(self) -> AsyncUsers:
         return AsyncUsers(self, f'{self.url}asynchPeople/')
 
     @property
-    def me(self):
+    def me(self) -> Optional[AsyncUser]:
         return self.user
 
-    async def __call__(self, depth):
+    async def __call__(self, depth: int) -> AsyncIterator[AsyncItem]:
         async for job in self.aiter(depth):
             yield job
 
-    async def __getitem__(self, full_name):
+    async def __getitem__(self, full_name: str) -> Optional[AsyncItem]:
         return await self.get_job(full_name)

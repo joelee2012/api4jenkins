@@ -1,22 +1,25 @@
 # encoding: utf-8
 import re
-
+from typing import Any, Iterator, AsyncIterator, Optional
+from httpx import Response
 from .item import AsyncItem, Item
 from .mix import (ActionsMixIn, AsyncActionsMixIn)
+from .job import Job, AsyncJob
+from .build import Build, AsyncBuild
 
 
 class Queue(Item):
-    def get(self, id):
+    def get(self, id: str) -> Optional['QueueItem']:
         for item in self.api_json(tree='items[id,url]')['items']:
             if item['id'] == int(id):
                 return QueueItem(self.jenkins,
-                                 f"{self.jenkins.url}{item['url']}")
+                               f"{self.jenkins.url}{item['url']}")
         return None
 
-    def cancel(self, id):
-        self.handle_req('POST', 'cancelItem', params={'id': id})
+    def cancel(self, id: str) -> Response:
+        return self.handle_req('POST', 'cancelItem', params={'id': id})
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator['QueueItem']:
         for item in self.api_json(tree='items[url]')['items']:
             yield QueueItem(self.jenkins, f"{self.jenkins.url}{item['url']}")
 
@@ -33,20 +36,23 @@ class Queue(Item):
 
 class QueueItem(Item, ActionsMixIn):
 
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         if not url.startswith('https') and jenkins.url.startswith('https'):
             url = re.sub(r'^http[s]', 'https', url)
         super().__init__(jenkins, url)
         self.id = int(self.url.split('/')[-2])
         self._build = None
 
-    def get_job(self):
+    def get_job(self) -> Job:
         if self._class.endswith('$BuildableItem'):
-            return self.get_build().project
+            build = self.get_build()
+            if build is None:
+                raise ValueError("Build not found for queue item")
+            return build.project
         task = self.api_json(tree='task[url]')['task']
         return self._new_item('api4jenkins.job', task)
 
-    def get_build(self):
+    def get_build(self) -> Optional[Build]:
         if not self._build:
             _class = self._class
             # BlockedItem does not have build
@@ -64,8 +70,8 @@ class QueueItem(Item, ActionsMixIn):
                         break
         return self._build
 
-    def cancel(self):
-        self.jenkins.queue.cancel(self.id)
+    def cancel(self) -> Response:
+        return self.jenkins.queue.cancel(str(self.id))
 
 # due to item type is dynamic
 
@@ -90,39 +96,41 @@ class WaitingItem(QueueItem):
 
 class AsyncQueue(AsyncItem):
 
-    async def get(self, id):
+    async def get(self, id: str) -> Optional['AsyncQueueItem']:
         for item in (await self.api_json(tree='items[id,url]'))['items']:
             if item['id'] == int(id):
                 return AsyncQueueItem(self.jenkins,
-                                      f"{self.jenkins.url}{item['url']}")
+                                    f"{self.jenkins.url}{item['url']}")
         return None
 
-    async def cancel(self, id):
-        await self.handle_req('POST', 'cancelItem', params={'id': id})
+    async def cancel(self, id: str) -> Response:
+        return await self.handle_req('POST', 'cancelItem', params={'id': id})
 
-    async def __aiter__(self):
+    async def __aiter__(self) -> AsyncIterator['AsyncQueueItem']:
         for item in (await self.api_json(tree='items[url]'))['items']:
             yield AsyncQueueItem(self.jenkins, f"{self.jenkins.url}{item['url']}")
 
 
 class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
 
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         if not url.startswith('https') and jenkins.url.startswith('https'):
             url = re.sub(r'^http[s]', 'https', url)
         super().__init__(jenkins, url)
         self.id = int(self.url.split('/')[-2])
         self._build = None
 
-    async def get_job(self):
+    async def get_job(self) -> AsyncJob:
         _class = await self._class
         if _class.endswith('$BuildableItem'):
             build = await self.get_build()
+            if build is None:
+                raise ValueError("Build not found for queue item")
             return await build.project
         data = await self.api_json(tree='task[url]')
         return self._new_item('api4jenkins.job', data['task'])
 
-    async def get_build(self):
+    async def get_build(self) -> Optional[AsyncBuild]:
         if not self._build:
             _class = await self._class
             # BlockedItem does not have build
@@ -140,8 +148,8 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
                         break
         return self._build
 
-    async def cancel(self):
-        await self.jenkins.queue.cancel(self.id)
+    async def cancel(self) -> Response:
+        return await self.jenkins.queue.cancel(str(self.id))
 
 
 class AsyncBuildableItem(AsyncQueueItem):
