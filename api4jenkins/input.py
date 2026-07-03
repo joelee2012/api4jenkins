@@ -10,7 +10,7 @@ class PendingInputAction(RawJsonMixIn, Item):
     `input step <https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step/>`_
     '''
 
-    def __init__(self, jenkins, raw):
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
         super().__init__(
             jenkins, f"{jenkins.url}{raw['abortUrl'].rstrip('abort').lstrip('/')}")
         self.raw = raw
@@ -48,7 +48,7 @@ def _make_input_params(api_json: Dict[str, Any], **params: Any) -> Dict[str, str
 
 
 class AsyncPendingInputAction(AsyncRawJsonMixIn, AsyncItem):
-    def __init__(self, jenkins, raw):
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
         super().__init__(
             jenkins, f"{jenkins.url}{raw['abortUrl'].rstrip('abort').lstrip('/')}")
         self.raw = raw

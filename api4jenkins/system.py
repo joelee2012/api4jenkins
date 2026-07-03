@@ -10,7 +10,7 @@ from .mix import AsyncRunScriptMixIn, RunScriptMixIn
 
 class System(Item, RunScriptMixIn):
 
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         '''
         see: https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance-
         '''
@@ -48,7 +48,7 @@ class System(Item, RunScriptMixIn):
 
 class AsyncSystem(AsyncItem, AsyncRunScriptMixIn):
 
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         '''
         see: https://support.cloudbees.com/hc/en-us/articles/216118748-How-to-Start-Stop-or-Restart-your-Instance-
         '''

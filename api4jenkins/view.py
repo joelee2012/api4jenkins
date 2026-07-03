@@ -1,12 +1,15 @@
 # encoding: utf-8
 
-from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
+from typing import Any, Dict, Iterator, AsyncIterator, Optional, List, TYPE_CHECKING
 from httpx import Response
 from .item import AsyncItem, Item
+
+if TYPE_CHECKING:
+    from .job import Job, AsyncJob
 from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
                   AsyncDescriptionMixIn, ConfigurationMixIn,
                   DeletionMixIn, DescriptionMixIn)
-from .job import Job, AsyncJob
+# Job is imported using string literal type annotation to avoid circular import
 
 
 class Views(Item):
@@ -14,7 +17,7 @@ class Views(Item):
     classdocs
     '''
 
-    def __init__(self, owner):
+    def __init__(self, owner: Any) -> None:
         '''
         Constructor
         '''
@@ -38,13 +41,13 @@ class Views(Item):
 
 class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
-    def get(self, name: str) -> Optional[Job]:
+    def get(self, name: str) -> Optional['Job']:
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
 
-    def __iter__(self) -> Iterator[Job]:
+    def __iter__(self) -> Iterator['Job']:
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             yield self._new_item('api4jenkins.job', item)
 
@@ -56,7 +59,7 @@ class View(Item, ConfigurationMixIn, DescriptionMixIn, DeletionMixIn):
 
 
 class AllView(View):
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         # name of all view for jenkins is 'all', but for folder is 'All'
         name = 'view/all' if jenkins.url == url else 'view/All'
         super().__init__(jenkins, url + name)
@@ -90,7 +93,7 @@ class AsyncViews(AsyncItem):
     classdocs
     '''
 
-    def __init__(self, owner):
+    def __init__(self, owner: Any) -> None:
         '''
         Constructor
         '''
@@ -116,14 +119,14 @@ class AsyncViews(AsyncItem):
 
 class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, AsyncDeletionMixIn):
 
-    async def get(self, name: str) -> Optional[AsyncJob]:
+    async def get(self, name: str) -> Optional['AsyncJob']:
         data = await self.api_json(tree='jobs[name,url]')
         for item in data['jobs']:
             if name == item['name']:
                 return self._new_item('api4jenkins.job', item)
         return None
 
-    async def __aiter__(self) -> AsyncIterator[AsyncJob]:
+    async def __aiter__(self) -> AsyncIterator['AsyncJob']:
         data = await self.api_json(tree='jobs[name,url]')
         for item in data['jobs']:
             yield self._new_item('api4jenkins.job', item)
@@ -136,7 +139,7 @@ class AsyncView(AsyncItem, AsyncConfigurationMixIn, AsyncDescriptionMixIn, Async
 
 
 class AsyncAllView(AsyncView):
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         # name of all view for jenkins is 'all', but for folder is 'All'
         name = 'view/all' if jenkins.url == url else 'view/All'
         super().__init__(jenkins, url + name)

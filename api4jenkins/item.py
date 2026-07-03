@@ -36,7 +36,7 @@ def append_slash(url: str) -> str:
 def _new_item() -> Any:
     delimiter = re.compile(r'[.$]')
 
-    def func(jenkins, module, item):
+    def func(jenkins: Any, module: str, item: Dict[str, Any]) -> Any:
         class_name = delimiter.split(item['_class'])[-1]
         if isinstance(jenkins, api4jenkins.AsyncJenkins):
             class_name = f'Async{class_name}'
@@ -71,7 +71,7 @@ class BaseItem:
     def __eq__(self, other: object) -> bool:
         return type(self) is type(other) and self.url == other.url
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'<{type(self).__name__}: {self.url}>'
 
     def _add_crumb(self, crumb: Optional[Dict[str, str]], kwargs: Dict[str, Any]) -> None:
@@ -179,7 +179,7 @@ class AsyncItem(BaseItem):
         raise TypeError(f"'{type(self).__name__}' object is not subscriptable")
 
     async def __aiter__(self) -> AsyncIterator[Any]:
-        """Default implementation raises TypeError since most items are not iterable.
-        Subclasses that support iteration should override this method."""
-        raise TypeError(f"'{type(self).__name__}' object is not iterable")
-        yield  # This makes it a generator function but is never reached
+        """Default implementation delegates to aiter().
+        Subclasses that support iteration should override aiter()."""
+        async for item in self.aiter():
+            yield item

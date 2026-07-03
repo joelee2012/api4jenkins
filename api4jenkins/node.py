@@ -20,7 +20,7 @@ _node_tree = ('executors[currentExecutable[url]],'
               'oneOffExecutors[currentExecutable[url]]')
 
 
-def _make_node_setting(name, **kwargs):
+def _make_node_setting(name: str, **kwargs: Any) -> Dict[str, Any]:
     node_setting = {
         'nodeDescription': '',
         'numExecutors': 1,
@@ -41,13 +41,13 @@ def _make_node_setting(name, **kwargs):
     }
 
 
-def _new_builds(jenkins, api_json):
+def _new_builds(jenkins: Any, api_json: Dict[str, Any]) -> Iterator[Any]:
     for computer in api_json['computer']:
         for item in _parse_builds(computer):
             yield new_item(jenkins, 'api4jenkins.build', item)
 
 
-def _parse_builds(data):
+def _parse_builds(data: Dict[str, Any]) -> Iterator[Dict[str, str]]:
     for kind in ['executors', 'oneOffExecutors']:
         for executor in data.get(kind):
             # in case of issue:
@@ -57,13 +57,13 @@ def _parse_builds(data):
                 yield {'url': execable['url'], '_class': execable['_class']}
 
 
-def _iter_node(jenkins, api_json):
+def _iter_node(jenkins: Any, api_json: Dict[str, Any]) -> Iterator[Any]:
     for item in api_json['computer']:
         item['url'] = f"{jenkins.url}computer/{item['displayName']}/"
         yield new_item(jenkins, __name__, item)
 
 
-def _get_node(jenkins, api_json, name):
+def _get_node(jenkins: Any, api_json: Dict[str, Any], name: str) -> Optional[Any]:
     for item in api_json['computer']:
         if name == item['displayName']:
             item['url'] = f"{jenkins.url}computer/{item['displayName']}/"
@@ -73,10 +73,12 @@ def _get_node(jenkins, api_json, name):
 
 from abc import abstractmethod
 
+
 class IterBuildingBuildsMixIn:
     @abstractmethod
-    def iter_builds(self) -> Iterator[Build]: ...
-    
+    def iter_builds(self) -> Iterator[Build]:
+        ...
+
     # pylint: disable=no-member
     def iter_building_builds(self) -> Iterator[Build]:
         yield from filter(lambda build: build.building, self.iter_builds())
@@ -172,8 +174,9 @@ class EC2Computer(Node):
 
 class AsyncIterBuildingBuildsMixIn:
     @abstractmethod
-    async def iter_builds(self) -> AsyncIterator[AsyncBuild]: ...
-    
+    async def iter_builds(self) -> AsyncIterator[AsyncBuild]:
+        ...
+
     # pylint: disable=no-member
     async def iter_building_builds(self) -> AsyncIterator[AsyncBuild]:
         async for build in self.iter_builds():
@@ -183,7 +186,7 @@ class AsyncIterBuildingBuildsMixIn:
 
 class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
     async def create(self, name: str, **kwargs: Any) -> Response:
-        return await self.handle_req('POST', 'doCreateItem', 
+        return await self.handle_req('POST', 'doCreateItem',
                                    data=_make_node_setting(name, **kwargs))
 
     async def get(self, name: str) -> Optional['AsyncNode']:

@@ -36,7 +36,7 @@ class Queue(Item):
 
 class QueueItem(Item, ActionsMixIn):
 
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         if not url.startswith('https') and jenkins.url.startswith('https'):
             url = re.sub(r'^http[s]', 'https', url)
         super().__init__(jenkins, url)
@@ -113,7 +113,7 @@ class AsyncQueue(AsyncItem):
 
 class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
 
-    def __init__(self, jenkins, url):
+    def __init__(self, jenkins: Any, url: str) -> None:
         if not url.startswith('https') and jenkins.url.startswith('https'):
             url = re.sub(r'^http[s]', 'https', url)
         super().__init__(jenkins, url)
