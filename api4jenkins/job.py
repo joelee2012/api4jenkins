@@ -5,7 +5,12 @@ from functools import partial
 from pathlib import PurePosixPath
 from urllib.parse import unquote_plus
 from typing import Optional, Dict, List, Any, Union, Iterator, AsyncIterator, Tuple
-from typing import override
+
+try:
+    from typing import override
+except ImportError:
+    def override(func):
+        return func
 
 from httpx import Response
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 from abc import abstractmethod
-from typing import Any, Dict, Generator, Iterator, TYPE_CHECKING, Protocol, Generic, TypeVar
+from typing import Any, Dict, Generator, Iterator, List, TYPE_CHECKING, Protocol, Generic, TypeVar
 import sys
 
 if TYPE_CHECKING or sys.version_info >= (3, 9):
@@ -33,7 +33,7 @@ class ResultBase:
     def __str__(self) -> str:
         return f'<{type(self).__name__}: {self.name}>'
 
-    def __dir__(self) -> list[str]:
+    def __dir__(self) -> List[str]:
         return list(super().__dir__()) + [snake(k) for k in self.raw]
 
 
