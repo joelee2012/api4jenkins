@@ -176,7 +176,7 @@ class TestAsyncStage:
         steps = [s async for s in stage]
         assert len(steps) == 1
         assert isinstance(steps[0], AsyncStep)
-        assert steps[0].name == 'Shell'
+        assert await steps[0].name == 'Shell'
 
     async def test_aiter_with_detail_fetch(self, async_jenkins, respx_mock):
         stage_data = {
@@ -196,7 +196,7 @@ class TestAsyncStage:
         steps = [s async for s in stage.aiter()]
         assert len(steps) == 1
         assert isinstance(steps[0], AsyncStep)
-        assert steps[0].name == 'Shell'
+        assert await steps[0].name == 'Shell'
 
 
 class TestAsyncBuild:
@@ -288,7 +288,7 @@ class TestAsyncWorkflowRun:
         assert len(stages) == count
         for i, stage in enumerate(stages):
             assert isinstance(stage, AsyncStage)
-            assert stage.name == data['stages'][i]['name']
+            assert await stage.name == data['stages'][i]['name']
 
     async def test_aiter_workflow_run(self, async_build, respx_mock):
         data = {'stages': [{'name': 'Build', 'status': 'SUCCESS',
@@ -297,4 +297,4 @@ class TestAsyncWorkflowRun:
         stages = [s async for s in async_build]
         assert len(stages) == 1
         assert isinstance(stages[0], AsyncStage)
-        assert stages[0].name == 'Build'
+        assert await stages[0].name == 'Build'

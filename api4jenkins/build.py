@@ -26,12 +26,6 @@ class Step(RawJsonMixIn, Item):
         self.raw = raw
         self.raw['_class'] = 'Step'
 
-    def __getattr__(self, name: str) -> Any:
-        if name in self.raw:
-            return self.raw[name]
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'")
-
     def get_log(self) -> Optional[Dict[str, Any]]:
         log_link = self.raw.get('_links', {}).get('log')
         if not log_link:
@@ -47,12 +41,6 @@ class Stage(RawJsonMixIn, Item):
         super().__init__(jenkins, url)
         self.raw = raw
         self.raw['_class'] = 'Stage'
-
-    def __getattr__(self, name: str) -> Any:
-        if name in self.raw:
-            return self.raw[name]
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'")
 
     def iter(self) -> Iterator[Step]:
         if 'stageFlowNodes' not in self.raw:
@@ -76,12 +64,6 @@ class AsyncStep(AsyncRawJsonMixIn, AsyncItem):
         self.raw = raw
         self.raw['_class'] = 'AsyncStep'
 
-    def __getattr__(self, name: str) -> Any:
-        if name in self.raw:
-            return self.raw[name]
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'")
-
     async def get_log(self) -> Optional[Dict[str, Any]]:
         log_link = self.raw.get('_links', {}).get('log')
         if not log_link:
@@ -98,12 +80,6 @@ class AsyncStage(AsyncRawJsonMixIn, AsyncItem):
         super().__init__(jenkins, url)
         self.raw = raw
         self.raw['_class'] = 'AsyncStage'
-
-    def __getattr__(self, name: str) -> Any:
-        if name in self.raw:
-            return self.raw[name]
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'")
 
     async def aiter(self) -> AsyncIterator[AsyncStep]:
         if 'stageFlowNodes' not in self.raw:
