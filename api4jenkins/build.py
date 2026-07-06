@@ -43,14 +43,8 @@ class Stage(RawJsonMixIn, Item):
         self.raw['_class'] = 'Stage'
 
     def iter(self) -> Iterator[Step]:
-        if 'stageFlowNodes' not in self.raw:
-            self._fetch_detail()
         for step in self.raw.get('stageFlowNodes', []):
             yield Step(self.jenkins, step)
-
-    def _fetch_detail(self) -> None:
-        data = self.handle_req('GET', '').json()
-        self.raw['stageFlowNodes'] = data.get('stageFlowNodes', [])
 
     def __iter__(self) -> Iterator[Step]:
         yield from self.iter()
@@ -82,14 +76,8 @@ class AsyncStage(AsyncRawJsonMixIn, AsyncItem):
         self.raw['_class'] = 'AsyncStage'
 
     async def aiter(self) -> AsyncIterator[AsyncStep]:
-        if 'stageFlowNodes' not in self.raw:
-            await self._fetch_detail()
         for step in self.raw.get('stageFlowNodes', []):
             yield AsyncStep(self.jenkins, step)
-
-    async def _fetch_detail(self) -> None:
-        data = (await self.handle_req('GET', '')).json()
-        self.raw['stageFlowNodes'] = data.get('stageFlowNodes', [])
 
     async def __aiter__(self) -> AsyncIterator[AsyncStep]:
         async for step in self.aiter():

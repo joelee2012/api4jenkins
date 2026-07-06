@@ -119,26 +119,6 @@ class TestStage:
         assert isinstance(steps[0], Step)
         assert steps[0].name == 'Shell'
 
-    def test_iter_with_detail_fetch(self, jenkins, respx_mock):
-        stage_data = {
-            'name': 'Build',
-            '_links': {
-                'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}
-            }
-        }
-        detail_data = {
-            'stageFlowNodes': [
-                {'name': 'Shell', 'status': 'SUCCESS',
-                 '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
-            ]
-        }
-        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe/').respond(json=detail_data)
-        stage = Stage(jenkins, stage_data)
-        steps = list(stage.iter())
-        assert len(steps) == 1
-        assert isinstance(steps[0], Step)
-        assert steps[0].name == 'Shell'
-
     def test_step_get_log(self, jenkins, respx_mock):
         step_data = {
             'name': 'Shell',
@@ -174,26 +154,6 @@ class TestAsyncStage:
             ]
         })
         steps = [s async for s in stage]
-        assert len(steps) == 1
-        assert isinstance(steps[0], AsyncStep)
-        assert await steps[0].name == 'Shell'
-
-    async def test_aiter_with_detail_fetch(self, async_jenkins, respx_mock):
-        stage_data = {
-            'name': 'Build',
-            '_links': {
-                'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}
-            }
-        }
-        detail_data = {
-            'stageFlowNodes': [
-                {'name': 'Shell', 'status': 'SUCCESS',
-                 '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
-            ]
-        }
-        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe/').respond(json=detail_data)
-        stage = AsyncStage(async_jenkins, stage_data)
-        steps = [s async for s in stage.aiter()]
         assert len(steps) == 1
         assert isinstance(steps[0], AsyncStep)
         assert await steps[0].name == 'Shell'
