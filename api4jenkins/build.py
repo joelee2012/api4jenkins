@@ -11,17 +11,20 @@ from .artifact import Artifact, async_save_response_to, save_response_to
 from .input import PendingInputAction
 from .item import AsyncItem, Item
 from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncDeletionMixIn,
-                  AsyncDescriptionMixIn, DeletionMixIn, DescriptionMixIn)
+                  AsyncDescriptionMixIn, AsyncRawJsonMixIn, DeletionMixIn,
+                  DescriptionMixIn, RawJsonMixIn)
 from .report import (AsyncCoverageReport, AsyncCoverageResult,
                      AsyncCoverageTrends, AsyncTestReport, CoverageReport,
                      CoverageResult, CoverageTrends, TestReport)
 
 
-class _HasRawRepr:
-    '''Base mixin for Step and Stage providing raw attribute access.'''
+class Step(RawJsonMixIn, Item):
 
-    def __init__(self, raw: Dict[str, Any]) -> None:
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
         self.raw = raw
+        self.raw['_class'] = 'Step'
 
     def __getattr__(self, name: str) -> Any:
         if name in self.raw:
@@ -29,106 +32,90 @@ class _HasRawRepr:
         raise AttributeError(
             f"'{type(self).__name__}' object has no attribute '{name}'")
 
-    def __repr__(self) -> str:
-        return f'<{type(self).__name__}: {self.name}>'
-
-    def api_json(self) -> Dict[str, Any]:
-        '''Return raw Jenkins JSON data.'''
-        return self.raw
-
-
-class Step(_HasRawRepr):
-    '''Pipeline step information wrapper.
-
-    Represents a single step (flow node) within a pipeline stage.
-    Attribute access delegates to the raw Jenkins JSON fields
-    (e.g. `id`, `name`, `status`, `durationMillis`).
-    '''
-
-    def __init__(self, raw: Dict[str, Any], jenkins: Any = None) -> None:
-        super().__init__(raw)
-        self.jenkins = jenkins
-
     def get_log(self) -> Optional[Dict[str, Any]]:
-        '''Fetch log for this pipeline step (flow node).
-
-        Returns the JSON response from the node log endpoint, or None
-        if the log link is not available.
-        '''
-        if not self.jenkins or '_links' not in self.raw:
-            return None
-        log_link = self.raw['_links'].get('log')
+        log_link = self.raw.get('_links', {}).get('log')
         if not log_link:
             return None
         url = _make_full_url(self.jenkins.url, log_link['href'])
-        return self.jenkins.http_client.request('GET', url).json()
+        return self._request('GET', url).json()
 
 
-class Stage(_HasRawRepr):
-    '''Pipeline stage information wrapper.
+class Stage(RawJsonMixIn, Item):
 
-    Provides convenient attribute access to the raw stage data returned
-    by Jenkins pipeline stage API (e.g. `id`, `name`, `status`,
-    `durationMillis`, `startTimeMillis`, `pauseDurationMillis`).
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'Stage'
 
-    Steps within a stage are available via :meth:`iter` or
-    by iterating the stage directly. If the stage object was created
-    from a run-level ``wfapi/describe`` the step data may be fetched
-    lazily from the stage detail endpoint.
-    '''
-
-    def __init__(self, raw: Dict[str, Any], jenkins: Any = None) -> None:
-        super().__init__(raw)
-        self.jenkins = jenkins
+    def __getattr__(self, name: str) -> Any:
+        if name in self.raw:
+            return self.raw[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'")
 
     def iter(self) -> Iterator[Step]:
-        '''Iterate over the pipeline steps (:class:`Step`) within this stage.
-
-        If ``stageFlowNodes`` is already present in the raw data it
-        is yielded directly. Otherwise the stage detail endpoint is
-        fetched to populate the step list.
-        '''
         if 'stageFlowNodes' not in self.raw:
             self._fetch_detail()
         for step in self.raw.get('stageFlowNodes', []):
-            yield Step(step, self.jenkins)
+            yield Step(self.jenkins, step)
 
     def _fetch_detail(self) -> None:
-        if not self.jenkins or '_links' not in self.raw:
-            return
-        detail_link = self.raw['_links'].get('self')
-        if not detail_link:
-            return
-        url = _make_full_url(self.jenkins.url, detail_link['href'])
-        resp = self.jenkins.http_client.request('GET', url)
-        data = resp.json()
+        data = self.handle_req('GET', '').json()
         self.raw['stageFlowNodes'] = data.get('stageFlowNodes', [])
 
     def __iter__(self) -> Iterator[Step]:
         yield from self.iter()
 
 
-class AsyncStage(Stage):
-    '''Async variant of :class:`Stage`.'''
+class AsyncStep(AsyncRawJsonMixIn, AsyncItem):
 
-    async def aiter(self) -> AsyncIterator[Step]:  # type: ignore[override]
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'AsyncStep'
+
+    def __getattr__(self, name: str) -> Any:
+        if name in self.raw:
+            return self.raw[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    async def get_log(self) -> Optional[Dict[str, Any]]:
+        log_link = self.raw.get('_links', {}).get('log')
+        if not log_link:
+            return None
+        url = _make_full_url(self.jenkins.url, log_link['href'])
+        resp = await self._request('GET', url)
+        return resp.json()
+
+
+class AsyncStage(AsyncRawJsonMixIn, AsyncItem):
+
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'AsyncStage'
+
+    def __getattr__(self, name: str) -> Any:
+        if name in self.raw:
+            return self.raw[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    async def aiter(self) -> AsyncIterator[AsyncStep]:
         if 'stageFlowNodes' not in self.raw:
-            await self._fetch_detail_async()
+            await self._fetch_detail()
         for step in self.raw.get('stageFlowNodes', []):
-            yield Step(step, self.jenkins)
+            yield AsyncStep(self.jenkins, step)
 
-    async def _fetch_detail_async(self) -> None:
-        if not self.jenkins or '_links' not in self.raw:
-            return
-        detail_link = self.raw['_links'].get('self')
-        if not detail_link:
-            return
-        url = _make_full_url(self.jenkins.url, detail_link['href'])
-        resp = await self.jenkins.http_client.request('GET', url)
-        data = resp.json()
+    async def _fetch_detail(self) -> None:
+        data = (await self.handle_req('GET', '')).json()
         self.raw['stageFlowNodes'] = data.get('stageFlowNodes', [])
 
-    async def __aiter__(self) -> AsyncIterator[Step]:
+    async def __aiter__(self) -> AsyncIterator[AsyncStep]:
         async for step in self.aiter():
             yield step
 
@@ -223,7 +210,7 @@ class WorkflowRun(Build):
         '''iterate pipeline stages'''
         data = self.handle_req('GET', 'wfapi/describe').json()
         for stage in data.get('stages', []):
-            yield Stage(stage, self.jenkins)
+            yield Stage(self.jenkins, stage)
 
     def save_artifacts(self, filename: str = 'archive.zip') -> None:
         with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:
@@ -323,7 +310,7 @@ class AsyncWorkflowRun(AsyncBuild):
         '''async iterate pipeline stages'''
         data = (await self.handle_req('GET', 'wfapi/describe')).json()
         for stage in data.get('stages', []):
-            yield AsyncStage(stage, self.jenkins)
+            yield AsyncStage(self.jenkins, stage)
 
     async def save_artifacts(self, filename: str = 'archive.zip') -> None:
         async with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:

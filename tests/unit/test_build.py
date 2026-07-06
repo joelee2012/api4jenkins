@@ -2,7 +2,7 @@
 import pytest
 from respx import MockResponse
 
-from api4jenkins.build import AsyncStage, AsyncWorkflowRun, Stage, Step, WorkflowRun
+from api4jenkins.build import AsyncStage, AsyncStep, AsyncWorkflowRun, Stage, Step, WorkflowRun
 from api4jenkins.input import PendingInputAction
 
 
@@ -83,7 +83,8 @@ class TestWorkflowRun:
 
     @pytest.mark.parametrize('data, count', [
         ({'stages': []}, 0),
-        ({'stages': [{'name': 'Build', 'status': 'SUCCESS'}]}, 1),
+        ({'stages': [{'name': 'Build', 'status': 'SUCCESS',
+                      '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}}}]}, 1),
     ], ids=['empty', 'one stage'])
     def test_iter(self, build, respx_mock, data, count):
         respx_mock.get(f'{build.url}wfapi/describe').respond(json=data)
@@ -94,7 +95,8 @@ class TestWorkflowRun:
             assert stage.name == data['stages'][i]['name']
 
     def test_iter_workflow_run(self, build, respx_mock):
-        data = {'stages': [{'name': 'Build', 'status': 'SUCCESS'}]}
+        data = {'stages': [{'name': 'Build', 'status': 'SUCCESS',
+                            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}}}]}
         respx_mock.get(f'{build.url}wfapi/describe').respond(json=data)
         stages = list(build)
         assert len(stages) == 1
@@ -103,8 +105,15 @@ class TestWorkflowRun:
 
 
 class TestStage:
-    def test_iter_stage(self):
-        stage = Stage({'name': 'Build', 'stageFlowNodes': [{'name': 'Shell', 'status': 'SUCCESS'}]})
+    def test_iter_stage(self, jenkins):
+        stage = Stage(jenkins, {
+            'name': 'Build',
+            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}},
+            'stageFlowNodes': [
+                {'name': 'Shell', 'status': 'SUCCESS',
+                 '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
+            ]
+        })
         steps = list(stage)
         assert len(steps) == 1
         assert isinstance(steps[0], Step)
@@ -119,57 +128,54 @@ class TestStage:
         }
         detail_data = {
             'stageFlowNodes': [
-                {'name': 'Shell', 'status': 'SUCCESS'}
+                {'name': 'Shell', 'status': 'SUCCESS',
+                 '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
             ]
         }
-        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe').respond(json=detail_data)
-        stage = Stage(stage_data, jenkins)
+        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe/').respond(json=detail_data)
+        stage = Stage(jenkins, stage_data)
         steps = list(stage.iter())
         assert len(steps) == 1
         assert isinstance(steps[0], Step)
         assert steps[0].name == 'Shell'
 
-    def test_iter_without_jenkins(self):
-        stage = Stage({'name': 'Build'})
-        steps = list(stage.iter())
-        assert steps == []
-
-    def test_iter_without_links(self, jenkins):
-        stage = Stage({'name': 'Build'}, jenkins)
-        steps = list(stage.iter())
-        assert steps == []
-
     def test_step_get_log(self, jenkins, respx_mock):
         step_data = {
             'name': 'Shell',
             '_links': {
+                'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'},
                 'log': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/log'}
             }
         }
         log_data = {'text': 'Hello world'}
         respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/11/wfapi/log').respond(json=log_data)
-        step = Step(step_data, jenkins)
+        step = Step(jenkins, step_data)
         assert step.get_log() == log_data
 
-    def test_step_get_log_without_jenkins(self):
-        step = Step({'name': 'Shell'})
-        assert step.get_log() is None
-
-    def test_step_get_log_without_links(self, jenkins):
-        step = Step({'name': 'Shell'}, jenkins)
-        assert step.get_log() is None
-
     def test_step_get_log_without_log_link(self, jenkins):
-        step = Step({'name': 'Shell', '_links': {}}, jenkins)
+        step_data = {
+            'name': 'Shell',
+            '_links': {
+                'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}
+            }
+        }
+        step = Step(jenkins, step_data)
         assert step.get_log() is None
 
 
 class TestAsyncStage:
-    async def test_aiter_stage(self):
-        stage = AsyncStage({'name': 'Build', 'stageFlowNodes': [{'name': 'Shell', 'status': 'SUCCESS'}]})
+    async def test_aiter_stage(self, async_jenkins):
+        stage = AsyncStage(async_jenkins, {
+            'name': 'Build',
+            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}},
+            'stageFlowNodes': [
+                {'name': 'Shell', 'status': 'SUCCESS',
+                 '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
+            ]
+        })
         steps = [s async for s in stage]
         assert len(steps) == 1
-        assert isinstance(steps[0], Step)
+        assert isinstance(steps[0], AsyncStep)
         assert steps[0].name == 'Shell'
 
     async def test_aiter_with_detail_fetch(self, async_jenkins, respx_mock):
@@ -181,25 +187,16 @@ class TestAsyncStage:
         }
         detail_data = {
             'stageFlowNodes': [
-                {'name': 'Shell', 'status': 'SUCCESS'}
+                {'name': 'Shell', 'status': 'SUCCESS',
+                 '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
             ]
         }
-        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe').respond(json=detail_data)
-        stage = AsyncStage(stage_data, async_jenkins)
+        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe/').respond(json=detail_data)
+        stage = AsyncStage(async_jenkins, stage_data)
         steps = [s async for s in stage.aiter()]
         assert len(steps) == 1
-        assert isinstance(steps[0], Step)
+        assert isinstance(steps[0], AsyncStep)
         assert steps[0].name == 'Shell'
-
-    async def test_aiter_without_jenkins(self):
-        stage = AsyncStage({'name': 'Build'})
-        steps = [s async for s in stage.aiter()]
-        assert steps == []
-
-    async def test_aiter_without_links(self, async_jenkins):
-        stage = AsyncStage({'name': 'Build'}, async_jenkins)
-        steps = [s async for s in stage.aiter()]
-        assert steps == []
 
 
 class TestAsyncBuild:
@@ -282,7 +279,8 @@ class TestAsyncWorkflowRun:
 
     @pytest.mark.parametrize('data, count', [
         ({'stages': []}, 0),
-        ({'stages': [{'name': 'Build', 'status': 'SUCCESS'}]}, 1),
+        ({'stages': [{'name': 'Build', 'status': 'SUCCESS',
+                      '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}}}]}, 1),
     ], ids=['empty', 'one stage'])
     async def test_aiter(self, async_build, respx_mock, data, count):
         respx_mock.get(f'{async_build.url}wfapi/describe').respond(json=data)
@@ -293,7 +291,8 @@ class TestAsyncWorkflowRun:
             assert stage.name == data['stages'][i]['name']
 
     async def test_aiter_workflow_run(self, async_build, respx_mock):
-        data = {'stages': [{'name': 'Build', 'status': 'SUCCESS'}]}
+        data = {'stages': [{'name': 'Build', 'status': 'SUCCESS',
+                            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}}}]}
         respx_mock.get(f'{async_build.url}wfapi/describe').respond(json=data)
         stages = [s async for s in async_build]
         assert len(stages) == 1
