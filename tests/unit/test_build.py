@@ -105,14 +105,16 @@ class TestWorkflowRun:
 
 
 class TestStage:
-    def test_iter_stage(self, jenkins):
-        stage = Stage(jenkins, {
-            'name': 'Build',
-            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}},
+    def test_iter_stage(self, jenkins, respx_mock):
+        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe/').respond(json={
             'stageFlowNodes': [
                 {'name': 'Shell', 'status': 'SUCCESS',
                  '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
             ]
+        })
+        stage = Stage(jenkins, {
+            'name': 'Build',
+            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}}
         })
         steps = list(stage)
         assert len(steps) == 1
@@ -144,14 +146,16 @@ class TestStage:
 
 
 class TestAsyncStage:
-    async def test_aiter_stage(self, async_jenkins):
-        stage = AsyncStage(async_jenkins, {
-            'name': 'Build',
-            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}},
+    async def test_aiter_stage(self, async_jenkins, respx_mock):
+        respx_mock.get('http://0.0.0.0:8080/job/folder/job/pipeline/2/execution/node/10/wfapi/describe/').respond(json={
             'stageFlowNodes': [
                 {'name': 'Shell', 'status': 'SUCCESS',
                  '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/11/wfapi/describe'}}}
             ]
+        })
+        stage = AsyncStage(async_jenkins, {
+            'name': 'Build',
+            '_links': {'self': {'href': '/job/folder/job/pipeline/2/execution/node/10/wfapi/describe'}}
         })
         steps = [s async for s in stage]
         assert len(steps) == 1
