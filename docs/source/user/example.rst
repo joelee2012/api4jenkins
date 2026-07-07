@@ -525,6 +525,39 @@ save artifacts as zip::
 
     >>> build.save_artifacts('filename.zip')
 
+iterate pipeline stages and steps of WorkflowRun::
+
+    >>> for stage in build:
+    ...     print(stage.name, stage.status)
+    ...     for step in stage:
+    ...         print(step.name, step.status)
+
+access stage/step attributes (snake case of JSON key)::
+
+    >>> stage.name
+    'Build'
+    >>> stage.status
+    'SUCCESS'
+    >>> step.name
+    'Shell Script'
+
+get step log if available::
+
+    >>> log = step.get_log()
+
+Stage/Step are :class:`RawJsonMixIn <api4jenkins.mix.RawJsonMixIn>` based,
+so `api_json()` returns the raw JSON without a network request::
+
+    >>> stage.api_json() == stage.raw
+    True
+
+async iteration with :class:`AsyncWorkflowRun <api4jenkins.build.AsyncWorkflowRun>`::
+
+    >>> async for stage in build:
+    ...     print(stage.name, await stage.status)
+    ...     async for step in stage:
+    ...         print(step.name, await step.status)
+
 
 Credential
 -------------

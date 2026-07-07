@@ -3,17 +3,122 @@
 import asyncio
 import re
 import time
-from typing import Any, Iterator, AsyncIterator, Optional, List
+import urllib.parse
+from typing import Any, Dict, Iterator, AsyncIterator, Optional, List
 from httpx import Response
 
 from .artifact import Artifact, async_save_response_to, save_response_to
 from .input import PendingInputAction
 from .item import AsyncItem, Item
 from .mix import (ActionsMixIn, AsyncActionsMixIn, AsyncDeletionMixIn,
-                  AsyncDescriptionMixIn, DeletionMixIn, DescriptionMixIn)
+                  AsyncDescriptionMixIn, AsyncRawJsonMixIn, DeletionMixIn,
+                  DescriptionMixIn, RawJsonMixIn)
 from .report import (AsyncCoverageReport, AsyncCoverageResult,
                      AsyncCoverageTrends, AsyncTestReport, CoverageReport,
                      CoverageResult, CoverageTrends, TestReport)
+
+
+class Step(RawJsonMixIn, Item):
+    """Represents a step within a pipeline stage.
+
+    Access step attributes as snake_case properties (e.g. ``step.name``,
+    ``step.status``). Use :meth:`get_log` to retrieve step log output
+    if available.
+    """
+
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'Step'
+
+    def get_log(self) -> Optional[Dict[str, Any]]:
+        """Return step log output as a dict, or None if no log link exists."""
+        log_link = self.raw.get('_links', {}).get('log')
+        if not log_link:
+            return None
+        url = _make_full_url(self.jenkins.url, log_link['href'])
+        return self._request('GET', url).json()
+
+
+class Stage(RawJsonMixIn, Item):
+    """Represents a stage in a pipeline build.
+
+    Access stage attributes as snake_case properties (e.g. ``stage.name``,
+    ``stage.status``). Iterate to get :class:`Step` objects within the stage.
+    Each iteration fetches fresh detail from the stage endpoint because
+    pipeline data may change during a running build.
+    """
+
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'Stage'
+
+    def iter(self) -> Iterator[Step]:
+        """Iterate steps in this stage. Always fetches fresh detail."""
+        detail = self.handle_req('GET', '').json()
+        for step in detail.get('stageFlowNodes', []):
+            yield Step(self.jenkins, step)
+
+    def __iter__(self) -> Iterator[Step]:
+        yield from self.iter()
+
+
+class AsyncStep(AsyncRawJsonMixIn, AsyncItem):
+    """Async variant of :class:`Step`.
+
+    Access step attributes as snake_case async properties
+    (e.g. ``await step.name``, ``await step.status``).
+    """
+
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'AsyncStep'
+
+    async def get_log(self) -> Optional[Dict[str, Any]]:
+        """Return step log output as a dict, or None if no log link exists."""
+        log_link = self.raw.get('_links', {}).get('log')
+        if not log_link:
+            return None
+        url = _make_full_url(self.jenkins.url, log_link['href'])
+        resp = await self._request('GET', url)
+        return resp.json()
+
+
+class AsyncStage(AsyncRawJsonMixIn, AsyncItem):
+    """Async variant of :class:`Stage`.
+
+    Access stage attributes as snake_case async properties
+    (e.g. ``await stage.name``, ``await stage.status``).
+    Iterate to get :class:`AsyncStep` objects within the stage.
+    """
+
+    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+        url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
+        super().__init__(jenkins, url)
+        self.raw = raw
+        self.raw['_class'] = 'AsyncStage'
+
+    async def aiter(self) -> AsyncIterator[AsyncStep]:
+        """Iterate async steps in this stage. Always fetches fresh detail."""
+        detail = (await self.handle_req('GET', '')).json()
+        for step in detail.get('stageFlowNodes', []):
+            yield AsyncStep(self.jenkins, step)
+
+    async def __aiter__(self) -> AsyncIterator[AsyncStep]:
+        async for step in self.aiter():
+            yield step
+
+
+def _make_full_url(base_url: str, href: str) -> str:
+    '''Convert a HAL href (which may be absolute) to a full URL.'''
+    base_url = base_url.rstrip('/')
+    parsed = urllib.parse.urlparse(base_url)
+    return f"{parsed.scheme}://{parsed.netloc}{href}"
 
 
 class Build(Item, DescriptionMixIn, DeletionMixIn, ActionsMixIn):
@@ -94,6 +199,12 @@ class WorkflowRun(Build):
     def artifacts(self) -> List[Artifact]:
         artifacts = self.handle_req('GET', 'wfapi/artifacts').json()
         return [Artifact(self.jenkins, art) for art in artifacts]
+
+    def iter(self) -> Iterator[Stage]:
+        '''iterate pipeline stages'''
+        data = self.handle_req('GET', 'wfapi/describe').json()
+        for stage in data.get('stages', []):
+            yield Stage(self.jenkins, stage)
 
     def save_artifacts(self, filename: str = 'archive.zip') -> None:
         with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:
@@ -188,6 +299,12 @@ class AsyncWorkflowRun(AsyncBuild):
     async def artifacts(self) -> List[Artifact]:
         artifacts = (await self.handle_req('GET', 'wfapi/artifacts')).json()
         return [Artifact(self.jenkins, art) for art in artifacts]
+
+    async def aiter(self) -> AsyncIterator[AsyncStage]:
+        '''async iterate pipeline stages'''
+        data = (await self.handle_req('GET', 'wfapi/describe')).json()
+        for stage in data.get('stages', []):
+            yield AsyncStage(self.jenkins, stage)
 
     async def save_artifacts(self, filename: str = 'archive.zip') -> None:
         async with self.handle_stream('GET', 'artifact/*zip*/archive.zip') as resp:
