@@ -19,6 +19,12 @@ from .report import (AsyncCoverageReport, AsyncCoverageResult,
 
 
 class Step(RawJsonMixIn, Item):
+    """Represents a step within a pipeline stage.
+
+    Access step attributes as snake_case properties (e.g. ``step.name``,
+    ``step.status``). Use :meth:`get_log` to retrieve step log output
+    if available.
+    """
 
     def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
         url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
@@ -27,6 +33,7 @@ class Step(RawJsonMixIn, Item):
         self.raw['_class'] = 'Step'
 
     def get_log(self) -> Optional[Dict[str, Any]]:
+        """Return step log output as a dict, or None if no log link exists."""
         log_link = self.raw.get('_links', {}).get('log')
         if not log_link:
             return None
@@ -35,6 +42,13 @@ class Step(RawJsonMixIn, Item):
 
 
 class Stage(RawJsonMixIn, Item):
+    """Represents a stage in a pipeline build.
+
+    Access stage attributes as snake_case properties (e.g. ``stage.name``,
+    ``stage.status``). Iterate to get :class:`Step` objects within the stage.
+    Each iteration fetches fresh detail from the stage endpoint because
+    pipeline data may change during a running build.
+    """
 
     def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
         url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
@@ -43,6 +57,7 @@ class Stage(RawJsonMixIn, Item):
         self.raw['_class'] = 'Stage'
 
     def iter(self) -> Iterator[Step]:
+        """Iterate steps in this stage. Always fetches fresh detail."""
         detail = self.handle_req('GET', '').json()
         for step in detail.get('stageFlowNodes', []):
             yield Step(self.jenkins, step)
@@ -52,6 +67,11 @@ class Stage(RawJsonMixIn, Item):
 
 
 class AsyncStep(AsyncRawJsonMixIn, AsyncItem):
+    """Async variant of :class:`Step`.
+
+    Access step attributes as snake_case async properties
+    (e.g. ``await step.name``, ``await step.status``).
+    """
 
     def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
         url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
@@ -60,6 +80,7 @@ class AsyncStep(AsyncRawJsonMixIn, AsyncItem):
         self.raw['_class'] = 'AsyncStep'
 
     async def get_log(self) -> Optional[Dict[str, Any]]:
+        """Return step log output as a dict, or None if no log link exists."""
         log_link = self.raw.get('_links', {}).get('log')
         if not log_link:
             return None
@@ -69,6 +90,12 @@ class AsyncStep(AsyncRawJsonMixIn, AsyncItem):
 
 
 class AsyncStage(AsyncRawJsonMixIn, AsyncItem):
+    """Async variant of :class:`Stage`.
+
+    Access stage attributes as snake_case async properties
+    (e.g. ``await stage.name``, ``await stage.status``).
+    Iterate to get :class:`AsyncStep` objects within the stage.
+    """
 
     def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
         url = _make_full_url(jenkins.url, raw['_links']['self']['href'])
@@ -77,6 +104,7 @@ class AsyncStage(AsyncRawJsonMixIn, AsyncItem):
         self.raw['_class'] = 'AsyncStage'
 
     async def aiter(self) -> AsyncIterator[AsyncStep]:
+        """Iterate async steps in this stage. Always fetches fresh detail."""
         detail = (await self.handle_req('GET', '')).json()
         for step in detail.get('stageFlowNodes', []):
             yield AsyncStep(self.jenkins, step)
