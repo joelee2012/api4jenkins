@@ -3,6 +3,7 @@ import tempfile
 import pytest
 from httpx import HTTPTransport
 
+from api4jenkins import AsyncJenkins, Jenkins, _is_api_token
 from api4jenkins.exceptions import BadRequestError, ItemNotFoundError
 from api4jenkins.http import _new_transport
 from api4jenkins.item import new_item, snake
@@ -322,3 +323,79 @@ def test_new_transport():
     trans = _new_transport(HTTPTransport, kwargs)
     assert isinstance(trans, HTTPTransport)
     assert kwargs == {'other': '1111'}
+
+
+class TestIsApiToken:
+    @pytest.mark.parametrize(
+        'token, expected',
+        [
+            ('a' * 32, True),
+            ('11' + 'b' * 32, True),
+            ('1234567890abcdef' * 2, True),
+            ('short', False),
+            ('password123', False),
+            ('a' * 31, False),
+            ('', False),
+            ('g' * 32, False),
+        ],
+    )
+    def test_is_api_token(self, token, expected):
+        assert _is_api_token(token) == expected
+
+
+class TestCrumbWithApiToken:
+    def test_crumb_skipped_for_api_token(self, respx_mock):
+        url = 'http://0.0.0.0:8080/'
+        api_token = 'a' * 32
+        j = Jenkins(url, auth=('admin', api_token))
+        respx_mock.get(f'{url}crumbIssuer/api/json')
+        crumb = j.crumb
+        assert crumb == {}
+        assert not respx_mock.calls
+
+    def test_crumb_requested_for_password(self, respx_mock):
+        url = 'http://0.0.0.0:8080/'
+        j = Jenkins(url, auth=('admin', 'password'))
+        respx_mock.get(f'{url}crumbIssuer/api/json').respond(
+            json={'crumbRequestField': 'Jenkins-Crumb', 'crumb': 'abc123'})
+        crumb = j.crumb
+        assert crumb == {'Jenkins-Crumb': 'abc123'}
+        assert len(respx_mock.calls) == 1
+
+    def test_crumb_requested_without_auth(self, respx_mock):
+        url = 'http://0.0.0.0:8080/'
+        j = Jenkins(url)
+        respx_mock.get(f'{url}crumbIssuer/api/json').respond(
+            json={'crumbRequestField': 'Jenkins-Crumb', 'crumb': 'abc123'})
+        crumb = j.crumb
+        assert crumb == {'Jenkins-Crumb': 'abc123'}
+        assert len(respx_mock.calls) == 1
+
+
+class TestAsyncCrumbWithApiToken:
+    async def test_crumb_skipped_for_api_token(self, respx_mock):
+        url = 'http://0.0.0.0:8080/'
+        api_token = 'a' * 32
+        j = AsyncJenkins(url, auth=('admin', api_token))
+        respx_mock.get(f'{url}crumbIssuer/api/json')
+        crumb = await j.crumb
+        assert crumb == {}
+        assert not respx_mock.calls
+
+    async def test_crumb_requested_for_password(self, respx_mock):
+        url = 'http://0.0.0.0:8080/'
+        j = AsyncJenkins(url, auth=('admin', 'password'))
+        respx_mock.get(f'{url}crumbIssuer/api/json').respond(
+            json={'crumbRequestField': 'Jenkins-Crumb', 'crumb': 'abc123'})
+        crumb = await j.crumb
+        assert crumb == {'Jenkins-Crumb': 'abc123'}
+        assert len(respx_mock.calls) == 1
+
+    async def test_crumb_requested_without_auth(self, respx_mock):
+        url = 'http://0.0.0.0:8080/'
+        j = AsyncJenkins(url)
+        respx_mock.get(f'{url}crumbIssuer/api/json').respond(
+            json={'crumbRequestField': 'Jenkins-Crumb', 'crumb': 'abc123'})
+        crumb = await j.crumb
+        assert crumb == {'Jenkins-Crumb': 'abc123'}
+        assert len(respx_mock.calls) == 1
