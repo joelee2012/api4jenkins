@@ -24,6 +24,22 @@ EMPTY_FOLDER_XML = '''<?xml version='1.0' encoding='UTF-8'?>
 <com.cloudbees.hudson.plugins.folder.Folder/>'''
 
 
+def _is_api_token(token: str) -> bool:
+    """Check if the auth token looks like a Jenkins API token.
+
+    Jenkins API tokens are typically 32-character hexadecimal strings
+    (classic format) or 34-character hexadecimal strings (newer format).
+    When authenticated with an API token, crumb validation is not required.
+    """
+    if len(token) < 32:
+        return False
+    try:
+        int(token, 16)
+        return True
+    except ValueError:
+        return False
+
+
 class Jenkins(Item, UrlMixIn):
     r'''Constructs  :class:`Jenkins <Jenkins>`.
 
@@ -231,18 +247,24 @@ class Jenkins(Item, UrlMixIn):
     #     except Exception as e:
     #         return isinstance(e, (AuthenticationError, PermissionError))
 
+    def _fetch_crumb(self) -> Dict[str, str]:
+        try:
+            _crumb = self._request(
+                'GET', f'{self.url}crumbIssuer/api/json').json()
+            return {_crumb['crumbRequestField']: _crumb['crumb']}
+        except HTTPStatusError:
+            return {}
+
     @property
     def crumb(self) -> Dict[str, str]:
-        if self._crumb is None:
-            with self._sync_lock:
-                if self._crumb is None:
-                    try:
-                        _crumb = self._request(
-                            'GET', f'{self.url}crumbIssuer/api/json').json()
-                        self._crumb = {
-                            _crumb['crumbRequestField']: _crumb['crumb']}
-                    except HTTPStatusError:
-                        self._crumb = {}
+        if self._crumb is not None:
+            return self._crumb
+        if self._auth and _is_api_token(self._auth[1]):
+            self._crumb = {}
+            return self._crumb
+        with self._sync_lock:
+            if self._crumb is None:
+                self._crumb = self._fetch_crumb()
         return self._crumb
 
     @property
@@ -377,17 +399,24 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
     #     except Exception as e:
     #         return isinstance(e, (AuthenticationError, PermissionError))
 
+    async def _fetch_crumb(self) -> Dict[str, str]:
+        try:
+            _crumb = (await self._request(
+                'GET', f'{self.url}crumbIssuer/api/json')).json()
+            return {_crumb['crumbRequestField']: _crumb['crumb']}
+        except HTTPStatusError:
+            return {}
+
     @property
     async def crumb(self) -> Dict[str, str]:
-        if self._crumb is None:
-            async with self._async_lock:
-                if self._crumb is None:
-                    try:
-                        _crumb = (await self._request('GET', f'{self.url}crumbIssuer/api/json')).json()
-                        self._crumb = {
-                            _crumb['crumbRequestField']: _crumb['crumb']}
-                    except HTTPStatusError:
-                        self._crumb = {}
+        if self._crumb is not None:
+            return self._crumb
+        if self._auth and _is_api_token(self._auth[1]):
+            self._crumb = {}
+            return self._crumb
+        async with self._async_lock:
+            if self._crumb is None:
+                self._crumb = await self._fetch_crumb()
         return self._crumb
 
     @property
