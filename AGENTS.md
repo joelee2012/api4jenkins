@@ -19,7 +19,7 @@ tox -e lint
 tox -e integration
 ```
 
-**No `pyproject.toml`** — this is a pure setuptools project. `setup.py` has **no `[dev]` extras**, so do not use `pip install -e .[dev]`. Install dev dependencies via the tox environments or manually (`respx`, `pytest-cov`, `pytest-asyncio`, `ruff`, `pycodestyle`).
+**Uses `pyproject.toml`** (PEP 621, setuptools build backend). There is no `setup.py`; build with `python -m build`. There are **no `[dev]` extras**, so do not use `pip install -e .[dev]`. Install dev dependencies via the tox environments or manually (`respx`, `pytest-cov`, `pytest-asyncio`, `ruff`, `pycodestyle`). The version is read dynamically from `api4jenkins/__version__.py` via `[tool.setuptools.dynamic]` (AST extraction, no import).
 
 ## Repository Layout
 
@@ -58,4 +58,4 @@ tox -e integration
 
 - `.github/workflows/unittest.yml` — Runs `tox` (style + lint + unit tests) across Python 3.8–3.13 on ubuntu-latest, uploads coverage for 3.12, and runs `twine check` on the built wheel/sdist.
 - `.github/workflows/integration.yml` — Starts Jenkins in Docker, then runs `tox -e integration`.
-- `.github/workflows/publish.yml` — Triggered on release creation; builds with `setup.py sdist bdist_wheel` and uploads to PyPI.
+- `.github/workflows/publish.yml` — Triggered on release creation; builds with `python -m build` and uploads to PyPI.

@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "api4jenkins"
+dynamic = ["version"]
+description = "Jenkins Python Client"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache 2.0"}
+authors = [
+    {name = "Joe Lee", email = "lj_2005@163.com"},
+]
+keywords = ["RESTAPI", "Jenkins"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "httpx >= 0.24.1",
+]
+
+[project.urls]
+Documentation = "https://api4jenkins.readthedocs.io"
+Source = "https://github.com/joelee2012/api4jenkins"
+
+[tool.setuptools]
+packages = ["api4jenkins"]
+
+[tool.setuptools.dynamic]
+# Read from api4jenkins/__version__.py. setuptools extracts the literal via
+# AST parsing (no import), so build dependencies are not required.
+version = {attr = "api4jenkins.__version__.__version__"}
+
+[tool.ruff.format]
+# Prefer single quotes over double quotes.
+quote-style = "single"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"

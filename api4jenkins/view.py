@@ -1,14 +1,21 @@
-# encoding: utf-8
 
-from typing import Any, Iterator, AsyncIterator, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, AsyncIterator, Iterator, Optional
+
 from httpx import Response
+
 from .item import AsyncItem, Item
 
 if TYPE_CHECKING:
-    from .job import Job, AsyncJob
-from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
-                  AsyncDescriptionMixIn, ConfigurationMixIn,
-                  DeletionMixIn, DescriptionMixIn)
+    from .job import AsyncJob, Job
+from .mix import (
+    AsyncConfigurationMixIn,
+    AsyncDeletionMixIn,
+    AsyncDescriptionMixIn,
+    ConfigurationMixIn,
+    DeletionMixIn,
+    DescriptionMixIn,
+)
+
 # Job is imported using string literal type annotation to avoid circular import
 
 

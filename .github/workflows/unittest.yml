@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
         # os: [ubuntu-latest, macOS-latest, windows-latest]
         os: [ubuntu-latest]
 
@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install --upgrade keyring==21.4.0 setuptools wheel twine tox
+        run: pip install --upgrade keyring==21.4.0 setuptools wheel twine tox build
 
       - name: Run pylint & codestyle & unit tests
         run: tox
@@ -39,5 +39,5 @@ jobs:
 
       - name: Run twine check
         run: |
-          python setup.py sdist bdist_wheel
+          python -m build
           twine check dist/*

@@ -1,8 +1,9 @@
-# encoding: utf-8
+from __future__ import annotations
+
 import asyncio
 import threading
 from importlib import import_module
-from typing import Any, AsyncIterator, Dict, Iterator, Optional, Tuple
+from typing import Any, AsyncIterator, Iterator
 
 from httpx import HTTPStatusError
 
@@ -43,14 +44,14 @@ class Jenkins(Item, UrlMixIn):
 
     def __init__(self, url: str, **kwargs: Any) -> None:
         self.http_client = new_http_client(**kwargs)
-        self._crumb: Optional[Dict[str, str]] = None
-        self._auth: Optional[Tuple[str, str]] = kwargs.get('auth')
+        self._crumb: dict[str, str] | None = None
+        self._auth: tuple[str, str] | None = kwargs.get('auth')
         self._sync_lock = threading.Lock()
         super().__init__(self, url)
-        self.user: Optional[User] = User(
+        self.user: User | None = User(
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
 
-    def get_job(self, full_name: str) -> Optional[Item]:
+    def get_job(self, full_name: str) -> Item | None:
         '''Get job by full name
 
         :param full_name: ``str``, full name of job
@@ -216,7 +217,7 @@ class Jenkins(Item, UrlMixIn):
         return self.handle_req(
             'POST', 'pipeline-model-converter/validate', data=data).text
 
-    def _resolve_name(self, full_name: str) -> Tuple[Folder, str]:
+    def _resolve_name(self, full_name: str) -> tuple[Folder, str]:
         parent, name = self._parse_name(full_name)
         return Folder(self, self._name2url(parent)), name
 
@@ -232,7 +233,7 @@ class Jenkins(Item, UrlMixIn):
     #         return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    def crumb(self) -> Dict[str, str]:
+    def crumb(self) -> dict[str, str]:
         if self._crumb is None:
             with self._sync_lock:
                 if self._crumb is None:
@@ -278,17 +279,17 @@ class Jenkins(Item, UrlMixIn):
         return Users(self, f'{self.url}asynchPeople/')
 
     @property
-    def me(self) -> Optional[User]:
+    def me(self) -> User | None:
         return self.user
 
     def __call__(self, depth: int) -> Iterator[Item]:
         yield from self.iter(depth)
 
-    def __getitem__(self, full_name: str) -> Optional[Item]:
+    def __getitem__(self, full_name: str) -> Item | None:
         return self.get_job(full_name)
 
 
-def _patch_to(module: str, cls: Any, func: Optional[Any] = None) -> None:
+def _patch_to(module: str, cls: Any, func: Any | None = None) -> None:
     _module = import_module(module)
     if func:
         _class = getattr(_module, cls.__name__)
@@ -308,7 +309,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         self.user = AsyncUser(
             self, f'{self.url}user/{self._auth[0]}/') if self._auth else None
 
-    async def get_job(self, full_name: str) -> Optional[AsyncItem]:
+    async def get_job(self, full_name: str) -> AsyncItem | None:
         folder, name = self._resolve_name(full_name)
         if await folder.exists():
             return await folder.get(name)
@@ -336,7 +337,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
     async def build_job(self, full_name: str, **params: Any) -> Any:
         job = await self._get_job_and_check(full_name)
         if not isinstance(job, AsyncProject):
-            raise AttributeError(f'{job} has no attribute build')
+            raise AttributeError(f'{job} has no attribute build')  # noqa: TRY004
         return await job.build(**params)
 
     async def rename_job(self, full_name: str, new_name: str) -> Any:
@@ -366,7 +367,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
             'POST', 'pipeline-model-converter/validate', data={'jenkinsfile': content})
         return data.text
 
-    def _resolve_name(self, full_name: str) -> Tuple[AsyncFolder, str]:
+    def _resolve_name(self, full_name: str) -> tuple[AsyncFolder, str]:
         parent, name = self._parse_name(full_name)
         return AsyncFolder(self, self._name2url(parent)), name
 
@@ -378,7 +379,7 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
     #         return isinstance(e, (AuthenticationError, PermissionError))
 
     @property
-    async def crumb(self) -> Dict[str, str]:
+    async def crumb(self) -> dict[str, str]:
         if self._crumb is None:
             async with self._async_lock:
                 if self._crumb is None:
@@ -423,12 +424,12 @@ class AsyncJenkins(AsyncItem, UrlMixIn):
         return AsyncUsers(self, f'{self.url}asynchPeople/')
 
     @property
-    def me(self) -> Optional[AsyncUser]:
+    def me(self) -> AsyncUser | None:
         return self.user
 
     async def __call__(self, depth: int) -> AsyncIterator[AsyncItem]:
         async for job in self.aiter(depth):
             yield job
 
-    async def __getitem__(self, full_name: str) -> Optional[AsyncItem]:
+    async def __getitem__(self, full_name: str) -> AsyncItem | None:
         return await self.get_job(full_name)

@@ -1,9 +1,13 @@
-# encoding: utf-8
 from collections import namedtuple
-from typing import Any, Iterator, AsyncIterator, Optional
+from typing import Any, AsyncIterator, Iterator, Optional
+
 from .item import AsyncItem, Item
-from .mix import (AsyncDeletionMixIn, AsyncDescriptionMixIn,
-                  DeletionMixIn, DescriptionMixIn)
+from .mix import (
+    AsyncDeletionMixIn,
+    AsyncDescriptionMixIn,
+    DeletionMixIn,
+    DescriptionMixIn,
+)
 
 user_tree = 'users[user[id,absoluteUrl,fullName]]'
 new_token_url = 'descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken'
