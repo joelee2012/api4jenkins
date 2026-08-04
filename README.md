@@ -72,10 +72,9 @@ Async example
 
 ```python
 import asyncio
-import time
 from api4jenkins import AsyncJenkins
 
-async main():
+async def main():
     client = AsyncJenkins('http://127.0.0.1:8080/', auth=('admin', 'admin'))
     print(await client.version)
     xml = """<?xml version='1.1' encoding='UTF-8'?>
@@ -89,7 +88,7 @@ async main():
     await client.create_job('job', xml)
     item = await client.build_job('job')
     while not await item.get_build():
-        time.sleep(1)
+        await asyncio.sleep(1)
     build = await item.get_build()
     async for line in build.progressive_output():
         print(line)
