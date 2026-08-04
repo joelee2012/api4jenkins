@@ -1,15 +1,18 @@
-# encoding: utf-8
+from __future__ import annotations
+
 import re
-from typing import Any, Iterator, AsyncIterator, Optional
+from typing import Any, AsyncIterator, Iterator
+
 from httpx import Response
+
+from .build import AsyncBuild, Build
 from .item import AsyncItem, Item
-from .mix import (ActionsMixIn, AsyncActionsMixIn)
-from .job import Job, AsyncJob
-from .build import Build, AsyncBuild
+from .job import AsyncJob, Job
+from .mix import ActionsMixIn, AsyncActionsMixIn
 
 
 class Queue(Item):
-    def get(self, id: str) -> Optional['QueueItem']:
+    def get(self, id: str) -> QueueItem | None:
         for item in self.api_json(tree='items[id,url]')['items']:
             if item['id'] == int(id):
                 return QueueItem(self.jenkins,
@@ -19,7 +22,7 @@ class Queue(Item):
     def cancel(self, id: str) -> Response:
         return self.handle_req('POST', 'cancelItem', params={'id': id})
 
-    def __iter__(self) -> Iterator['QueueItem']:
+    def __iter__(self) -> Iterator[QueueItem]:
         for item in self.api_json(tree='items[url]')['items']:
             yield QueueItem(self.jenkins, f"{self.jenkins.url}{item['url']}")
 
@@ -52,7 +55,7 @@ class QueueItem(Item, ActionsMixIn):
         task = self.api_json(tree='task[url]')['task']
         return self._new_item('api4jenkins.job', task)
 
-    def get_build(self) -> Optional[Build]:
+    def get_build(self) -> Build | None:
         if not self._build:
             _class = self._class
             # BlockedItem does not have build
@@ -96,7 +99,7 @@ class WaitingItem(QueueItem):
 
 class AsyncQueue(AsyncItem):
 
-    async def get(self, id: str) -> Optional['AsyncQueueItem']:
+    async def get(self, id: str) -> AsyncQueueItem | None:
         for item in (await self.api_json(tree='items[id,url]'))['items']:
             if item['id'] == int(id):
                 return AsyncQueueItem(self.jenkins,
@@ -106,7 +109,7 @@ class AsyncQueue(AsyncItem):
     async def cancel(self, id: str) -> Response:
         return await self.handle_req('POST', 'cancelItem', params={'id': id})
 
-    async def __aiter__(self) -> AsyncIterator['AsyncQueueItem']:
+    async def __aiter__(self) -> AsyncIterator[AsyncQueueItem]:
         for item in (await self.api_json(tree='items[url]'))['items']:
             yield AsyncQueueItem(self.jenkins, f"{self.jenkins.url}{item['url']}")
 
@@ -130,7 +133,7 @@ class AsyncQueueItem(AsyncItem, AsyncActionsMixIn):
         data = await self.api_json(tree='task[url]')
         return self._new_item('api4jenkins.job', data['task'])
 
-    async def get_build(self) -> Optional[AsyncBuild]:
+    async def get_build(self) -> AsyncBuild | None:
         if not self._build:
             _class = await self._class
             # BlockedItem does not have build

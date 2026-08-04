@@ -1,8 +1,11 @@
-# encoding: utf-8
+from __future__ import annotations
+
 import json
 import time
 import xml.etree.ElementTree as ET
-from typing import Iterator, AsyncIterator, Optional, List
+from typing import AsyncIterator, Iterator
+
+import anyio
 from httpx import Response
 
 from .item import AsyncItem, Item
@@ -10,7 +13,7 @@ from .item import AsyncItem, Item
 
 class PluginsManager(Item):
 
-    def get(self, name: str) -> Optional['Plugin']:
+    def get(self, name: str) -> Plugin | None:
         for plugin in self.api_json(tree='plugins[shortName]')['plugins']:
             if plugin['shortName'] == name:
                 return Plugin(self.jenkins, f'{self.url}plugin/{name}/')
@@ -30,7 +33,7 @@ class PluginsManager(Item):
             time.sleep(2)
         return resp
 
-    def uninstall(self, *names: str) -> List[Response]:
+    def uninstall(self, *names: str) -> list[Response]:
         responses = []
         for name in names:
             responses.append(
@@ -47,11 +50,11 @@ class PluginsManager(Item):
         return self.handle_req('POST', 'checkUpdatesServer')
 
     @property
-    def update_center(self) -> 'UpdateCenter':
+    def update_center(self) -> UpdateCenter:
         return UpdateCenter(self.jenkins, f'{self.jenkins.url}updateCenter/')
 
     @property
-    def site(self) -> Optional[str]:
+    def site(self) -> str | None:
         return self.update_center.site
 
     @property
@@ -70,7 +73,7 @@ class PluginsManager(Item):
         return self.handle_req('POST', 'proxyConfigure', data={
             'json': json.dumps(data)})
 
-    def __iter__(self) -> Iterator['Plugin']:
+    def __iter__(self) -> Iterator[Plugin]:
         for plugin in self.api_json(tree='plugins[shortName]')['plugins']:
             yield Plugin(self.jenkins,
                         f'{self.url}plugin/{plugin["shortName"]}/')
@@ -95,7 +98,7 @@ class UpdateCenter(Item):
             'restartRequiredForCompletion'))
 
     @property
-    def site(self) -> Optional[str]:
+    def site(self) -> str | None:
         return self.api_json(tree='sites[url]')['sites'][0].get('url')
 
 
@@ -103,7 +106,7 @@ class UpdateCenter(Item):
 
 class AsyncPluginsManager(AsyncItem):
 
-    async def get(self, name: str) -> Optional['AsyncPlugin']:
+    async def get(self, name: str) -> AsyncPlugin | None:
         data = await self.api_json(tree='plugins[shortName]')
         for plugin in data['plugins']:
             if plugin['shortName'] == name:
@@ -121,7 +124,7 @@ class AsyncPluginsManager(AsyncItem):
                               content=ET.tostring(plugin_xml))
 
         while block and not await self.installation_done:
-            time.sleep(2)
+            await anyio.sleep(2)
 
     async def uninstall(self, *names: str) -> None:
         for name in names:
@@ -135,11 +138,11 @@ class AsyncPluginsManager(AsyncItem):
         await self.handle_req('POST', 'checkUpdatesServer')
 
     @property
-    def update_center(self) -> 'AsyncUpdateCenter':
+    def update_center(self) -> AsyncUpdateCenter:
         return AsyncUpdateCenter(self.jenkins, f'{self.jenkins.url}updateCenter/')
 
     @property
-    async def site(self) -> Optional[str]:
+    async def site(self) -> str | None:
         return await self.update_center.site
 
     @property
@@ -159,7 +162,7 @@ class AsyncPluginsManager(AsyncItem):
         await self.handle_req('POST', 'proxyConfigure', data={
             'json': json.dumps(data)})
 
-    async def __aiter__(self) -> AsyncIterator['AsyncPlugin']:
+    async def __aiter__(self) -> AsyncIterator[AsyncPlugin]:
         data = await self.api_json(tree='plugins[shortName]')
         for plugin in data['plugins']:
             yield AsyncPlugin(self.jenkins,
@@ -185,6 +188,6 @@ class AsyncUpdateCenter(AsyncItem):
         return bool(data.get('restartRequiredForCompletion'))
 
     @property
-    async def site(self) -> Optional[str]:
+    async def site(self) -> str | None:
         data = await self.api_json(tree='sites[url]')
         return data['sites'][0].get('url')

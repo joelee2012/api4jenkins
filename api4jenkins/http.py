@@ -1,10 +1,17 @@
-# encoding: utf-8
+from __future__ import annotations
+
 import inspect
 import logging
-from typing import Any, Dict
+from typing import Any
 
-from httpx import (AsyncClient, AsyncHTTPTransport, Client, HTTPTransport,
-                   Request, Response)
+from httpx import (
+    AsyncClient,
+    AsyncHTTPTransport,
+    Client,
+    HTTPTransport,
+    Request,
+    Response,
+)
 
 from .exceptions import AuthenticationError, BadRequestError, ItemNotFoundError
 
@@ -31,7 +38,7 @@ def check_response(response: Response) -> None:
     response.raise_for_status()
 
 
-def _new_transport(obj: Any, kwargs: Dict[str, Any]) -> Any:
+def _new_transport(obj: Any, kwargs: dict[str, Any]) -> Any:
     init_args = {
         arg: kwargs.pop(arg)
         for arg in inspect.getfullargspec(obj).args

@@ -1,9 +1,10 @@
-# encoding: utf-8
+from __future__ import annotations
 
 import contextlib
 import re
 from importlib import import_module
-from typing import Any, Dict, List, Optional, Union, Iterator, AsyncIterator
+from typing import Any, AsyncIterator, ClassVar, Iterator
+
 from httpx import Response
 
 import api4jenkins
@@ -36,7 +37,7 @@ def append_slash(url: str) -> str:
 def _new_item() -> Any:
     delimiter = re.compile(r'[.$]')
 
-    def func(jenkins: Any, module: str, item: Dict[str, Any]) -> Any:
+    def func(jenkins: Any, module: str, item: dict[str, Any]) -> Any:
         class_name = delimiter.split(item['_class'])[-1]
         if isinstance(jenkins, api4jenkins.AsyncJenkins):
             class_name = f'Async{class_name}'
@@ -56,8 +57,8 @@ new_item = _new_item()
 
 
 class BaseItem:
-    headers: Dict[str, str] = {'Content-Type': 'text/xml; charset=utf-8'}
-    _attr_names: List[str] = []
+    headers: ClassVar[dict[str, str]] = {'Content-Type': 'text/xml; charset=utf-8'}
+    _attr_names: ClassVar[list[str]] = []
 
     def __init__(self, jenkins: Any, url: str) -> None:
         self.jenkins = jenkins
@@ -65,7 +66,7 @@ class BaseItem:
         self._request = jenkins.http_client.request
         self._stream = jenkins.http_client.stream
 
-    def _new_item(self, module: str, item: Dict[str, Any]) -> Any:
+    def _new_item(self, module: str, item: dict[str, Any]) -> Any:
         return new_item(self.jenkins, module, item)
 
     def __eq__(self, other: object) -> bool:
@@ -74,14 +75,14 @@ class BaseItem:
     def __str__(self) -> str:
         return f'<{type(self).__name__}: {self.url}>'
 
-    def _add_crumb(self, crumb: Optional[Dict[str, str]], kwargs: Dict[str, Any]) -> None:
+    def _add_crumb(self, crumb: dict[str, str] | None, kwargs: dict[str, Any]) -> None:
         if crumb:
             headers = kwargs.get('headers', {})
             headers.update(crumb)
             kwargs['headers'] = headers
 
     @classmethod
-    def _get_attr_names(cls, api_json: Dict[str, Any]) -> None:
+    def _get_attr_names(cls, api_json: dict[str, Any]) -> None:
         types = (int, str, bool, type(None))
         cls._attr_names = [snake(k)
                            for k in api_json if isinstance(api_json[k], types)]
@@ -89,7 +90,7 @@ class BaseItem:
 
 class Item(BaseItem):
 
-    def api_json(self, tree: str = '', depth: int = 0) -> Dict[str, Any]:
+    def api_json(self, tree: str = '', depth: int = 0) -> dict[str, Any]:
         params = {'depth': depth}
         if tree:
             params['tree'] = tree
@@ -113,7 +114,7 @@ class Item(BaseItem):
             return False
 
     @property
-    def dynamic_attrs(self) -> List[str]:
+    def dynamic_attrs(self) -> list[str]:
         if not self._attr_names:
             self._get_attr_names(self.api_json())
         return self._attr_names
@@ -124,7 +125,7 @@ class Item(BaseItem):
             return self.api_json(tree=attr)[attr]
         return super().__getattribute__(name)
 
-    def __getitem__(self, name: Union[str, int]) -> Any:
+    def __getitem__(self, name: str | int) -> Any:
         if hasattr(self, 'get'):
             return self.get(name)
         raise TypeError(f"'{type(self).__name__}' object is not subscriptable")
@@ -138,7 +139,7 @@ class Item(BaseItem):
 
 class AsyncItem(BaseItem):
 
-    async def api_json(self, tree: str = '', depth: int = 0) -> Dict[str, Any]:
+    async def api_json(self, tree: str = '', depth: int = 0) -> dict[str, Any]:
         params = {'depth': depth}
         if tree:
             params['tree'] = tree
@@ -162,7 +163,7 @@ class AsyncItem(BaseItem):
             return False
 
     @property
-    async def dynamic_attrs(self) -> List[str]:
+    async def dynamic_attrs(self) -> list[str]:
         if not self._attr_names:
             self._get_attr_names(await self.api_json())
         return self._attr_names
@@ -173,7 +174,7 @@ class AsyncItem(BaseItem):
             return (await self.api_json(tree=attr))[attr]
         return super().__getattribute__(name)
 
-    async def __getitem__(self, name: Union[str, int]) -> Any:
+    async def __getitem__(self, name: str | int) -> Any:
         if hasattr(self, 'get'):
             return await self.get(name)
         raise TypeError(f"'{type(self).__name__}' object is not subscriptable")

@@ -1,16 +1,21 @@
-# encoding: utf-8
 
-from typing import Iterator, AsyncIterator, Optional
-from .item import AsyncItem, Item
-from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
-                  ConfigurationMixIn, DeletionMixIn)
+from typing import AsyncIterator, Iterator, Optional
+
 from httpx import Response
+
+from .item import AsyncItem, Item
+from .mix import (
+    AsyncConfigurationMixIn,
+    AsyncDeletionMixIn,
+    ConfigurationMixIn,
+    DeletionMixIn,
+)
 
 
 class Credentials(Item):
 
     def get(self, name: str) -> Optional['Domain']:
-        for key in self.api_json(tree='domains[urlName]')['domains'].keys():
+        for key in self.api_json(tree='domains[urlName]')['domains']:
             if key == name:
                 return Domain(self.jenkins, f'{self.url}domain/{key}/')
         return None
@@ -22,7 +27,7 @@ class Credentials(Item):
     def iter(self) -> Iterator['Domain']:  # type: ignore[override]
         """Override Item.iter() to provide domain iteration.
         Note: This intentionally changes the return type from None to Iterator."""
-        for key in self.api_json(tree='domains[urlName]')['domains'].keys():
+        for key in self.api_json(tree='domains[urlName]')['domains']:
             yield Domain(self.jenkins, f'{self.url}domain/{key}/')
 
     @property
@@ -60,7 +65,7 @@ class AsyncCredentials(AsyncItem):
 
     async def get(self, name: str) -> Optional['AsyncDomain']:
         data = await self.api_json(tree='domains[urlName]')
-        for key in data['domains'].keys():
+        for key in data['domains']:
             if key == name:
                 return AsyncDomain(self.jenkins, f'{self.url}domain/{key}/')
         return None
@@ -73,7 +78,7 @@ class AsyncCredentials(AsyncItem):
         """Override AsyncItem.aiter() to provide async domain iteration.
         Note: This intentionally changes the return type from None to AsyncIterator."""
         data = await self.api_json(tree='domains[urlName]')
-        for key in data['domains'].keys():
+        for key in data['domains']:
             yield AsyncDomain(self.jenkins, f'{self.url}domain/{key}/')
 
     @property

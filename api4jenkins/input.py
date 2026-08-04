@@ -1,6 +1,8 @@
-# encoding: utf-8
+from __future__ import annotations
+
 import json
-from typing import Any, Dict
+from typing import Any
+
 from .item import AsyncItem, Item
 from .mix import AsyncRawJsonMixIn, RawJsonMixIn
 
@@ -10,7 +12,7 @@ class PendingInputAction(RawJsonMixIn, Item):
     `input step <https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step/>`_
     '''
 
-    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+    def __init__(self, jenkins: Any, raw: dict[str, Any]) -> None:
         super().__init__(
             jenkins, f"{jenkins.url}{raw['abortUrl'].rstrip('abort').lstrip('/')}")
         self.raw = raw
@@ -34,7 +36,7 @@ class PendingInputAction(RawJsonMixIn, Item):
         return self.handle_req('POST', 'proceedEmpty')
 
 
-def _make_input_params(api_json: Dict[str, Any], **params: Any) -> Dict[str, str]:
+def _make_input_params(api_json: dict[str, Any], **params: Any) -> dict[str, str]:
     input_args = [input['name'] for input in api_json['inputs']]
     params_keys = list(params.keys())
     if not input_args:
@@ -48,7 +50,7 @@ def _make_input_params(api_json: Dict[str, Any], **params: Any) -> Dict[str, str
 
 
 class AsyncPendingInputAction(AsyncRawJsonMixIn, AsyncItem):
-    def __init__(self, jenkins: Any, raw: Dict[str, Any]) -> None:
+    def __init__(self, jenkins: Any, raw: dict[str, Any]) -> None:
         super().__init__(
             jenkins, f"{jenkins.url}{raw['abortUrl'].rstrip('abort').lstrip('/')}")
         self.raw = raw

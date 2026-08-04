@@ -1,9 +1,9 @@
-# encoding: utf-8
+from __future__ import annotations
 
 # pylint: disable=no-member
 from collections import namedtuple
 from pathlib import PurePosixPath
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class UrlMixIn:
@@ -20,7 +20,7 @@ class UrlMixIn:
         full_name = full_name.strip('/').replace('/', '/job/')
         return f'{self.url}job/{full_name}/'
 
-    def _parse_name(self, full_name: str) -> Tuple[str, str]:
+    def _parse_name(self, full_name: str) -> tuple[str, str]:
         if full_name.startswith(('http://', 'https://')):
             full_name = self._url2name(full_name)
         path = PurePosixPath(full_name)
@@ -38,7 +38,7 @@ class DeletionMixIn:
 class ConfigurationMixIn:
     __slots__ = ()
 
-    def configure(self, xml: Optional[str] = None) -> Any:
+    def configure(self, xml: str | None = None) -> Any:
         if not xml:
             return self.handle_req('GET', 'config.xml').text
         return self.handle_req('POST', 'config.xml',
@@ -78,7 +78,7 @@ class EnableMixIn:
 class RawJsonMixIn:
     __slots__ = ()
 
-    def api_json(self, tree: str = '', depth: int = 0) -> Dict[str, Any]:
+    def api_json(self, tree: str = '', depth: int = 0) -> dict[str, Any]:
         return self.raw
 
 
@@ -88,8 +88,8 @@ Parameter = namedtuple('Parameter', ['class_name', 'name', 'value'])
 class ActionsMixIn:
     __slots__ = ()
 
-    def get_parameters(self) -> List[Parameter]:
-        parameters: List[Parameter] = []
+    def get_parameters(self) -> list[Parameter]:
+        parameters: list[Parameter] = []
         for action in self.api_json()['actions']:
             if 'parameters' in action:
                 parameters.extend(Parameter(raw['_class'], raw['name'], raw.get(
@@ -97,7 +97,7 @@ class ActionsMixIn:
                 break
         return parameters
 
-    def get_causes(self) -> List[Dict[str, Any]]:
+    def get_causes(self) -> list[dict[str, Any]]:
         return next((action['causes'] for action in self.api_json()['actions'] if 'causes' in action), [])
 
 
@@ -114,7 +114,7 @@ class AsyncDeletionMixIn:
 class AsyncConfigurationMixIn:
     __slots__ = ()
 
-    async def configure(self, xml: Optional[str] = None) -> Any:
+    async def configure(self, xml: str | None = None) -> Any:
         if xml:
             return await self.handle_req('POST', 'config.xml',
                                          headers=self.headers, content=xml)
@@ -153,15 +153,15 @@ class AsyncEnableMixIn:
 class AsyncRawJsonMixIn:
     __slots__ = ()
 
-    async def api_json(self, tree: str = '', depth: int = 0) -> Dict[str, Any]:
+    async def api_json(self, tree: str = '', depth: int = 0) -> dict[str, Any]:
         return self.raw
 
 
 class AsyncActionsMixIn:
     __slots__ = ()
 
-    async def get_parameters(self) -> List[Parameter]:
-        parameters: List[Parameter] = []
+    async def get_parameters(self) -> list[Parameter]:
+        parameters: list[Parameter] = []
         data = await self.api_json()
         for action in data['actions']:
             if 'parameters' in action:
@@ -170,6 +170,6 @@ class AsyncActionsMixIn:
                 break
         return parameters
 
-    async def get_causes(self) -> List[Dict[str, Any]]:
+    async def get_causes(self) -> list[dict[str, Any]]:
         data = await self.api_json()
         return next((action['causes'] for action in data['actions'] if 'causes' in action), [])

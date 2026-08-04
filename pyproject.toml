@@ -45,3 +45,7 @@ packages = ["api4jenkins"]
 # Read from api4jenkins/__version__.py. setuptools extracts the literal via
 # AST parsing (no import), so build dependencies are not required.
 version = {attr = "api4jenkins.__version__.__version__"}
+
+[tool.ruff.format]
+# Prefer single quotes over double quotes.
+quote-style = "single"

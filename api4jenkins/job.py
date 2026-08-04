@@ -1,16 +1,19 @@
-# encoding: utf-8
+from __future__ import annotations
+
 import json
 import xml.etree.ElementTree as ET
 from functools import partial
 from pathlib import PurePosixPath
+from typing import Any, AsyncIterator, Iterator
 from urllib.parse import unquote_plus
-from typing import Optional, Dict, List, Any, Union, Iterator, AsyncIterator, Tuple
 
 try:
     from typing import override
 except ImportError:
     def override(func):
         return func
+
+from typing import TYPE_CHECKING
 
 from httpx import Response
 
@@ -27,10 +30,9 @@ from .mix import (
     EnableMixIn,
 )
 from .view import Views
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .queue import QueueItem, AsyncQueueItem
+    from .queue import AsyncQueueItem, QueueItem
 
 
 class NameMixIn:
@@ -80,7 +82,7 @@ def _make_query(depth: int) -> str:
     return query
 
 
-def _iter_jobs(jenkins: Any, item: Dict[str, Any]) -> Iterator[Any]:
+def _iter_jobs(jenkins: Any, item: dict[str, Any]) -> Iterator[Any]:
     yield new_item(jenkins, __name__, item)
     if jobs := item.get('jobs'):
         for job in jobs:
@@ -91,7 +93,7 @@ class Folder(Job):
     def create(self, name: str, xml: str) -> Response:
         return self.handle_req('POST', 'createItem', params={'name': name}, headers=self.headers, content=xml)
 
-    def get(self, name: str) -> Optional[Any]:
+    def get(self, name: str) -> Any | None:
         for item in self.api_json(tree='jobs[name,url]')['jobs']:
             if name == item['name']:
                 return self._new_item(__name__, item)
@@ -159,13 +161,13 @@ def _set_get_methods(job: Any, func: Any) -> None:
         setattr(job, snake(f'get_{key}'), partial(func, key))
 
 
-def _get_build(job: Any, api_json: Dict[str, Any], number: Union[int, str]) -> Optional[Any]:
+def _get_build(job: Any, api_json: dict[str, Any], number: int | str) -> Any | None:
     for item in api_json['builds']:
         if number in [item['number'], item['displayName']]:
             return job._new_item('api4jenkins.build', item)
 
 
-def _parse_build_params(params: Dict[str, Any]) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
+def _parse_build_params(params: dict[str, Any]) -> tuple[str, dict[str, Any], dict[str, Any]]:
     reserved = ['token', 'delay']
     entry = 'buildWithParameters'
     if not params or all(k in reserved for k in params):
@@ -189,13 +191,13 @@ class Project(Job, EnableMixIn):
 
         _set_get_methods(self, _get_build_by_key)
 
-    def build(self, **params) -> 'QueueItem':
+    def build(self, **params) -> QueueItem:
         entry, params, files = _parse_build_params(params)
         resp = self.handle_req('POST', entry, params=params, files=files)
         from .queue import QueueItem  # Import here to avoid circular import
         return QueueItem(self.jenkins, resp.headers['Location'])
 
-    def get(self, number: Union[int, str]) -> Optional[Any]:
+    def get(self, number: int | str) -> Any | None:
         return _get_build(self, self.api_json(tree='builds[number,displayName,url]'), number)
 
     @override
@@ -216,7 +218,7 @@ class Project(Job, EnableMixIn):
         data['json'] = json.dumps(data)
         self.handle_req('POST', 'nextbuildnumber/submit', data=data)
 
-    def get_parameters(self) -> List[Dict[str, Any]]:
+    def get_parameters(self) -> list[dict[str, Any]]:
         params = []
         for p in self.api_json()['property']:
             if 'parameterDefinitions' in p:
@@ -310,7 +312,7 @@ class AsyncFolder(AsyncJob):
     async def create(self, name: str, xml: str) -> Response:
         return await self.handle_req('POST', 'createItem', params={'name': name}, headers=self.headers, content=xml)
 
-    async def get(self, name: str) -> Optional[Any]:
+    async def get(self, name: str) -> Any | None:
         resp = await self.api_json(tree='jobs[name,url]')
         for item in resp['jobs']:
             if name == item['name']:
@@ -380,13 +382,13 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
 
         _set_get_methods(self, _get_build_by_key)
 
-    async def build(self, **params: Any) -> 'AsyncQueueItem':
+    async def build(self, **params: Any) -> AsyncQueueItem:
         from .queue import AsyncQueueItem  # Local import to avoid circular dependency
         entry, params, files = _parse_build_params(params)
         resp = await self.handle_req('POST', entry, params=params, files=files)
         return AsyncQueueItem(self.jenkins, resp.headers['Location'])
 
-    async def get(self, number: Union[int, str]) -> Optional[Any]:
+    async def get(self, number: int | str) -> Any | None:
         return _get_build(self, await self.api_json(tree='builds[number,displayName,url]'), number)
 
     @override
@@ -409,7 +411,7 @@ class AsyncProject(AsyncJob, AsyncEnableMixIn):
         data['json'] = json.dumps(data)
         await self.handle_req('POST', 'nextbuildnumber/submit', data=data)
 
-    async def get_parameters(self) -> List[Dict[str, Any]]:
+    async def get_parameters(self) -> list[dict[str, Any]]:
         params = []
         for p in (await self.api_json())['property']:
             if 'parameterDefinitions' in p:

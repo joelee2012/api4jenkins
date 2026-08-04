@@ -1,15 +1,21 @@
-# encoding: utf-8
+from __future__ import annotations
 
 import json
 from abc import abstractmethod
-from typing import Any, Dict, Iterator, AsyncIterator, Optional
-from httpx import Response
-from .build import Build, AsyncBuild
+from typing import Any, AsyncIterator, Iterator
 
+from httpx import Response
+
+from .build import AsyncBuild, Build
 from .item import AsyncItem, Item, new_item
-from .mix import (AsyncConfigurationMixIn, AsyncDeletionMixIn,
-                  AsyncRunScriptMixIn, ConfigurationMixIn, DeletionMixIn,
-                  RunScriptMixIn)
+from .mix import (
+    AsyncConfigurationMixIn,
+    AsyncDeletionMixIn,
+    AsyncRunScriptMixIn,
+    ConfigurationMixIn,
+    DeletionMixIn,
+    RunScriptMixIn,
+)
 
 # query builds from 'executors', 'oneOffExecutors' in computer(s),
 # cause freestylebuild is in executors, and workflowbuild has different _class in
@@ -21,7 +27,7 @@ _node_tree = ('executors[currentExecutable[url]],'
               'oneOffExecutors[currentExecutable[url]]')
 
 
-def _make_node_setting(name: str, **kwargs: Any) -> Dict[str, Any]:
+def _make_node_setting(name: str, **kwargs: Any) -> dict[str, Any]:
     node_setting = {
         'nodeDescription': '',
         'numExecutors': 1,
@@ -42,13 +48,13 @@ def _make_node_setting(name: str, **kwargs: Any) -> Dict[str, Any]:
     }
 
 
-def _new_builds(jenkins: Any, api_json: Dict[str, Any]) -> Iterator[Any]:
+def _new_builds(jenkins: Any, api_json: dict[str, Any]) -> Iterator[Any]:
     for computer in api_json['computer']:
         for item in _parse_builds(computer):
             yield new_item(jenkins, 'api4jenkins.build', item)
 
 
-def _parse_builds(data: Dict[str, Any]) -> Iterator[Dict[str, str]]:
+def _parse_builds(data: dict[str, Any]) -> Iterator[dict[str, str]]:
     for kind in ['executors', 'oneOffExecutors']:
         for executor in data.get(kind):
             # in case of issue:
@@ -58,13 +64,13 @@ def _parse_builds(data: Dict[str, Any]) -> Iterator[Dict[str, str]]:
                 yield {'url': execable['url'], '_class': execable['_class']}
 
 
-def _iter_node(jenkins: Any, api_json: Dict[str, Any]) -> Iterator[Any]:
+def _iter_node(jenkins: Any, api_json: dict[str, Any]) -> Iterator[Any]:
     for item in api_json['computer']:
         item['url'] = f"{jenkins.url}computer/{item['displayName']}/"
         yield new_item(jenkins, __name__, item)
 
 
-def _get_node(jenkins: Any, api_json: Dict[str, Any], name: str) -> Optional[Any]:
+def _get_node(jenkins: Any, api_json: dict[str, Any], name: str) -> Any | None:
     for item in api_json['computer']:
         if name == item['displayName']:
             item['url'] = f"{jenkins.url}computer/{item['displayName']}/"
@@ -91,22 +97,22 @@ class Nodes(Item, IterBuildingBuildsMixIn):
         return self.handle_req('POST', 'doCreateItem',
                              data=_make_node_setting(name, **kwargs))
 
-    def get(self, name: str) -> Optional['Node']:
+    def get(self, name: str) -> Node | None:
         return _get_node(self.jenkins, self.api_json(tree='computer[displayName]'), name)
 
     def iter_builds(self) -> Iterator[Build]:
         yield from _new_builds(self.jenkins, self.api_json(_nodes_tree, 2))
 
-    def iter(self) -> Iterator['Node']:
+    def iter(self) -> Iterator[Node]:
         yield from _iter_node(self.jenkins, self.api_json(tree='computer[displayName]'))
 
-    def filter_node_by_label(self, *labels: str) -> Iterator['Node']:
+    def filter_node_by_label(self, *labels: str) -> Iterator[Node]:
         for node in self:
             for label in node.api_json()['assignedLabels']:
                 if label['name'] in labels:
                     yield node
 
-    def filter_node_by_status(self, *, online: bool) -> Iterator['Node']:
+    def filter_node_by_status(self, *, online: bool) -> Iterator[Node]:
         yield from filter(lambda node: online != node.offline, self)
 
 # following two functions should be used in this module only
@@ -114,13 +120,13 @@ class Nodes(Item, IterBuildingBuildsMixIn):
 
 class Node(Item, ConfigurationMixIn, DeletionMixIn, RunScriptMixIn, IterBuildingBuildsMixIn):
 
-    def enable(self) -> Optional[Response]:
+    def enable(self) -> Response | None:
         if self.offline:
             return self.handle_req('POST', 'toggleOffline',
                                  params={'offlineMessage': ''})
         return None
 
-    def disable(self, msg: str = '') -> Optional[Response]:
+    def disable(self, msg: str = '') -> Response | None:
         if not self.offline:
             return self.handle_req('POST', 'toggleOffline',
                                  params={'offlineMessage': msg})
@@ -187,7 +193,7 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         return await self.handle_req('POST', 'doCreateItem',
                                    data=_make_node_setting(name, **kwargs))
 
-    async def get(self, name: str) -> Optional['AsyncNode']:
+    async def get(self, name: str) -> AsyncNode | None:
         return _get_node(self.jenkins, await self.api_json(tree='computer[displayName]'), name)
 
     async def iter_builds(self) -> AsyncIterator[AsyncBuild]:  # type: ignore[override]
@@ -196,21 +202,21 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
         for build in _new_builds(self.jenkins, await self.api_json(_nodes_tree, 2)):
             yield build
 
-    async def aiter(self) -> AsyncIterator['AsyncNode']:  # type: ignore[override]
+    async def aiter(self) -> AsyncIterator[AsyncNode]:  # type: ignore[override]
         """Override AsyncItem.aiter() to provide async node iteration.
         Note: This intentionally changes the return type."""
         data = await self.api_json(tree='computer[displayName]')
         for node in _iter_node(self.jenkins, data):
             yield node
 
-    async def filter_node_by_label(self, *labels: str) -> AsyncIterator['AsyncNode']:
+    async def filter_node_by_label(self, *labels: str) -> AsyncIterator[AsyncNode]:
         async for node in self:
             data = await node.api_json()
             for label in data['assignedLabels']:
                 if label['name'] in labels:
                     yield node
 
-    async def filter_node_by_status(self, *, online: bool) -> AsyncIterator['AsyncNode']:
+    async def filter_node_by_status(self, *, online: bool) -> AsyncIterator[AsyncNode]:
         async for node in self:
             if online != await node.offline:
                 yield node
@@ -218,13 +224,13 @@ class AsyncNodes(AsyncItem, AsyncIterBuildingBuildsMixIn):
 
 class AsyncNode(AsyncItem, AsyncConfigurationMixIn, AsyncDeletionMixIn, AsyncRunScriptMixIn, AsyncIterBuildingBuildsMixIn):
 
-    async def enable(self) -> Optional[Response]:
+    async def enable(self) -> Response | None:
         if await self.offline:
             return await self.handle_req('POST', 'toggleOffline',
                                        params={'offlineMessage': ''})
         return None
 
-    async def disable(self, msg: str = '') -> Optional[Response]:
+    async def disable(self, msg: str = '') -> Response | None:
         if not await self.offline:
             return await self.handle_req('POST', 'toggleOffline',
                                        params={'offlineMessage': msg})
