@@ -1,5 +1,18 @@
 Release History
 ===============
+2.1.0 (2025-11-19)
+------------------
+- Support file parameter
+
+2.0.4 (2025-03-20)
+------------------
+- Fix `OrganizationFolder.get_scan_log` returns 404 Not Found
+- Update doc
+
+2.0.3 (2023-12-22)
+------------------
+- Dynamically create transport object and remove unnecessary logger
+
 2.0.2 (2023-11-06)
 ------------------
 - Fix certificates verification after migration from `requtests` to `httpx`
