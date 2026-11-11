@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import xml.etree.ElementTree as ET
+from collections.abc import AsyncIterator, Iterator
 from functools import partial
 from pathlib import PurePosixPath
-from typing import Any, AsyncIterator, Iterator
+from typing import Any
 from urllib.parse import unquote_plus
 
 try:

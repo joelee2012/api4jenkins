@@ -4,7 +4,8 @@ import asyncio
 import re
 import time
 import urllib.parse
-from typing import Any, AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Iterator
+from typing import Any
 
 from httpx import Response
 

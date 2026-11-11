@@ -1,22 +1,14 @@
 from __future__ import annotations
 
-import sys
 from abc import abstractmethod
+from collections.abc import AsyncIterator, Generator, Iterator
 from typing import (
-    TYPE_CHECKING,
     Any,
     ClassVar,
-    Generator,
     Generic,
-    Iterator,
     Protocol,
     TypeVar,
 )
-
-if TYPE_CHECKING or sys.version_info >= (3, 9):
-    from collections.abc import AsyncIterator
-else:
-    from typing import AsyncIterator
 
 from api4jenkins.item import AsyncItem, Item, camel, snake
 
