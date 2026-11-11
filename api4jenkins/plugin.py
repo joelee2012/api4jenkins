@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import time
 import xml.etree.ElementTree as ET
-from typing import AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Iterator
 
 import anyio
 from httpx import Response

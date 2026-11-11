@@ -52,10 +52,10 @@ tox -e integration
 - **Style**: pycodestyle with explicit ignores: `E501,F401,E128,E402,E731,F821`
 - **Lint**: ruff
 - **Docstrings**: Google style
-- **Python support**: 3.8 through 3.13
+- **Python support**: 3.10 through 3.15
 
 ## CI/CD
 
-- `.github/workflows/unittest.yml` — Runs `tox` (style + lint + unit tests) across Python 3.8–3.13 on ubuntu-latest, uploads coverage for 3.12, and runs `twine check` on the built wheel/sdist.
+- `.github/workflows/unittest.yml` — Runs `tox` (style + lint + unit tests) across Python 3.10–3.15 on ubuntu-latest, uploads coverage for 3.12, and runs `twine check` on the built wheel/sdist.
 - `.github/workflows/integration.yml` — Starts Jenkins in Docker, then runs `tox -e integration`.
 - `.github/workflows/publish.yml` — Triggered on release creation; builds with `python -m build` and uploads to PyPI.

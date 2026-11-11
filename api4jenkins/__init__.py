@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import threading
+from collections.abc import AsyncIterator, Iterator
 from importlib import import_module
-from typing import Any, AsyncIterator, Iterator
+from typing import Any
 
 from httpx import HTTPStatusError
 

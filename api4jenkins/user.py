@@ -1,5 +1,6 @@
 from collections import namedtuple
-from typing import Any, AsyncIterator, Iterator, Optional
+from collections.abc import AsyncIterator, Iterator
+from typing import Any, Optional
 
 from .item import AsyncItem, Item
 from .mix import (

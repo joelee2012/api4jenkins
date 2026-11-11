@@ -1,5 +1,6 @@
 
-from typing import TYPE_CHECKING, Any, AsyncIterator, Iterator, Optional
+from collections.abc import AsyncIterator, Iterator
+from typing import TYPE_CHECKING, Any, Optional
 
 from httpx import Response
 

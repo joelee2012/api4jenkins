@@ -1,5 +1,6 @@
 
-from typing import AsyncIterator, Iterator, Optional
+from collections.abc import AsyncIterator, Iterator
+from typing import Optional
 
 from httpx import Response
 

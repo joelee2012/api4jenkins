@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import contextlib
 import re
+from collections.abc import AsyncIterator, Iterator
 from importlib import import_module
-from typing import Any, AsyncIterator, ClassVar, Iterator
+from typing import Any, ClassVar
 
 from httpx import Response
 

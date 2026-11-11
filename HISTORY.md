@@ -1,5 +1,11 @@
 Release History
 ===============
+2.2.0 (2026-11-11)
+------------------
+- Add Python 3.15 support
+- Drop Python 3.8 and 3.9 support
+- Use SPDX license metadata and migrate PyPI publishing to Trusted Publishing
+
 2.1.0 (2025-11-19)
 ------------------
 - Support file parameter

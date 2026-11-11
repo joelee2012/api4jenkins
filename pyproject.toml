@@ -1,14 +1,15 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "api4jenkins"
-dynamic = ["version"]
+version = "2.2.0"
 description = "Jenkins Python Client"
 readme = "README.md"
-requires-python = ">=3.8"
-license = {text = "Apache 2.0"}
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
     {name = "Joe Lee", email = "lj_2005@163.com"},
 ]
@@ -17,12 +18,9 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -41,11 +39,6 @@ Source = "https://github.com/joelee2012/api4jenkins"
 
 [tool.setuptools]
 packages = ["api4jenkins"]
-
-[tool.setuptools.dynamic]
-# Read from api4jenkins/__version__.py. setuptools extracts the literal via
-# AST parsing (no import), so build dependencies are not required.
-version = {attr = "api4jenkins.__version__.__version__"}
 
 [tool.ruff.format]
 # Prefer single quotes over double quotes.
