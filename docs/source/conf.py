@@ -12,24 +12,23 @@
 #
 
 import sys
+from importlib.metadata import metadata
 from pathlib import Path
 
 repo_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(repo_root))
 # -- Project information -----------------------------------------------------
 
-about = {}
-with open(repo_root.joinpath('api4jenkins', '__version__.py')) as f:
-    exec(f.read(), about)
+_meta = metadata('api4jenkins')
 
-project = about['__title__']
-copyright = about['__copyright__']
-author = about['__author__']
+project = _meta['Name']
+copyright = 'Copyright 2025 Joe Lee'
+author = 'Joe Lee'
 
 # The full version, including alpha/beta/rc tags
-release = about['__version__']
+release = _meta['Version']
 
-version = about['__version__']
+version = release
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

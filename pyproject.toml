@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "api4jenkins"
-dynamic = ["version"]
+version = "2.2.0"
 description = "Jenkins Python Client"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -41,11 +41,6 @@ Source = "https://github.com/joelee2012/api4jenkins"
 
 [tool.setuptools]
 packages = ["api4jenkins"]
-
-[tool.setuptools.dynamic]
-# Read from api4jenkins/__version__.py. setuptools extracts the literal via
-# AST parsing (no import), so build dependencies are not required.
-version = {attr = "api4jenkins.__version__.__version__"}
 
 [tool.ruff.format]
 # Prefer single quotes over double quotes.
